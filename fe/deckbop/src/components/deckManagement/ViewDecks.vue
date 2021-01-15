@@ -4,7 +4,7 @@
             <h1>+ New Deck</h1>
         </div>
         <div class="view-decks">
-            <div v-for="deck in decks" :key="deck">
+            <div v-for="deck in decks" :key="deck.deck_id">
                 <DeckBox v-bind:deck="deck" />
             </div>
         </div>    
