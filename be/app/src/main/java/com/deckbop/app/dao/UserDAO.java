@@ -54,8 +54,11 @@ public class UserDAO  {
                 jdbcTemplate.update(sql, username, encryptedPassword);
             }
             catch (Exception e) {
-                throw new RegisterException();
+                // logging
             }
+        }
+        else {
+            throw new RegisterException();
         }
     }
 
