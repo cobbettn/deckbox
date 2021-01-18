@@ -32,12 +32,14 @@ public class AuthenticationController {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
+
     @PostMapping("/login")
     public ResponseEntity<JWTToken> authorize(@RequestBody LoginDto loginDto) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
 
+        // Throws org.springframework.security.authentication.BadCredentialsException and returns 401 status
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

@@ -1,52 +1,63 @@
 package com.deckbop.app.dao;
 
-import org.springframework.stereotype.Component;
+import com.deckbop.app.Exception.RegisterException;
+import com.deckbop.app.controller.dto.RegisterDto;
+import com.deckbop.app.security.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.deckbop.app.security.model.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class UserDAO  {
-
- @Autowired
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public User getUser (String username) {
+    // adding this in here since this is where the encryption will occur
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    public Optional<User> getUser (String username) {
         User user = null;
-        try { 
-            String sql = "SELECT pw FROM users where username = ?";
+
+        try {
+            String sql = "SELECT * FROM users where username = ?";
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username);
             if (results.next()) {
-                String pw = results.getString("pw");
-                user = new User(1L,username, pw,"user",true);
+                Long id  = results.getLong("user_id");
+                String name = results.getString("username");
+                String pass = results.getString("pw");
+                user = new User(id, name, pass, "user",true);
             }
-            else {
-                System.out.println("user is not in the system");
-            }
-                    } catch (Exception e) {
-               //unsure of what type(s) of exceptions may be thrown
+        } catch (Exception e) {
+            // add logging
+            System.out.println("user not found");
         }
-        return user;
+
+        return Optional.ofNullable(user);
     }
-     public User registerUser(String username, String password) {
-        User user = null;
-        // check that user name isn't taken
-        if (this.getUser(username) == null) {
+
+    public void createUser(RegisterDto registerDto) throws RegisterException {
+        String username = registerDto.getUsername();
+        Optional<User> user = this.getUser(username);
+        if (user.isEmpty()) {
             try {
-                String sql = "INSERT INTO users (username, pw) VALUES (?,?)";
-                jdbcTemplate.update(sql,username,password);
-                user.setUsername(username);
-                user.setPassword(password);
+                String password = registerDto.getPassword();
+                String encryptedPassword = passwordEncoder().encode(password); // encrypt password before storing in db
+                String sql = "INSERT INTO users (username, pw) VALUES (?, ?)";
+                jdbcTemplate.update(sql, username, encryptedPassword);
             }
-                   catch (Exception e) {
-                //unsure of what type(s) of exceptions may be thrown
+            catch (Exception e) {
+                throw new RegisterException();
             }
         }
-        else {
-            // user exits, return error mesasge
-        }
-        return user;
     }
 
 }

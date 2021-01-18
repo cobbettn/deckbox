@@ -1,18 +1,19 @@
 package com.deckbop.app.security;
 
+import com.deckbop.app.dao.UserDAO;
 import com.deckbop.app.security.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -20,26 +21,20 @@ import java.util.stream.Collectors;
  */
 @Component("userDetailsService")
 public class UserModelDetailsService implements UserDetailsService {
-
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    @Autowired
+    UserDAO userDAO;
 
     private final Logger log = LoggerFactory.getLogger(UserModelDetailsService.class);
 
     @Override
     public UserDetails loadUserByUsername(final String login) {
         log.debug("Authenticating user '{}'", login);
-
-        String lowercaseLogin = login.toLowerCase();
-
-        boolean userFound = true;
-        if (userFound) {
-            User u = new User(1L, "user", passwordEncoder().encode("password"), "user", true);
-            return createSpringSecurityUser(lowercaseLogin, u);
+        Optional<User> user = userDAO.getUser(login);
+        if (user.isPresent()) {
+            return createSpringSecurityUser(login, user.get());
         }
         else {
-            throw new UsernameNotFoundException("User " + lowercaseLogin + " was not found.");
+            throw new UsernameNotFoundException("User " + login + " was not found.");
         }
     }
 
