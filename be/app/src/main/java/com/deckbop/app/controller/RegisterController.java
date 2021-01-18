@@ -23,6 +23,5 @@ public class RegisterController {
         catch (RegisterException ex) {
             return new ResponseEntity<>(HttpStatus.CONFLICT); // 409
         }
-
     }
 }

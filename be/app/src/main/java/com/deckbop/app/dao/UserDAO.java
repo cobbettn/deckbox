@@ -38,7 +38,6 @@ public class UserDAO  {
             }
         } catch (Exception e) {
             // add logging
-            System.out.println("user not found");
         }
 
         return Optional.ofNullable(user);
