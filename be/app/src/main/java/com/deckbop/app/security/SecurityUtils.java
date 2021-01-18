@@ -11,12 +11,8 @@ import java.util.Optional;
 public class SecurityUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityUtils.class);
-
-    private SecurityUtils() {
-    }
-
     /**
-     * Get the login of the current user.
+     * UNUSED Get the login of the current user.
      *
      * @return the login of the current user.
      */
