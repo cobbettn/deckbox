@@ -4,7 +4,7 @@
         <div>
             <h2>
                 Welcome {{ user }} 
-                <button>logout</button>
+                <router-link to="/login">login</router-link>
             </h2>
         </div>
     </div>

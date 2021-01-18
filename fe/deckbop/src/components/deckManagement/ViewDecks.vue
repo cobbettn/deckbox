@@ -4,7 +4,8 @@
             <h1>+ New Deck</h1>
         </div>
         <div class="view-decks">
-            <div v-for="deck in decks" :key="deck.deck_id">
+            <div v-for="(deck, index) in decks" :key="index">
+
                 <DeckBox v-bind:deck="deck" />
             </div>
         </div>    
@@ -20,7 +21,31 @@ export default {
     components: {
         DeckBox
     },
-    props: ["decks"],
+    props: [],
+    data() {
+        return {
+            decks: [
+                {
+                deck_id: 1,
+                user_id: 1,
+                decklist_id: 1,
+                deck_name: "burn"
+                },
+                {
+                deck_id: 2,
+                user_id: 1,
+                decklist_id: 2,
+                deck_name: "storm"
+                },
+                {
+                deck_id: 3,
+                user_id: 1,
+                decklist_id: 3,
+                deck_name: "red deck wins"
+                }
+            ]
+            }
+    }
 }
 
 </script>
@@ -31,11 +56,13 @@ export default {
     }
     .view-decks {
         display: flex;
+        flex-flow: row wrap;
         justify-content: space-around;
         
     }
     .new-deck {
         padding-left: 2em;
+        flex: 1;
     }
 </style>
 
