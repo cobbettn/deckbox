@@ -5,7 +5,7 @@
         </div>
         <div class="view-decks">
             <div v-for="(deck, index) in decks" :key="index">
-                
+
                 <DeckBox v-bind:deck="deck" />
             </div>
         </div>    
