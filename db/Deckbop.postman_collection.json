@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a184cbb5-1921-44e6-a073-eb5acb8c4c79",
+		"_postman_id": "bb095716-8a59-43d7-b0ba-bb23279d1f0b",
 		"name": "Deckbop",
 		"description": "Deckbop rest API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -74,7 +74,7 @@
 					},
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b21ieSIsImF1dGgiOiJ1c2VyIiwiZXhwIjoxNjExMTcxMTEyfQ.RsDQugBHiDjNaAEHthGBIjApHwP26ecPFG8qoThgRpUa-5YakSDrYw7HOIhhZQT7kikKFn36ytkDUjd8kZQ3Ng",
+						"value": "Bearer ",
 						"type": "text"
 					}
 				],
@@ -107,7 +107,7 @@
 					},
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b21ieSIsImF1dGgiOiJ1c2VyIiwiZXhwIjoxNjExMTcxMTEyfQ.RsDQugBHiDjNaAEHthGBIjApHwP26ecPFG8qoThgRpUa-5YakSDrYw7HOIhhZQT7kikKFn36ytkDUjd8kZQ3Ng",
+						"value": "Bearer ",
 						"type": "text"
 					}
 				],
