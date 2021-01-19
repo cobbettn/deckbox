@@ -15,10 +15,6 @@ public class Deck {
         this.deckName = deckName;
     }
     
-    public Deck(){
-        
-    }
-
     public int getDeckId() {
         return deckId;
     }
