@@ -23,7 +23,7 @@ public class DeckController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createDeck(@RequestBody DeckPostRequest deckDto){
         deckDAO.createDeck(deckDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<DeckGetResponse> getDeck(@PathVariable long id) {
