@@ -20,9 +20,7 @@ public class DeckDAO {
     private JdbcTemplate jdbcTemplate;
     
     public void createDeck(DeckDTO deckDto){
-        Deck deck = new Deck();
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
         try{
             String deckName = deckDto.getName();
             long userId = deckDto.getUserId();
@@ -40,7 +38,7 @@ public class DeckDAO {
                 values[i] =  "(" + deckId + ", '" + cardId + "', " + cardQuantity + ")";
             }
             String sql3 = String.join(", ", values);
-//            int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
+//          int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
             System.out.println(sql2 + sql3);
             jdbcTemplate.update(sql2 + sql3);
             
