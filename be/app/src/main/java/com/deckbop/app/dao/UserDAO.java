@@ -28,7 +28,7 @@ public class UserDAO  {
         User user = null;
 
         try {
-            String sql = "SELECT * FROM users where username = ?";
+            String sql = "SELECT * FROM user_account where username = ?";
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username);
             if (results.next()) {
                 Long id  = results.getLong("user_id");
@@ -50,7 +50,7 @@ public class UserDAO  {
             try {
                 String password = registerDto.getPassword();
                 String encryptedPassword = passwordEncoder().encode(password); // encrypt password before storing in db
-                String sql = "INSERT INTO users (username, pw) VALUES (?, ?)";
+                String sql = "INSERT INTO user_account (username, pw) VALUES (?, ?)";
                 jdbcTemplate.update(sql, username, encryptedPassword);
             }
             catch (Exception e) {

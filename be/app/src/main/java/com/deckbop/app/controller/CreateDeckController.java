@@ -24,7 +24,7 @@ public class CreateDeckController {
     @Autowired
     DeckDAO deckDAO;
     
-    @RequestMapping( value = "/", method = RequestMethod.POST)
+    @RequestMapping( value = "", method = RequestMethod.POST)
     public void createDeck(@RequestBody DeckDTO deckDto){
         deckDAO.createDeck(deckDto);
         

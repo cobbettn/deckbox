@@ -7,10 +7,20 @@ public class DeckDTO {
     
     private String name;
     private List<Card>cardList;
+    private long userId;
 
-    public DeckDTO(String name, List<Card> cardList) {
+    public DeckDTO(String name, List<Card> cardList, long userId) {
         this.name = name;
         this.cardList = cardList;
+        this.userId = userId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getName() {

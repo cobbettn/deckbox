@@ -1,40 +1,32 @@
-BEGIN TRANSACTION;
+CREATE DATABASE deckbop;
 
-CREATE TABLE Users
+CREATE TABLE user_account
 (
         user_id serial,
         username varchar(64) NOT NULL,
         pw varchar(64) NOT NULL,
         email varchar(64),
 
-        constraint pk_Users primary key(user_id)
+        constraint pk_User primary key(user_id)
 );
 
-CREATE TABLE Decks
+CREATE TABLE deck
 (
         deck_id serial,
         user_id int,
         deck_name varchar(64),
 
-        constraint pk_decks primary key(deck_id),
-        constraint fk_user_deck foreign key(user_id) references Users(user_id)
+        constraint pk_Deck primary key(deck_id),
+        constraint fk_User_Deck foreign key(user_id) references user_account(user_id)
 );
 
-CREATE TABLE Decklist
+CREATE TABLE card
 (
-        decklist_id serial,
         deck_id int,
-   
-        constraint fk_decklist_deck foreign key (deck_id) references Decks(deck_id),
-        constraint pk_decklist primary key(decklist_id)
-);
-CREATE TABLE Deckcards
-(
-        decklist_id int,
-        card_id int,
+        card_id varchar(255),
         card_quantity int,
         
-        constraint fk_deckcards_decklist foreign key (decklist_id) references Decklist(decklist_id)
+        constraint fk_Card_Deck foreign key (deck_id) references deck(deck_id)
 );
 
 COMMIT TRANSACTION;
