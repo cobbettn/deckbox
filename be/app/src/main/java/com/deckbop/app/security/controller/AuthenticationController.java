@@ -1,13 +1,16 @@
 package com.deckbop.app.security.controller;
 
 
+import com.deckbop.app.service.LoggingService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.deckbop.app.security.controller.dto.LoginDto;
 import com.deckbop.app.security.jwt.JWTFilter;
 import com.deckbop.app.security.jwt.TokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -32,6 +35,8 @@ public class AuthenticationController {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
+    @Autowired
+    private LoggingService loggingService;
 
     @PostMapping("/login")
     public ResponseEntity<JWTToken> authorize(@RequestBody LoginDto loginDto) {
@@ -39,8 +44,15 @@ public class AuthenticationController {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
 
-        // Throws org.springframework.security.authentication.BadCredentialsException and returns 401 status
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        Authentication authentication = null;
+        try {
+            authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            loggingService.info(loginDto.getUsername() + " logged in");
+        }
+        catch (BadCredentialsException e) {
+            loggingService.warn(loginDto.getUsername() + " provided bad credentials");
+            throw e;
+        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         boolean rememberMe = loginDto.isRememberMe() != null && loginDto.isRememberMe();

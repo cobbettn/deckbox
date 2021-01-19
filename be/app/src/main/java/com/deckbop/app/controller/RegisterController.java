@@ -1,8 +1,9 @@
 package com.deckbop.app.controller;
 
-import com.deckbop.app.Exception.RegisterException;
+import com.deckbop.app.exception.UsernameTakenException;
 import com.deckbop.app.controller.dto.RegisterDto;
 import com.deckbop.app.dao.UserDAO;
+import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegisterController {
     @Autowired
     UserDAO userDAO;
+    @Autowired
+    LoggingService loggingService;
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterDto registerDto) {
         try {
             userDAO.createUser(registerDto);
+            loggingService.info("user: " + registerDto.getUsername() + " created.");
             return new ResponseEntity<>(HttpStatus.CREATED); // 201
         }
-        catch (RegisterException ex) {
+        catch (UsernameTakenException ex) {
             return new ResponseEntity<>(HttpStatus.CONFLICT); // 409
         }
     }
