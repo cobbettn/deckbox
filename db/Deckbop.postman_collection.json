@@ -1,0 +1,129 @@
+{
+	"info": {
+		"_postman_id": "a184cbb5-1921-44e6-a073-eb5acb8c4c79",
+		"name": "Deckbop",
+		"description": "Deckbop rest API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8080/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"testuser\",\r\n    \"password\" : \"pass1234\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"testuser\",\r\n    \"password\" : \"pass1234\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/deck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b21ieSIsImF1dGgiOiJ1c2VyIiwiZXhwIjoxNjExMTcxMTEyfQ.RsDQugBHiDjNaAEHthGBIjApHwP26ecPFG8qoThgRpUa-5YakSDrYw7HOIhhZQT7kikKFn36ytkDUjd8kZQ3Ng",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"name\":\"my deck\", \"userId\": 1, \"cardList\":[{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
+				},
+				"url": {
+					"raw": "localhost:8080/deck",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"deck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/deck/2",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b21ieSIsImF1dGgiOiJ1c2VyIiwiZXhwIjoxNjExMTcxMTEyfQ.RsDQugBHiDjNaAEHthGBIjApHwP26ecPFG8qoThgRpUa-5YakSDrYw7HOIhhZQT7kikKFn36ytkDUjd8kZQ3Ng",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/deck/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"deck",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
