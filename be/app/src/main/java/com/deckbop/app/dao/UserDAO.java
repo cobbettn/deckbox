@@ -29,7 +29,7 @@ public class UserDAO {
         return new BCryptPasswordEncoder();
     }
 
-    public Optional<User> getUser (String username) {
+    public Optional<User> getUser(String username) {
         User user = null;
         try {
             String sql = "SELECT * FROM user_account where username = ?";
@@ -41,7 +41,7 @@ public class UserDAO {
                 user = new User(id, name, pass, "user",true);
             }
         } catch (DataAccessException e) {
-            loggingService.error(this.getClass().getName() + ".getUser() could not access database");
+            loggingService.error("SQL error while getting user: username = " + username);
         }
         return Optional.ofNullable(user);
     }
@@ -57,7 +57,7 @@ public class UserDAO {
                 jdbcTemplate.update(sql, username, encryptedPassword);
             }
             catch (DataAccessException e) {
-                loggingService.error(this.getClass().getName() + ".createUser() : could not access database");
+                loggingService.error("SQL error while creating user");
             }
         }
         else {

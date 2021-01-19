@@ -43,28 +43,34 @@ public class DeckDAO {
             String sql3 = String.join(", ", values);
 //          int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
             jdbcTemplate.update(sql2 + sql3);
-        } catch (DataAccessException e){
-            loggingService.error("Could not access database when creating a deck");
+        } catch (Exception e){
+            loggingService.error("SQL error while creating a deck");
         }
     }
-    public Optional<DeckGetResponse> getDeck (long deck_id) {
+    public Optional<DeckGetResponse> getDeck(long deck_id) {
         DeckGetResponse deck = null;
-        String sql = "SELECT deck_name, user_id FROM deck WHERE deck_id = ?";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, deck_id);
-        if (results.next()) {
-            String deck_name = results.getString("deck_name");
-            int user_id = results.getInt("user_id");
-            sql = "SELECT card_id, card_quantity FROM card WHERE deck_id = ?";
-            results = jdbcTemplate.queryForRowSet(sql, deck_id);
-            List<Card> cardList = new ArrayList<>();
-            while (results.next()) {
-                String card_id = results.getString("card_id");
-                int card_qty = results.getInt("card_quantity");
-                Card card = new Card(card_id, card_qty);
-                cardList.add(card);
+        try {
+            String sql = "SELECT deck_name, user_id FROM deck WHERE deck_id = ?";
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, deck_id);
+            if (results.next()) {
+                String deck_name = results.getString("deck_name");
+                int user_id = results.getInt("user_id");
+                sql = "SELECT card_id, card_quantity FROM card WHERE deck_id = ?";
+                results = jdbcTemplate.queryForRowSet(sql, deck_id);
+                List<Card> cardList = new ArrayList<>();
+                while (results.next()) {
+                    String card_id = results.getString("card_id");
+                    int card_qty = results.getInt("card_quantity");
+                    Card card = new Card(card_id, card_qty);
+                    cardList.add(card);
+                }
+                deck = new DeckGetResponse(deck_name, cardList, user_id, deck_id);
             }
-            deck = new DeckGetResponse(deck_name, cardList, user_id, deck_id);
         }
+        catch (Exception e) {
+            loggingService.error("SQL error while retrieving deck: deckId = " + deck_id);
+        }
+
         return Optional.ofNullable(deck);
     }
 
