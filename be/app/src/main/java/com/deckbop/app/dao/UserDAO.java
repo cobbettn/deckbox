@@ -1,6 +1,6 @@
 package com.deckbop.app.dao;
 
-import com.deckbop.app.controller.dto.RegisterDto;
+import com.deckbop.app.controller.dto.RegisterPostRequest;
 import com.deckbop.app.exception.UsernameTakenException;
 import com.deckbop.app.security.model.User;
 import com.deckbop.app.service.LoggingService;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class UserDAO  {
+public class UserDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -31,7 +31,6 @@ public class UserDAO  {
 
     public Optional<User> getUser (String username) {
         User user = null;
-
         try {
             String sql = "SELECT * FROM user_account where username = ?";
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username);
@@ -44,11 +43,10 @@ public class UserDAO  {
         } catch (DataAccessException e) {
             loggingService.error(this.getClass().getName() + ".getUser() could not access database");
         }
-
         return Optional.ofNullable(user);
     }
 
-    public void createUser(RegisterDto registerDto) throws UsernameTakenException {
+    public void createUser(RegisterPostRequest registerDto) throws UsernameTakenException {
         String username = registerDto.getUsername();
         Optional<User> user = this.getUser(username);
         if (user.isEmpty()) {
@@ -63,7 +61,7 @@ public class UserDAO  {
             }
         }
         else {
-            throw new UsernameTakenException("user name taken");
+            throw new UsernameTakenException("username taken");
         }
     }
 

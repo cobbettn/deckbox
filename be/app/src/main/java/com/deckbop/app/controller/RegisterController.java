@@ -1,7 +1,7 @@
 package com.deckbop.app.controller;
 
 import com.deckbop.app.exception.UsernameTakenException;
-import com.deckbop.app.controller.dto.RegisterDto;
+import com.deckbop.app.controller.dto.RegisterPostRequest;
 import com.deckbop.app.dao.UserDAO;
 import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class RegisterController {
     @Autowired
     LoggingService loggingService;
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<String> registerUser(@RequestBody RegisterPostRequest registerDto) {
         try {
             userDAO.createUser(registerDto);
             loggingService.info("user: " + registerDto.getUsername() + " created.");
