@@ -61,7 +61,7 @@ public class UserDAO {
             }
         }
         else {
-            throw new UsernameTakenException("username taken");
+            throw new UsernameTakenException("username " + username + " taken.");
         }
     }
 
