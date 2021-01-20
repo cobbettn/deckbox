@@ -21,6 +21,9 @@ public class UserDAO {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
+    DeckDAO deckDAO;
+
+    @Autowired
     LoggingService loggingService;
 
     // adding this in here since this is where the encryption will occur
@@ -64,6 +67,17 @@ public class UserDAO {
             throw new UsernameTakenException("username " + username + " taken.");
         }
     }
+
+        public void deleteUser(long user_id) {
+            try {
+                deckDAO.deleteUserDecks(user_id);
+                String sql = "DELETE FROM user_account where user_id = ?";
+                jdbcTemplate.update(sql, user_id);
+            }
+            catch (DataAccessException e) {
+                loggingService.error("SQL error deleting user with id " + user_id);
+            }
+        }
 
 }
             
