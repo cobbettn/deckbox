@@ -3,13 +3,13 @@ package com.deckbop.app.controller.dto;
 import com.deckbop.app.model.Card;
 import java.util.List;
 
-public class DeckDTO {
+public class DeckPostRequest {
     
     private String name;
     private List<Card>cardList;
     private long userId;
 
-    public DeckDTO(String name, List<Card> cardList, long userId) {
+    public DeckPostRequest(String name, List<Card> cardList, long userId) {
         this.name = name;
         this.cardList = cardList;
         this.userId = userId;
@@ -38,7 +38,4 @@ public class DeckDTO {
     public void setCardList(List<Card> cardList) {
         this.cardList = cardList;
     }
-    
-    
-
 }

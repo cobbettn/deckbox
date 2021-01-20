@@ -1,5 +1,7 @@
-CREATE DATABASE deckbop;
+--useage psql -u postgres -f /path/to/file
 
+CREATE DATABASE deckbop;
+\c deckbop;
 CREATE TABLE user_account
 (
         user_id serial,
@@ -28,5 +30,3 @@ CREATE TABLE card
         
         constraint fk_Card_Deck foreign key (deck_id) references deck(deck_id)
 );
-
-COMMIT TRANSACTION;

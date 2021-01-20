@@ -1,10 +1,10 @@
 package com.deckbop.app.controller.dto;
 
-public class RegisterDto {
+public class RegisterPostRequest {
     private String username;
     private String password;
 
-    public RegisterDto(String username, String password) {
+    public RegisterPostRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
