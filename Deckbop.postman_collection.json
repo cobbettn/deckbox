@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "localhost:8080/register",
+			"name": "register user",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -35,7 +35,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:8080/login",
+			"name": "login",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -63,7 +63,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:8080/deck",
+			"name": "create deck",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -96,7 +96,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:8080/deck/2",
+			"name": "get deck",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -120,6 +120,56 @@
 					"path": [
 						"deck",
 						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/user/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete deck",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/deck/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"deck",
+						"1"
 					]
 				}
 			},

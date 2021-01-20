@@ -85,4 +85,24 @@ public class DeckDAO {
         }
     }
 
+    public Optional<List<Long>> getDeckIdsByUserId(long userId) {
+        List<Long> list = null;
+        try {
+            list = new ArrayList<Long>();
+            String sql = "SELECT deck_id FROM deck WHERE user_id = ?";
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+            while (results.next()) {
+                list.add(results.getLong("deck_id"));
+            }
+        } catch (DataAccessException e) {
+            loggingService.error("SQL error in deleteDeck()");
+        }
+        return Optional.ofNullable(list);
+    }
+
+    public void deleteUserDecks(long userId) {
+        Optional<List<Long>> list = getDeckIdsByUserId(userId);
+        list.ifPresent(longs -> longs.forEach(this::deleteDeck));
+    }
+
 }
