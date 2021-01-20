@@ -30,5 +30,10 @@ public class DeckController {
         Optional<DeckGetResponse> response = deckDAO.getDeck(id);
         return response.map(deckGetResponse -> new ResponseEntity<>(deckGetResponse, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteDeck(@PathVariable long id){
+        deckDAO.deleteDeck(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

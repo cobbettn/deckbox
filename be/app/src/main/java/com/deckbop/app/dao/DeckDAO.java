@@ -74,4 +74,15 @@ public class DeckDAO {
         return Optional.ofNullable(deck);
     }
 
+    public void deleteDeck(long id){
+        try {
+            String sql1 = "DELETE FROM card WHERE deck_id = ?";
+            jdbcTemplate.update(sql1, id);
+            String sql2 = "DELETE FROM deck WHERE deck_id = ?";
+            jdbcTemplate.update(sql2, id);
+        } catch (DataAccessException e) {
+            loggingService.error("SQL error while deleting deck: deckId = " + id);
+        }
+    }
+
 }
