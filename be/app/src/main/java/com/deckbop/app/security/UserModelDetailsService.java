@@ -29,7 +29,7 @@ public class UserModelDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String login) {
         log.debug("Authenticating user '{}'", login);
-        Optional<User> user = userDAO.getUser(login);
+        Optional<User> user = userDAO.getUserByLogin(login);
         if (user.isPresent()) {
             return createSpringSecurityUser(login, user.get());
         }

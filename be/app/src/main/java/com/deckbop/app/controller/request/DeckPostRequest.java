@@ -1,4 +1,4 @@
-package com.deckbop.app.controller.dto;
+package com.deckbop.app.controller.request;
 
 import com.deckbop.app.model.Card;
 import java.util.List;

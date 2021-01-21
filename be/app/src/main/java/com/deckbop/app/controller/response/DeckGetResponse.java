@@ -1,5 +1,6 @@
-package com.deckbop.app.controller.dto;
+package com.deckbop.app.controller.response;
 
+import com.deckbop.app.controller.request.DeckPostRequest;
 import com.deckbop.app.model.Card;
 
 import java.util.List;

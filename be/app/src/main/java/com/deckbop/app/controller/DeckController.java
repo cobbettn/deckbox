@@ -1,7 +1,7 @@
 package com.deckbop.app.controller;
 
-import com.deckbop.app.controller.dto.DeckGetResponse;
-import com.deckbop.app.controller.dto.DeckPostRequest;
+import com.deckbop.app.controller.response.DeckGetResponse;
+import com.deckbop.app.controller.request.DeckPostRequest;
 import com.deckbop.app.dao.DeckDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
