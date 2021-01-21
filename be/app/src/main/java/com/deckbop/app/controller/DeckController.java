@@ -1,5 +1,6 @@
 package com.deckbop.app.controller;
 
+import com.deckbop.app.controller.request.UpdateDeckRequest;
 import com.deckbop.app.controller.response.DeckGetResponse;
 import com.deckbop.app.controller.request.DeckPostRequest;
 import com.deckbop.app.dao.DeckDAO;
@@ -25,11 +26,30 @@ public class DeckController {
         deckDAO.createDeck(deckDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckPostRequest request){
+
+        try {
+            Optional<DeckGetResponse> deck = deckDAO.getDeck(id);
+            if (deck.isPresent()) {
+                return deckDAO.updateDeck(request, id);
+            } else {
+                return new ResponseEntity<>("Invalid Deck ID",HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+
+        }
+
+        return null;
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<DeckGetResponse> getDeck(@PathVariable long id) {
         Optional<DeckGetResponse> response = deckDAO.getDeck(id);
         return response.map(deckGetResponse -> new ResponseEntity<>(deckGetResponse, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteDeck(@PathVariable long id){
         deckDAO.deleteDeck(id);
