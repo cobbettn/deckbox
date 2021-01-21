@@ -36,7 +36,6 @@ public class JWTFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
-
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -44,7 +43,6 @@ public class JWTFilter extends GenericFilterBean {
         } else {
             LOG.debug("no valid JWT token found, uri: {}", requestURI);
         }
-
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

@@ -1,12 +1,15 @@
 package com.deckbop.app.controller;
 
-import com.deckbop.app.controller.dto.RegisterPostRequest;
+import com.deckbop.app.controller.request.UserLoginRequest;
+import com.deckbop.app.controller.request.UserRegisterRequest;
 import com.deckbop.app.dao.UserDAO;
-import com.deckbop.app.exception.UsernameTakenException;
+import com.deckbop.app.exception.UserLoginException;
+import com.deckbop.app.security.service.AuthenticationService;
 import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,21 +18,35 @@ public class UserController {
     UserDAO userDAO;
     @Autowired
     LoggingService loggingService;
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterPostRequest registerDto) {
-        try {
-            userDAO.createUser(registerDto);
-            loggingService.info("user: " + registerDto.getUsername() + " created.");
-            return new ResponseEntity<>(HttpStatus.CREATED); // 201
+    @Autowired
+    AuthenticationService authenticationService;
+
+    @PostMapping("/user/register")
+    public ResponseEntity<String> register(@RequestBody UserRegisterRequest request) {
+        if (request.getCredentials().containsKey("username") && request.getCredentials().containsKey("email")) {
+            try {
+                userDAO.registerUser(request.getCredentials().get("username"), request.getCredentials().get("email"), request.getPassword());
+            }
+            catch (Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
         }
-        catch (UsernameTakenException ex) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT); // 409
+        return new ResponseEntity<>("registration successful", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/user/login")
+    public ResponseEntity<?> login(@RequestBody UserLoginRequest request) {
+        try {
+            return authenticationService.authorize(request);
+        }
+        catch (UserLoginException | AuthenticationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable long id) {
-            userDAO.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.OK); // 200
+    public ResponseEntity<String> delete(@PathVariable long id) {
+        userDAO.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

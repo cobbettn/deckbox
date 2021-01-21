@@ -1,7 +1,6 @@
 package com.deckbop.app.dao;
 
-import com.deckbop.app.controller.dto.RegisterPostRequest;
-import com.deckbop.app.exception.UsernameTakenException;
+import com.deckbop.app.exception.CredentialAlreadyTakenException;
 import com.deckbop.app.security.model.User;
 import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class UserDAO {
         return new BCryptPasswordEncoder();
     }
 
-    public Optional<User> getUser(String username) {
+    public Optional<User> getUserByLogin(String username) {
         User user = null;
         try {
             String sql = "SELECT * FROM user_account where username = ?";
@@ -48,36 +47,46 @@ public class UserDAO {
         }
         return Optional.ofNullable(user);
     }
-
-    public void createUser(RegisterPostRequest registerDto) throws UsernameTakenException {
-        String username = registerDto.getUsername();
-        Optional<User> user = this.getUser(username);
-        if (user.isEmpty()) {
-            try {
-                String password = registerDto.getPassword();
-                String encryptedPassword = passwordEncoder().encode(password); // encrypt password before storing in db
-                String sql = "INSERT INTO user_account (username, pw) VALUES (?, ?)";
-                jdbcTemplate.update(sql, username, encryptedPassword);
-            }
-            catch (DataAccessException e) {
-                loggingService.error("SQL error while creating user");
+    public Optional<String> getUsernameByEmail(String email) {
+        String username = null;
+        try {
+            String sql = "SELECT username FROM user_account WHERE email = ?";
+            SqlRowSet result = jdbcTemplate.queryForRowSet(sql, email);
+            if (result.next()) {
+                username = result.getString("username");
             }
         }
+        catch (DataAccessException e) {
+            loggingService.error("Sql error");
+        }
+        return Optional.ofNullable(username);
+    }
+
+    public void registerUser(String username, String email, String password) throws Exception {
+        boolean nameTaken = this.getUserByLogin(username).isPresent();
+        boolean emailTaken = this.getUsernameByEmail(email).isPresent();
+        if (!nameTaken && !emailTaken) {
+            String encryptedPassword = passwordEncoder().encode(password);
+            String sql = "INSERT INTO user_account (username, pw, email) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql, username, encryptedPassword, email);
+        }
         else {
-            throw new UsernameTakenException("username " + username + " taken.");
+            throw new CredentialAlreadyTakenException("credentials already registered");
         }
     }
 
-        public void deleteUser(long user_id) {
-            try {
-                deckDAO.deleteUserDecks(user_id);
-                String sql = "DELETE FROM user_account where user_id = ?";
-                jdbcTemplate.update(sql, user_id);
-            }
-            catch (DataAccessException e) {
-                loggingService.error("SQL error deleting user with id " + user_id);
-            }
+    public void deleteUser(long user_id) {
+        try {
+            deckDAO.deleteUserDecks(user_id);
+            String sql = "DELETE FROM user_account where user_id = ?";
+            jdbcTemplate.update(sql, user_id);
         }
+        catch (DataAccessException e) {
+            loggingService.error("SQL error deleting user with id " + user_id);
+        }
+    }
+
+
 
 }
             

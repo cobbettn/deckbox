@@ -1,7 +1,7 @@
 package com.deckbop.app.dao;
 
-import com.deckbop.app.controller.dto.DeckGetResponse;
-import com.deckbop.app.controller.dto.DeckPostRequest;
+import com.deckbop.app.controller.response.DeckGetResponse;
+import com.deckbop.app.controller.request.DeckPostRequest;
 import com.deckbop.app.model.Card;
 import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
