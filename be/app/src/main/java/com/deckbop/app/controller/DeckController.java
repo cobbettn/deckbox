@@ -1,8 +1,7 @@
 package com.deckbop.app.controller;
 
-import com.deckbop.app.controller.request.UpdateDeckRequest;
 import com.deckbop.app.controller.response.DeckGetResponse;
-import com.deckbop.app.controller.request.DeckPostRequest;
+import com.deckbop.app.controller.request.DeckRequest;
 import com.deckbop.app.dao.DeckDAO;
 import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +25,13 @@ public class DeckController {
     LoggingService loggingService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createDeck(@RequestBody DeckPostRequest deckDto){
+    public ResponseEntity<?> createDeck(@RequestBody DeckRequest deckDto){
         deckDAO.createDeck(deckDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckPostRequest request){
+    public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckRequest request){
         try {
             Optional<DeckGetResponse> deck = deckDAO.getDeck(id);
             if (deck.isPresent()) {

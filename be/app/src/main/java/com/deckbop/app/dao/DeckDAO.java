@@ -1,13 +1,11 @@
 package com.deckbop.app.dao;
 
-import com.deckbop.app.controller.request.UpdateDeckRequest;
 import com.deckbop.app.controller.response.DeckGetResponse;
-import com.deckbop.app.controller.request.DeckPostRequest;
+import com.deckbop.app.controller.request.DeckRequest;
 import com.deckbop.app.model.Card;
 import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,7 +24,7 @@ public class DeckDAO {
     @Autowired
     LoggingService loggingService;
     
-    public void createDeck(DeckPostRequest request){
+    public void createDeck(DeckRequest request){
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         try {
             String deckName = request.getName();
@@ -98,7 +96,7 @@ public class DeckDAO {
         list.ifPresent(longs -> longs.forEach(this::deleteDeck));
     }
 
-    public ResponseEntity<?> updateDeck(DeckPostRequest request, long id) {
+    public ResponseEntity<?> updateDeck(DeckRequest request, long id) {
         try {
             String sql = "UPDATE deck SET deck_name = ? WHERE deck_id = ?";
             jdbcTemplate.update(sql, request.getName(), id);
@@ -112,7 +110,7 @@ public class DeckDAO {
         }
     }
 
-    public void addCardsToDeck(DeckPostRequest request, long deckId){
+    public void addCardsToDeck(DeckRequest request, long deckId){
         String sql2 = "INSERT INTO card (deck_id, card_id, card_quantity) VALUES ";
         List<Card> cards = request.getCardList();
         String[] values = new String[cards.size()];
