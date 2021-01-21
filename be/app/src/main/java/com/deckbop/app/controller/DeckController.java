@@ -4,6 +4,7 @@ import com.deckbop.app.controller.request.UpdateDeckRequest;
 import com.deckbop.app.controller.response.DeckGetResponse;
 import com.deckbop.app.controller.request.DeckPostRequest;
 import com.deckbop.app.dao.DeckDAO;
+import com.deckbop.app.service.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,10 @@ public class DeckController {
     
     @Autowired
     DeckDAO deckDAO;
-    
+
+    @Autowired
+    LoggingService loggingService;
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createDeck(@RequestBody DeckPostRequest deckDto){
         deckDAO.createDeck(deckDto);
@@ -37,7 +41,7 @@ public class DeckController {
                 return new ResponseEntity<>("Invalid Deck ID",HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-
+            loggingService.error("SQL error while updating deck.");
         }
         return null;
     }
