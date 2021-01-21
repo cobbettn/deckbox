@@ -26,8 +26,15 @@ export default {
     },
     methods: {
         login: function (username, password) {
-            console.log(`login with username: ${username} 
+            const axios = require('axios');
+            axios.post("http://localhost/8080/login",
+                {username:username,password:password},
+                {"Content-Type":"application/json"})
+                .then(() =>{
+                    console.log(`login with username: ${username} 
                         password: ${password}`);
+                });
+            
         }
     }
 

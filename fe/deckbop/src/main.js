@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import App from './App.vue'
 
 // Import components here for routes
+import Register from './components/authentication/Register.vue'
 import Login from './components/authentication/Login.vue'
 import ViewDecks from './components/deckManagement/ViewDecks.vue'
 
@@ -11,6 +12,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {path: '/login', component: Login},
+  {path: '/register', component: Register},
   {path: '/viewDecks', component: ViewDecks},
   {path: '/', component: ViewDecks},
 ]
