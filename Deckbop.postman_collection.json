@@ -19,15 +19,16 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\" : \"testuser\",\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/register",
+					"raw": "localhost:8080/user/register",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"user",
 						"register"
 					]
 				}
@@ -35,7 +36,36 @@
 			"response": []
 		},
 		{
-			"name": "login",
+			"name": "login (email)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"credentials\": { \"email\": \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/user/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login (username)",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -47,16 +77,42 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\" : \"testuser\",\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\": \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/login",
+					"raw": "localhost:8080/user/login",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"user",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/user/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"1"
 					]
 				}
 			},
@@ -80,7 +136,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"name\":\"my deck\", \"userId\": 1, \"cardList\":[{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
+					"raw": "{ \"name\" : \"my deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
 				},
 				"url": {
 					"raw": "localhost:8080/deck",
@@ -120,31 +176,6 @@
 					"path": [
 						"deck",
 						"2"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "delete user",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer ",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "localhost:8080/user/1",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"user",
-						"1"
 					]
 				}
 			},
