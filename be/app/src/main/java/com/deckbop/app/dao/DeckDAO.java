@@ -102,7 +102,6 @@ public class DeckDAO {
         try {
             String sql = "UPDATE deck SET deck_name = ? WHERE deck_id = ?";
             jdbcTemplate.update(sql, request.getName(), id);
-            System.out.println("testing");
             sql = "DELETE FROM card WHERE deck_id = ?";
             jdbcTemplate.update(sql, id);
             addCardsToDeck(request, id);
@@ -125,8 +124,6 @@ public class DeckDAO {
         }
         String sql3 = String.join(", ", values);
 //          int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
-        String s = sql2 + sql3;
-        System.out.println(s);
         jdbcTemplate.update(sql2 + sql3);
     }
 

@@ -29,7 +29,6 @@ public class DeckController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckPostRequest request){
-
         try {
             Optional<DeckGetResponse> deck = deckDAO.getDeck(id);
             if (deck.isPresent()) {
@@ -40,7 +39,6 @@ public class DeckController {
         } catch (Exception e) {
 
         }
-
         return null;
     }
 
