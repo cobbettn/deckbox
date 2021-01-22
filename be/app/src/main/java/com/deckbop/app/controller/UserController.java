@@ -2,6 +2,7 @@ package com.deckbop.app.controller;
 
 import com.deckbop.app.controller.request.UserLoginRequest;
 import com.deckbop.app.controller.request.UserRegisterRequest;
+import com.deckbop.app.controller.request.UserUpdateRequest;
 import com.deckbop.app.dao.UserDAO;
 import com.deckbop.app.exception.UserLoginException;
 import com.deckbop.app.security.service.AuthenticationService;
@@ -48,5 +49,11 @@ public class UserController {
     public ResponseEntity<String> delete(@PathVariable long id) {
         userDAO.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{id}")
+    public ResponseEntity<?> update(@PathVariable long id, @RequestBody UserUpdateRequest request){
+        userDAO.updateUser(id, request);
+        return null;
     }
 }

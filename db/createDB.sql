@@ -2,12 +2,15 @@
 
 CREATE DATABASE deckbop;
 \c deckbop;
+CREATE TYPE user_role AS ENUM ('USER', 'ADMIN');
 CREATE TABLE user_account
 (
         user_id serial,
-        username varchar(64) NOT NULL,
+        username varchar(64) NOT NULL UNIQUE,
         pw varchar(64) NOT NULL,
-        email varchar(64),
+        email varchar(64) NOT NULL UNIQUE,
+        account_role user_role NOT NULL,
+        is_activated boolean NOT NULL,
 
         constraint pk_User primary key(user_id)
 );
