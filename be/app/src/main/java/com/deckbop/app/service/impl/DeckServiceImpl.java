@@ -25,8 +25,9 @@ public class DeckServiceImpl implements DeckService {
         try {
             deckDAO.createDeck(request);
         }
-        catch (Exception e) {
-
+        catch (DataAccessException e) {
+            loggingService.error("SQL error while creating deck");
+            throw e;
         }
     }
 
@@ -40,7 +41,8 @@ public class DeckServiceImpl implements DeckService {
             }
         }
         catch (Exception e) {
-            loggingService.error("");
+            loggingService.error("Error while retrieving deck");
+            throw e;
         }
         return response;
     }
