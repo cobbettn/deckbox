@@ -2,7 +2,10 @@ package com.deckbop.app.security;
 
 
 import com.deckbop.app.security.jwt.JWTConfigurer;
-import com.deckbop.app.security.jwt.TokenProvider;
+import com.deckbop.app.security.jwt.JwtAccessDeniedHandler;
+import com.deckbop.app.security.jwt.JwtAuthenticationEntryPoint;
+import com.deckbop.app.security.jwt.JWTProvider;
+import com.deckbop.app.service.impl.UserModelDetailsServiceImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,21 +18,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final TokenProvider tokenProvider;
+    private final JWTProvider JWTProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final UserModelDetailsService userModelDetailsService;
+    private final UserModelDetailsServiceImpl userModelDetailsServiceImpl;
 
     public WebSecurityConfig(
-            TokenProvider tokenProvider,
+            JWTProvider JWTProvider,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
             JwtAccessDeniedHandler jwtAccessDeniedHandler,
-            UserModelDetailsService userModelDetailsService
+            UserModelDetailsServiceImpl userModelDetailsServiceImpl
     ) {
-        this.tokenProvider = tokenProvider;
+        this.JWTProvider = JWTProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
-        this.userModelDetailsService = userModelDetailsService;
+        this.userModelDetailsServiceImpl = userModelDetailsServiceImpl;
     }
 
     /**
@@ -65,6 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
-        return new JWTConfigurer(tokenProvider);
+        return new JWTConfigurer(JWTProvider);
     }
 }

@@ -24,10 +24,10 @@ public class JWTFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private final TokenProvider tokenProvider;
+    private final JWTProvider JWTProvider;
 
-    public JWTFilter(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
+    public JWTFilter(JWTProvider JWTProvider) {
+        this.JWTProvider = JWTProvider;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class JWTFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        if (StringUtils.hasText(jwt) && JWTProvider.validateToken(jwt)) {
+            Authentication authentication = JWTProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             LOG.debug("set Authentication to security context for '{}', uri: {}", authentication.getName(), requestURI);
         } else {

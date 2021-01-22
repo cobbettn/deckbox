@@ -1,4 +1,4 @@
-package com.deckbop.app.controller.request.model;
+package com.deckbop.app.model;
 
 public class Credential {
     String type;

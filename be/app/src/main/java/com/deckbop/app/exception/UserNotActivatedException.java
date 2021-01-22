@@ -1,4 +1,4 @@
-package com.deckbop.app.security;
+package com.deckbop.app.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

@@ -1,4 +1,4 @@
-package com.deckbop.app.security.model;
+package com.deckbop.app.model;
 
 import java.util.Objects;
 

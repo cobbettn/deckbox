@@ -1,4 +1,4 @@
-package com.deckbop.app.security;
+package com.deckbop.app.security.jwt;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
