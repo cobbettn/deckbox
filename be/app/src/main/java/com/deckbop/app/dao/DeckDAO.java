@@ -25,7 +25,6 @@ public class DeckDAO {
     LoggingService loggingService;
     
     public void createDeck(DeckRequest request){
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         try {
             String deckName = request.getName();
             long userId = request.getUserId();
@@ -110,7 +109,7 @@ public class DeckDAO {
         }
     }
 
-    public void addCardsToDeck(DeckRequest request, long deckId){
+    private void addCardsToDeck(DeckRequest request, long deckId){
         String sql2 = "INSERT INTO card (deck_id, card_id, card_quantity) VALUES ";
         List<Card> cards = request.getCardList();
         String[] values = new String[cards.size()];
