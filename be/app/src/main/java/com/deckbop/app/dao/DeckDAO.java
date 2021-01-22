@@ -1,13 +1,11 @@
 package com.deckbop.app.dao;
 
-import com.deckbop.app.controller.response.DeckGetResponse;
 import com.deckbop.app.controller.request.DeckRequest;
+import com.deckbop.app.controller.response.DeckResponse;
 import com.deckbop.app.model.Card;
-import com.deckbop.app.service.LoggingService;
+import com.deckbop.app.service.impl.LoggingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -22,91 +20,76 @@ public class DeckDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    LoggingService loggingService;
+    LoggingServiceImpl loggingService;
     
-    public void createDeck(DeckRequest request){
-        try {
-            String deckName = request.getName();
-            long userId = request.getUserId();
-            String sql = "INSERT INTO deck(user_id, deck_name) VALUES (?, ?) RETURNING deck_id";
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, deckName);
-            results.next();
-            int deckId = results.getInt("deck_id");
-            addCardsToDeck(request, deckId);
-        } catch (Exception e){
-            loggingService.error("SQL error while creating a deck");
-        }
+    public void createDeck(DeckRequest request) throws DataAccessException {
+        int deckId = insertDeck(request);
+        addCardsToDeck(request, deckId);
     }
-    public Optional<DeckGetResponse> getDeck(long deck_id) {
-        DeckGetResponse deck = null;
-        try {
-            String sql = "SELECT deck_name, user_id FROM deck WHERE deck_id = ?";
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, deck_id);
-            if (results.next()) {
-                String deck_name = results.getString("deck_name");
-                int user_id = results.getInt("user_id");
-                sql = "SELECT card_id, card_quantity FROM card WHERE deck_id = ?";
-                results = jdbcTemplate.queryForRowSet(sql, deck_id);
-                List<Card> cardList = new ArrayList<>();
-                while (results.next()) {
-                    String card_id = results.getString("card_id");
-                    int card_qty = results.getInt("card_quantity");
-                    Card card = new Card(card_id, card_qty);
-                    cardList.add(card);
-                }
-                deck = new DeckGetResponse(deck_name, cardList, user_id, deck_id);
-            }
-        }
-        catch (Exception e) {
-            loggingService.error("SQL error while retrieving deck: deckId = " + deck_id);
-        }
 
+    public Optional<DeckResponse> getDeck(long deck_id) {
+        DeckResponse deck = null;
+        String sql = "SELECT deck_name, user_id FROM deck WHERE deck_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, deck_id);
+        if (results.next()) {
+            String deck_name = results.getString("deck_name");
+            int user_id = results.getInt("user_id");
+            sql = "SELECT card_id, card_quantity FROM card WHERE deck_id = ?";
+            results = jdbcTemplate.queryForRowSet(sql, deck_id);
+            List<Card> cardList = new ArrayList<>();
+            while (results.next()) {
+                String card_id = results.getString("card_id");
+                int card_qty = results.getInt("card_quantity");
+                Card card = new Card(card_id, card_qty);
+                cardList.add(card);
+            }
+            deck = new DeckResponse(deck_name, cardList, user_id, deck_id);
+        }
         return Optional.ofNullable(deck);
     }
 
-    public void deleteDeck(long id){
-        try {
-            String sql1 = "DELETE FROM card WHERE deck_id = ?";
-            jdbcTemplate.update(sql1, id);
-            String sql2 = "DELETE FROM deck WHERE deck_id = ?";
-            jdbcTemplate.update(sql2, id);
-        } catch (DataAccessException e) {
-            loggingService.error("SQL error while deleting deck: deckId = " + id);
-        }
+    public void deleteDeck(long deck_id) {
+        this.deleteCardsFromDeck(deck_id);
+        String sql2 = "DELETE FROM deck WHERE deck_id = ?";
+        jdbcTemplate.update(sql2, deck_id);
     }
 
-    public Optional<List<Long>> getDeckIdsByUserId(long userId) {
-        List<Long> list = null;
-        try {
-            list = new ArrayList<Long>();
-            String sql = "SELECT deck_id FROM deck WHERE user_id = ?";
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
-            while (results.next()) {
-                list.add(results.getLong("deck_id"));
-            }
-        } catch (DataAccessException e) {
-            loggingService.error("SQL error in deleteDeck()");
-        }
-        return Optional.ofNullable(list);
+    public void updateDeck(DeckRequest request, long deck_id) {
+        this.doUpdate(request, deck_id);
     }
 
-    public void deleteUserDecks(long userId) {
-        Optional<List<Long>> list = getDeckIdsByUserId(userId);
-        list.ifPresent(longs -> longs.forEach(this::deleteDeck));
+    public List<Long> getDeckIdsByUserId(long userId) {
+        List<Long> list = new ArrayList<>();
+        String sql = "SELECT deck_id FROM deck WHERE user_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+        while (results.next()) {
+            list.add(results.getLong("deck_id"));
+        }
+        return list;
     }
 
-    public ResponseEntity<?> updateDeck(DeckRequest request, long id) {
-        try {
-            String sql = "UPDATE deck SET deck_name = ? WHERE deck_id = ?";
-            jdbcTemplate.update(sql, request.getName(), id);
-            sql = "DELETE FROM card WHERE deck_id = ?";
-            jdbcTemplate.update(sql, id);
-            addCardsToDeck(request, id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (DataAccessException e) {
-            loggingService.error("SQL Error while updating deck");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    private int insertDeck(DeckRequest request) {
+        String deckName = request.getName();
+        long userId = request.getUserId();
+        String sql = "INSERT INTO deck(user_id, deck_name) VALUES (?, ?) RETURNING deck_id";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, deckName);
+        return results.next() ? results.getInt("deck_id") : -1;
+    }
+
+    private void doUpdate(DeckRequest request, long deck_id) {
+        this.updateDeckTable(request, deck_id);
+        this.deleteCardsFromDeck(deck_id);
+        this.addCardsToDeck(request, deck_id);
+    }
+
+    private void updateDeckTable(DeckRequest request, long deck_id) {
+        String sql = "UPDATE deck SET deck_name = ? WHERE deck_id = ?";
+        jdbcTemplate.update(sql, request.getName(), deck_id);
+    }
+
+    private void deleteCardsFromDeck(long deck_id) {
+        String sql1 = "DELETE FROM card WHERE deck_id = ?";
+        jdbcTemplate.update(sql1, deck_id);
     }
 
     private void addCardsToDeck(DeckRequest request, long deckId){
@@ -120,8 +103,7 @@ public class DeckDAO {
             values[i] =  "(" + deckId + ", '" + cardId + "', " + cardQuantity + ")";
         }
         String sql3 = String.join(", ", values);
-//          int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
-        jdbcTemplate.update(sql2 + sql3);
+        jdbcTemplate.update(sql2 + sql3);  // int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
     }
 
 }

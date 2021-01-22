@@ -1,15 +1,15 @@
-package com.deckbop.app.security.service;
+package com.deckbop.app.service.impl;
 
 
 import com.deckbop.app.controller.request.UserLoginRequest;
 import com.deckbop.app.controller.response.UserLoginResponse;
-import com.deckbop.app.dao.UserDAO;
 import com.deckbop.app.exception.EmailNotRegisteredException;
-import com.deckbop.app.exception.NoUsernameOrEmailExcecption;
+import com.deckbop.app.exception.NoUsernameOrEmailException;
 import com.deckbop.app.exception.UserLoginException;
+import com.deckbop.app.model.User;
 import com.deckbop.app.security.jwt.JWTFilter;
-import com.deckbop.app.security.jwt.TokenProvider;
-import com.deckbop.app.service.LoggingService;
+import com.deckbop.app.security.jwt.JWTProvider;
+import com.deckbop.app.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,24 +27,25 @@ import java.util.Optional;
 
 
 @Component
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
-    private LoggingService loggingService;
+    private LoggingServiceImpl loggingService;
 
     @Autowired
-    UserDAO userDAO;
+    UserServiceImpl userService;
 
-    private final TokenProvider tokenProvider;
+    private final JWTProvider JWTProvider;
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public AuthenticationService(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.tokenProvider = tokenProvider;
+    public AuthenticationServiceImpl(JWTProvider JWTProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+        this.JWTProvider = JWTProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
-    public ResponseEntity<UserLoginResponse> authorize(UserLoginRequest request) throws AuthenticationException, UserLoginException {
+    @Override
+    public ResponseEntity<?> authorizeAndReturnJWTToken(UserLoginRequest request) throws AuthenticationException, UserLoginException {
         String username = this.getUsernameFromCredentials(request.getCredentials());
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, request.getPassword());
@@ -58,33 +59,29 @@ public class AuthenticationService {
             throw e;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         // boolean rememberMe = request.isRememberMe() != null && request.isRememberMe();
-        String jwt = tokenProvider.createToken(authentication, true); // HACK: hard-coded true until request is done
-
+        String jwt = JWTProvider.createToken(authentication, true); // HACK: hard-coded true until request is done
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return new ResponseEntity<>(new UserLoginResponse(jwt), httpHeaders, HttpStatus.OK);
     }
 
-    private String getUsernameFromCredentials(Map<String, String> credentials) throws UserLoginException {
+    @Override
+    public String getUsernameFromCredentials(Map<String, String> credentials) throws EmailNotRegisteredException, NoUsernameOrEmailException {
         String username = credentials.get("username");
-        if (username == null)  {
+        if (username == null) {
             String email = credentials.get("email");
             if (email != null) {
-                Optional<String> name = userDAO.getUsernameByEmail(email);
-                if (name.isPresent()) {
-                    username = name.get();
-                }
-                else {
+                Optional<User> user = userService.getUserByEmail(email);
+                if (user.isPresent()) {
+                    username = user.get().getUsername();
+                } else {
                     throw new EmailNotRegisteredException("Email is not registered");
                 }
-            }
-            else {
-                throw new NoUsernameOrEmailExcecption("no username or email provided");
+            } else {
+                throw new NoUsernameOrEmailException("no username or email provided");
             }
         }
         return username;
     }
-
 }

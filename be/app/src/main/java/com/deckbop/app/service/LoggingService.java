@@ -1,26 +1,13 @@
 package com.deckbop.app.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+public interface LoggingService {
+    void trace(String message);
 
-@Service
-public class LoggingService {
-    private Logger logger = LoggerFactory.getLogger(LoggingService.class);
+    void info(String message);
 
-    public void trace(String message) {
-        logger.trace(message);
-    }
-    public void info(String message) {
-        logger.info(message);
-    }
-    public void warn(String message) {
-        logger.warn(message);
-    }
-    public void debug(String message) {
-        logger.debug(message);
-    }
-    public void error(String message) {
-        logger.error(message);
-    }
+    void warn(String message);
+
+    void debug(String message);
+
+    void error(String message);
 }

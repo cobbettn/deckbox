@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "822fcbd0-0ab9-4a3e-a365-8626c11f2f02",
+		"_postman_id": "16cbccec-b133-4bf6-8e98-48233a949e47",
 		"name": "Deckbop",
 		"description": "Deckbop rest API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser1\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/register",
@@ -31,42 +31,6 @@
 						"user",
 						"register"
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "delete user",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer ",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "localhost:8080/user/1",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"user",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "update user",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": ""
 				}
 			},
 			"response": []
@@ -130,6 +94,70 @@
 			"response": []
 		},
 		{
+			"name": "update user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"update@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/user/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/user/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "create deck",
 			"request": {
 				"method": "POST",
@@ -147,7 +175,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"name\" : \"my deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
+					"raw": "{ \"name\" : \"new deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
 				},
 				"url": {
 					"raw": "localhost:8080/deck",
@@ -168,25 +196,60 @@
 				"method": "GET",
 				"header": [
 					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
 						"key": "Authorization",
 						"value": "Bearer ",
 						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/2",
+					"raw": "localhost:8080/deck/1",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"deck",
-						"2"
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update deck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"name\" : \"update_deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"fun\",\"card_quantity\":4},{\"card_id\":\"bar\",\"card_quantity\":2}] }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/deck/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"deck",
+						"1"
 					]
 				}
 			},
@@ -212,35 +275,6 @@
 					"path": [
 						"deck",
 						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "update deck",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0dXNlcjEiLCJhdXRoIjoidXNlciIsImV4cCI6MTYxMTM3NDcxMn0.y0FKfAb62TU6BDFl8fyy670kpE8b55FuQObv2-wfW2tWAQ64ZDes3SNz4puI4B3zDJZU_HqE7eU4ncYZbtGSDg",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"name\" : \"newdeck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"fun\",\"card_quantity\":4},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
-				},
-				"url": {
-					"raw": "localhost:8080/deck/2",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"deck",
-						"2"
 					]
 				}
 			},

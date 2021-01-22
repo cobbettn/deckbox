@@ -1,7 +1,5 @@
 package com.deckbop.app.controller.request;
 
-import com.deckbop.app.controller.request.model.Credential;
-
 import java.util.Map;
 
 public class UserLoginRequest extends UserRegisterRequest {

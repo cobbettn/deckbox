@@ -1,59 +1,62 @@
 package com.deckbop.app.controller;
 
-import com.deckbop.app.controller.response.DeckGetResponse;
 import com.deckbop.app.controller.request.DeckRequest;
-import com.deckbop.app.service.LocalDeckService;
-import com.deckbop.app.service.LoggingService;
+import com.deckbop.app.controller.response.DeckResponse;
+import com.deckbop.app.service.impl.DeckServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 
 @RestController
 @PreAuthorize("isAuthenticated()")
 @RequestMapping("/deck")
 public class DeckController {
-
     @Autowired
-    LoggingService loggingService;
-
-    @Autowired
-    LocalDeckService deckService;
+    DeckServiceImpl deckService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createDeck(@RequestBody DeckRequest deckDto){
-        deckService.createDeck(deckDto);
+    public ResponseEntity<?> createDeck(@RequestBody DeckRequest request){
+        try {
+            deckService.createDeck(request);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckRequest request){
         try {
-            Optional<DeckGetResponse> deck = deckService.getDeck(id);
-            if (deck.isPresent()) {
-                return deckService.updateDeck(request, id);
-            } else {
-                return new ResponseEntity<>("Invalid Deck ID",HttpStatus.BAD_REQUEST);
-            }
+            deckService.updateDeck(request, id);
         } catch (Exception e) {
-            loggingService.error("SQL error while updating deck.");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return null;
+        return  new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<DeckGetResponse> getDeck(@PathVariable long id) {
-        Optional<DeckGetResponse> response = deckService.getDeck(id);
-        return response.map(deckGetResponse -> new ResponseEntity<>(deckGetResponse, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    public ResponseEntity<?> getDeck(@PathVariable long id) {
+        try {
+            DeckResponse response = deckService.getDeck(id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteDeck(@PathVariable long id){
-        deckService.deleteDeck(id);
+    public ResponseEntity<?> deleteDeck(@PathVariable long id) {
+        try {
+            deckService.deleteDeck(id);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

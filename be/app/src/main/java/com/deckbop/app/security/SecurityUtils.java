@@ -12,7 +12,7 @@ public class SecurityUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityUtils.class);
     /**
-     * UNUSED Get the login of the current user.
+     * Get the login of the current user.
      *
      * @return the login of the current user.
      */

@@ -22,9 +22,9 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-public class TokenProvider implements InitializingBean {
+public class JWTProvider implements InitializingBean {
 
-    private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
+    private final Logger log = LoggerFactory.getLogger(JWTProvider.class);
 
     private static final String AUTHORITIES_KEY = "auth";
 
@@ -35,7 +35,7 @@ public class TokenProvider implements InitializingBean {
     private Key key;
 
 
-    public TokenProvider(
+    public JWTProvider(
             @Value("${jwt.base64-secret}") String base64Secret,
             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
             @Value("${jwt.token-validity-in-seconds-for-remember-me}") long tokenValidityInSecondsForRememberMe) {

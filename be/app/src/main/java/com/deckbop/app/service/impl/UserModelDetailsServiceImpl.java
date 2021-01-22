@@ -1,7 +1,8 @@
-package com.deckbop.app.security;
+package com.deckbop.app.service.impl;
 
 import com.deckbop.app.dao.UserDAO;
-import com.deckbop.app.security.model.User;
+import com.deckbop.app.exception.UserNotActivatedException;
+import com.deckbop.app.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,11 @@ import java.util.stream.Collectors;
  * Authenticate a user from the database.
  */
 @Component("userDetailsService")
-public class UserModelDetailsService implements UserDetailsService {
+public class UserModelDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserDAO userDAO;
 
-    private final Logger log = LoggerFactory.getLogger(UserModelDetailsService.class);
+    private final Logger log = LoggerFactory.getLogger(UserModelDetailsServiceImpl.class);
 
     @Override
     public UserDetails loadUserByUsername(final String login) {
