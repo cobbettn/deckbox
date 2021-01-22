@@ -1,5 +1,6 @@
 package com.deckbop.app.dao;
 
+import com.deckbop.app.controller.request.UserUpdateRequest;
 import com.deckbop.app.exception.CredentialAlreadyTakenException;
 import com.deckbop.app.security.model.User;
 import com.deckbop.app.service.LoggingService;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -67,7 +69,7 @@ public class UserDAO {
         boolean emailTaken = this.getUsernameByEmail(email).isPresent();
         if (!nameTaken && !emailTaken) {
             String encryptedPassword = passwordEncoder().encode(password);
-            String sql = "INSERT INTO user_account (username, pw, email) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO user_account (username, pw, email, account_role, is_activated) VALUES (?, ?, ?, 'USER', FALSE)";
             jdbcTemplate.update(sql, username, encryptedPassword, email);
         }
         else {
@@ -83,6 +85,17 @@ public class UserDAO {
         }
         catch (DataAccessException e) {
             loggingService.error("SQL error deleting user with id " + user_id);
+        }
+    }
+
+    public void updateUser(long id, UserUpdateRequest request){
+        try {
+            Map<String, String> map = request.getCredentials();
+            String encryptedPassword = passwordEncoder().encode(request.getPassword());
+            String sql = "UPDATE user_account SET username = ?, pw = ?, email = ? WHERE user_id = ?";
+            jdbcTemplate.update(sql, map.get("username"), encryptedPassword, map.get("email"), id);
+        } catch (Exception e) {
+            loggingService.error("SQL error while updating user.");
         }
     }
 
