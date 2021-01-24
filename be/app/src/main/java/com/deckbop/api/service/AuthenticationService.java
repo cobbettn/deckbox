@@ -44,10 +44,10 @@ public class AuthenticationService {
         Authentication authentication = null;
         try {
             authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            loggingService.info(AuthenticationService.class, username + " logged in");
+            loggingService.info(this, username.get() + " logged in");
         }
         catch (BadCredentialsException e) {
-            loggingService.warn(AuthenticationService.class, username + " provided bad credentials");
+            loggingService.warn(this, username.get() + " provided bad credentials");
             throw e;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -23,8 +23,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final UserModelDetailsService userModelDetailsService;
 
-    public static final String loginEndpoint = "/user/login";
-    public static final String registerEndpoint = "/user/register";
+    private static final String loginEndpoint = "/user/login";
+    private static final String registerEndpoint = "/user/register";
 
     public WebSecurityConfig(
             JWTProvider JWTProvider,
@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");  // CORS
-        web.ignoring().antMatchers(loginEndpoint, registerEndpoint);
+        web.ignoring().antMatchers(HttpMethod.POST, loginEndpoint, registerEndpoint);
     }
 
     /**

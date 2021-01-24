@@ -24,7 +24,7 @@ public class DeckService  {
             deckDAO.createDeck(request);
         }
         catch (DataAccessException e) {
-            loggingService.error(DeckService.class, "SQL error while creating deck");
+            loggingService.error(this, "SQL error while creating deck");
             throw e;
         }
     }
@@ -38,7 +38,7 @@ public class DeckService  {
             }
         }
         catch (Exception e) {
-            loggingService.error(DeckService.class,"Error while retrieving deck");
+            loggingService.error(this,"Error while retrieving deck");
             throw e;
         }
         return response;
@@ -49,7 +49,7 @@ public class DeckService  {
             deckDAO.updateDeck(request, id);
         }
         catch (Exception e) {
-            loggingService.error(DeckService.class,"SQL error in updateDeck");
+            loggingService.error(this,"SQL error in updateDeck");
             throw e;
         }
     }
@@ -59,7 +59,7 @@ public class DeckService  {
             deckDAO.deleteDeck(id);
         }
         catch (DataAccessException e) {
-            loggingService.error(DeckService.class,"SQL error in deleteDeck");
+            loggingService.error(this,"SQL error in deleteDeck");
             throw e;
         }
     }
@@ -69,7 +69,7 @@ public class DeckService  {
             return deckDAO.getDeckIdsByUserId(userId);
         }
         catch (DataAccessException e) {
-            loggingService.error(DeckService.class,"SQL error in getDeckIdsByUserId");
+            loggingService.error(this,"SQL error in getDeckIdsByUserId");
             throw e;
         }
     }
@@ -80,7 +80,7 @@ public class DeckService  {
             list.forEach(this::deleteDeck);
         }
         catch (DataAccessException e) {
-            loggingService.error(DeckService.class,"SQL error in deleteUserDecks");
+            loggingService.error(this,"SQL error in deleteUserDecks");
             throw e;
         }
     }

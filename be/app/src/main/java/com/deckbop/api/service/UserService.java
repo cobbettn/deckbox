@@ -30,7 +30,7 @@ public class UserService {
     AuthenticationService authenticationService;
 
     @Autowired
-    IUserDatasource userDatasource = new UserDatasourceDAO();
+    IUserDatasource userDatasource = new UserDatasourceDAO();  // determine class by a properties file config?
 
     @Autowired
     LoggingService loggingService;
@@ -49,7 +49,7 @@ public class UserService {
                 user = getUserFromResults(results);
             }
         } catch (DataAccessException e) {
-            loggingService.error(UserService.class,"SQL error while getting user: username = " + username);
+            loggingService.error(this,"SQL error while getting user: username = " + username);
             throw e;
         }
         return Optional.ofNullable(user);
@@ -63,7 +63,7 @@ public class UserService {
                 user = getUserFromResults(results);
             }
         } catch (DataAccessException e) {
-            loggingService.error(UserService.class,"SQL error while getting user: email = " + email);
+            loggingService.error(this,"SQL error while getting user: email = " + email);
             throw e;
         }
         return Optional.ofNullable(user);
@@ -94,12 +94,12 @@ public class UserService {
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {
-                    loggingService.error(UserService.class,"SQL error while registering a user");
+                    loggingService.error(this,"SQL error while registering a user");
                     throw e;
                 }
             }
             else {
-                loggingService.error(UserService.class,"Credentials already in use");
+                loggingService.error(this,"Credentials already in use");
                 if (emailInUse && usernameInUse) {
                     throw new CredentialsInUseException("username and email already taken");
                 }
@@ -120,7 +120,7 @@ public class UserService {
             userDatasource.deleteUser(user_id);
         }
         catch (DataAccessException e) {
-            loggingService.error(UserService.class,"SQL error while deleting user");
+            loggingService.error(this,"SQL error while deleting user");
             throw e;
         }
     }
@@ -136,7 +136,7 @@ public class UserService {
             }
         }
         catch (DataAccessException e) {
-            loggingService.error(UserService.class,"SQL Error while updating user");
+            loggingService.error(this,"SQL Error while updating user");
             throw e;
         }
     }
@@ -150,7 +150,7 @@ public class UserService {
             }
         }
         catch (AuthenticationException | UserLoginException e) {
-            loggingService.error(UserService.class,e.getMessage());
+            loggingService.error(this, e.getMessage());
             throw e;
         }
         return Optional.ofNullable(response);

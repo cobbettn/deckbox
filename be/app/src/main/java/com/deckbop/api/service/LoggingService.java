@@ -5,9 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LoggingService {
-    public void trace(Object object, String message) {
-        LoggerFactory.getLogger(object.getClass()).trace(message);
-    }
+    public void trace(Object object, String message) { LoggerFactory.getLogger(object.getClass()).trace(message); }
     public void info(Object object, String message) { LoggerFactory.getLogger(object.getClass()).info(message); }
     public void warn(Object object, String message) {
         LoggerFactory.getLogger(object.getClass()).warn(message);
