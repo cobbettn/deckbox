@@ -99,7 +99,7 @@ public class UserService {
                 }
             }
             else {
-                loggingService.error(UserService.class,"Error while registering user");
+                loggingService.error(UserService.class,"Credentials already in use");
                 if (emailInUse && usernameInUse) {
                     throw new CredentialsInUseException("username and email already taken");
                 }

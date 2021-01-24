@@ -23,6 +23,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final UserModelDetailsService userModelDetailsService;
 
+    public static final String loginEndpoint = "/user/login";
+    public static final String registerEndpoint = "/user/register";
+
     public WebSecurityConfig(
             JWTProvider JWTProvider,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
@@ -40,8 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @param web
      */
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
-        web.ignoring().antMatchers("/user/login", "/user/register");
+        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");  // CORS
+        web.ignoring().antMatchers(loginEndpoint, registerEndpoint);
     }
 
     /**
@@ -52,9 +55,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
 
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, loginEndpoint, registerEndpoint)
+                .permitAll().anyRequest().authenticated()
+
+                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)

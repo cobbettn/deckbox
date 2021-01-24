@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterRequest request) {
         ResponseEntity<?> response = null;
         try {
@@ -34,7 +35,7 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequest request) {
         ResponseEntity<?> response = null;
         try {
@@ -50,7 +51,7 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/user/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @RequestBody UserUpdateRequest request) {
         ResponseEntity<?> response = null;
         try {
@@ -63,7 +64,7 @@ public class UserController {
         return  response;
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
         ResponseEntity<?> response = null;
         try {
