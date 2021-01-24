@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -144,7 +145,7 @@ public class UserService {
     public Optional<UserLoginResponse> loginUser(UserLoginRequest request) throws UserLoginException {
         UserLoginResponse response = null;
         try {
-            Optional<String> jwt = Optional.ofNullable(authenticationService.authorizeAndGetJWTToken(request));
+            Optional<String> jwt = Optional.ofNullable(authenticationService.authenticateAndGetJWTToken(request));
             if (jwt.isPresent()) {
                 response = new UserLoginResponse(jwt.get());
             }
@@ -154,6 +155,26 @@ public class UserService {
             throw e;
         }
         return Optional.ofNullable(response);
+    }
+
+    public Optional<String> getUsernameFromCredentials(Map<String, String> credentials) throws UserLoginException {
+        Optional<String> username = Optional.ofNullable(credentials.get("username"));
+        if (username.isEmpty()) {
+            Optional<String> email = Optional.ofNullable(credentials.get("email"));
+            if (email.isPresent()) {
+                Optional<User> user = getUserByEmail(email.get());
+                if (user.isPresent()) {
+                    username = Optional.ofNullable(user.get().getUsername());
+                }
+                else {
+                    throw new UserLoginException("Invalid email");
+                }
+            }
+            else {
+                throw new UserLoginException("No credentials provided");
+            }
+        }
+        return username;
     }
 
     public HttpHeaders getJWTHeaders(String jwt) {
