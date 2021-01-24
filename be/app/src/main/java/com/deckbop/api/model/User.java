@@ -20,9 +20,10 @@ public class User {
     private boolean activated;
     private Set<Authority> authorities = new HashSet<>();
 
-    public User(Long id, String username, String password, String role, boolean activated) {
+    public User(Long id, String username, String password, String email, String role, boolean activated) {
         this.id = id;
         this.username = username;
+        this.email = email;
         this.password = password;
         this.authorities.add(new Authority(role));
         this.activated = activated;

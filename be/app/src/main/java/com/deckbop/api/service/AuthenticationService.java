@@ -21,7 +21,7 @@ import java.util.Optional;
 public class AuthenticationService {
 
     @Autowired
-    private LoggingService loggingService;
+     LoggingService loggingService;
 
     @Autowired
     UserService userService;

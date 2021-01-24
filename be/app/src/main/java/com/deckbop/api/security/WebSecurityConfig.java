@@ -2,9 +2,9 @@ package com.deckbop.api.security;
 
 
 import com.deckbop.api.security.jwt.JWTConfigurer;
+import com.deckbop.api.security.jwt.JWTProvider;
 import com.deckbop.api.security.jwt.JwtAccessDeniedHandler;
 import com.deckbop.api.security.jwt.JwtAuthenticationEntryPoint;
-import com.deckbop.api.security.jwt.JWTProvider;
 import com.deckbop.api.service.UserModelDetailsService;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -41,6 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
+        web.ignoring().antMatchers("/user/login", "/user/register");
     }
 
     /**
@@ -64,12 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
-                .apply(securityConfigurerAdapter())
-
-                .and().authorizeRequests()
-                .antMatchers("/user/login").permitAll()
-                .antMatchers("/user/register").permitAll()
-                .anyRequest().authenticated();
+                .apply(securityConfigurerAdapter());
     }
 
     private JWTConfigurer securityConfigurerAdapter() {

@@ -71,9 +71,12 @@ public class UserService {
 
     private User getUserFromResults(SqlRowSet results) {
         return new User(
+                results.getLong("user_id"),
                 results.getString("username"),
                 results.getString("pw"),
-                results.getString("email")
+                results.getString("email"),
+                results.getString("account_role"),
+                results.getBoolean("is_activated")
         );
     }
 
@@ -87,7 +90,7 @@ public class UserService {
             boolean usernameInUse = usernameResults.next();
             if (!emailInUse && !usernameInUse) {
                 try {
-                    userDatasource.registerUser(username.get(), email.get(), this.getPasswordEncoder().encode(request.getPassword()));
+                    userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {

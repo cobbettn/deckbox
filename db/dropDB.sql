@@ -5,3 +5,4 @@ DROP TABLE deck;
 DROP TABLE user_account;
 \c postgres;
 DROP DATABASE deckbop;
+\q;

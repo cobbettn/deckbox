@@ -1,6 +1,5 @@
 package com.deckbop.api.security.jwt;
 
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -33,7 +32,6 @@ public class JWTProvider implements InitializingBean {
     private final long tokenValidityInMillisecondsForRememberMe;
 
     private Key key;
-
 
     public JWTProvider(
             @Value("${jwt.base64-secret}") String base64Secret,

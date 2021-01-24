@@ -31,6 +31,7 @@ public class JWTFilter extends GenericFilterBean {
     }
 
     @Override
+
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
@@ -39,10 +40,11 @@ public class JWTFilter extends GenericFilterBean {
         if (StringUtils.hasText(jwt) && JWTProvider.validateToken(jwt)) {
             Authentication authentication = JWTProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            LOG.debug("set Authentication to security context for '{}', uri: {}", authentication.getName(), requestURI);
+            LOG.info("set Authentication to security context for '{}', uri: {}", authentication.getName(), requestURI);
         } else {
-            LOG.debug("no valid JWT token found, uri: {}", requestURI);
+            LOG.info("no valid JWT token found, uri: {}", requestURI);
         }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

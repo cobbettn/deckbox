@@ -6,7 +6,6 @@ import com.deckbop.api.controller.request.UserUpdateRequest;
 import com.deckbop.api.controller.response.UserLoginResponse;
 import com.deckbop.api.exception.UserLoginException;
 import com.deckbop.api.exception.UserRegisterException;
-import com.deckbop.api.service.AuthenticationService;
 import com.deckbop.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -22,8 +21,6 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     UserService userService;
-    @Autowired
-    AuthenticationService authenticationService;
 
     @PostMapping("/user/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterRequest request) {
