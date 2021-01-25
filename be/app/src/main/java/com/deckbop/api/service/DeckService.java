@@ -2,11 +2,18 @@ package com.deckbop.api.service;
 
 import com.deckbop.api.controller.request.DeckRequest;
 import com.deckbop.api.controller.response.DeckResponse;
-import com.deckbop.api.data.dao.DeckDAO;
+import com.deckbop.api.data.IUserDatasource;
+import com.deckbop.api.data.SQLTemplates;
+import com.deckbop.api.data.dao.impl.DeckDatabaseDAO;
+import com.deckbop.api.data.dao.impl.UserDatabaseDAO;
+import com.deckbop.api.exception.CreateDeckException;
+import com.deckbop.api.model.Card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,14 +21,24 @@ import java.util.Optional;
 public class DeckService  {
 
     @Autowired
-    DeckDAO deckDAO;
+    DeckDatabaseDAO deckDatabaseDAO;
 
     @Autowired
     LoggingService loggingService;
 
-    public void createDeck(DeckRequest request) {
+    public void createDeck(DeckRequest request) throws CreateDeckException {
         try {
-            deckDAO.createDeck(request);
+            String deckName = request.getName();
+            long userId = request.getUserId();
+            Long deck_id = deckDatabaseDAO.insertDeck(deckName, userId);
+            if (deck_id > 0) {
+                String cardValues = this.getCardDataSQL(request, deck_id);
+                deckDatabaseDAO.addCardsToDeck(SQLTemplates.addCardsToDeck + cardValues);
+
+            } else {
+                loggingService.error(this,"SQL ERROR could not create deck.");
+                throw new CreateDeckException("SQL ERROR could not create deck.");
+            }
         }
         catch (DataAccessException e) {
             loggingService.error(this, "SQL error while creating deck");
@@ -30,9 +47,9 @@ public class DeckService  {
     }
 
     public DeckResponse getDeck(long deck_id) {
-        DeckResponse response =  null;
+        DeckResponse response = null;
         try {
-            Optional<DeckResponse> deck =  deckDAO.getDeck(deck_id);
+            Optional<DeckResponse> deck = this.getDeckResponse(deck_id);
             if (deck.isPresent()) {
                 response = deck.get();
             }
@@ -44,9 +61,31 @@ public class DeckService  {
         return response;
     }
 
-    public void updateDeck(DeckRequest request, long id) {
+    private Optional<DeckResponse> getDeckResponse(long deck_id) {
+        DeckResponse deck = null;
+        SqlRowSet results  = deckDatabaseDAO.getDeckById(deck_id);
+        if (results.next()) {
+            String deck_name = results.getString("deck_name");
+            int user_id = results.getInt("user_id");
+            results = deckDatabaseDAO.getCardsByDeckId(deck_id);
+            List<Card> cardList = new ArrayList<>();
+            while (results.next()) {
+                String card_id = results.getString("card_id");
+                int card_qty = results.getInt("card_quantity");
+                Card card = new Card(card_id, card_qty);
+                cardList.add(card);
+            }
+            deck = new DeckResponse(deck_name, cardList, user_id, deck_id);
+        }
+        return Optional.ofNullable(deck);
+    }
+
+    public void updateDeck(DeckRequest request, long deck_id) {
         try {
-            deckDAO.updateDeck(request, id);
+            deckDatabaseDAO.updateDeckTable(request.getName(), deck_id);
+            deckDatabaseDAO.deleteCardsFromDeck(deck_id);
+            String cardValues = this.getCardDataSQL(request, deck_id);
+            deckDatabaseDAO.addCardsToDeck(SQLTemplates.addCardsToDeck + cardValues);
         }
         catch (Exception e) {
             loggingService.error(this,"SQL error in updateDeck");
@@ -54,9 +93,10 @@ public class DeckService  {
         }
     }
 
-    public void deleteDeck(long id) {
+    public void deleteDeck(long deck_id) {
         try {
-            deckDAO.deleteDeck(id);
+            deckDatabaseDAO.deleteCardsFromDeck(deck_id);
+            deckDatabaseDAO.deleteDeck(deck_id);
         }
         catch (DataAccessException e) {
             loggingService.error(this,"SQL error in deleteDeck");
@@ -64,9 +104,14 @@ public class DeckService  {
         }
     }
 
-    public List<Long> getDeckIdsByUserId(long userId) {
+    private List<Long> getDeckIdsByUserId(long userId) {
         try {
-            return deckDAO.getDeckIdsByUserId(userId);
+            SqlRowSet results = deckDatabaseDAO.getDeckIdsByUserId(userId);
+            List<Long> list = new ArrayList<>();
+            while (results.next()) {
+                list.add(results.getLong("deck_id"));
+            }
+            return list;
         }
         catch (DataAccessException e) {
             loggingService.error(this,"SQL error in getDeckIdsByUserId");
@@ -85,4 +130,15 @@ public class DeckService  {
         }
     }
 
+    private String getCardDataSQL(DeckRequest request, long deckId){
+        List<Card> cards = request.getCardList();
+        String[] values = new String[cards.size()];
+        for (int i = 0; i < values.length; i++) {
+            Card c = cards.get(i);
+            String cardId = c.getCard_id();
+            int cardQuantity = c.getCard_quantity();
+            values[i] =  "(" + deckId + ", '" + cardId + "', " + cardQuantity + ")";
+        }
+        return String.join(", ", values);
+    }
 }

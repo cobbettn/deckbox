@@ -2,12 +2,12 @@ package com.deckbop.api.data.dao.impl;
 
 import com.deckbop.api.data.IUserDatasource;
 import com.deckbop.api.data.SQLTemplates;
-import com.deckbop.api.data.dao.AbstractDAO;
+import com.deckbop.api.data.dao.DatabaseDAO;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserDatasourceDAO extends AbstractDAO implements IUserDatasource  {
+public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource  {
     @Override
     public void registerUser(String username, String email, String password) {
         this.jdbcTemplate.update(SQLTemplates.registerUser, username, password, email);

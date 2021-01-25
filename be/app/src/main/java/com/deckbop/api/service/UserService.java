@@ -5,7 +5,7 @@ import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
 import com.deckbop.api.controller.response.UserLoginResponse;
 import com.deckbop.api.data.IUserDatasource;
-import com.deckbop.api.data.dao.impl.UserDatasourceDAO;
+import com.deckbop.api.data.dao.impl.UserDatabaseDAO;
 import com.deckbop.api.exception.CredentialsInUseException;
 import com.deckbop.api.exception.UserLoginException;
 import com.deckbop.api.model.User;
@@ -31,7 +31,7 @@ public class UserService {
     AuthenticationService authenticationService;
 
     @Autowired
-    IUserDatasource userDatasource = new UserDatasourceDAO();  // determine class by a properties file config?
+    IUserDatasource userDatasource = new UserDatabaseDAO();  // determine class by a properties file config?
 
     @Autowired
     LoggingService loggingService;
