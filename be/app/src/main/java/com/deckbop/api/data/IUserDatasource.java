@@ -1,6 +1,5 @@
 package com.deckbop.api.data;
 
-import com.deckbop.api.controller.request.DeckRequest;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 public interface IUserDatasource {
