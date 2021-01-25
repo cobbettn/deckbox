@@ -10,6 +10,7 @@ import com.deckbop.api.exception.UserLoginException;
 import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,7 +36,8 @@ public class UserService {
     @Autowired
     DeckService deckService;
 
-    @Resource(name = "userDatasource")
+    @Autowired
+    @Qualifier("userDatasource")
     IUserDatasource userDatasource;
 
     @Bean
