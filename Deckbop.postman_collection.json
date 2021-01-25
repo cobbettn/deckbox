@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"test@user.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/register",
@@ -48,7 +48,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\": \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/login",
@@ -77,7 +77,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"email\": \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"email\" : \"test@user.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/login",
@@ -106,12 +106,13 @@
 					{
 						"key": "Authorization",
 						"value": "Bearer ",
+						"description": " ",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"update@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}",
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"updated@email.com\" },\r\n    \"password\" : \"updatedPassword\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -175,7 +176,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"name\" : \"new deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
+					"raw": "{ \"name\" : \"new deck\", \"userId\" :8 , \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
 				},
 				"url": {
 					"raw": "localhost:8080/deck",
