@@ -5,7 +5,6 @@ import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
 import com.deckbop.api.controller.response.UserLoginResponse;
 import com.deckbop.api.data.IUserDatasource;
-import com.deckbop.api.data.dao.impl.UserDatabaseDAO;
 import com.deckbop.api.exception.CredentialsInUseException;
 import com.deckbop.api.exception.UserLoginException;
 import com.deckbop.api.model.User;
@@ -22,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,13 +31,13 @@ public class UserService {
     AuthenticationService authenticationService;
 
     @Autowired
-    IUserDatasource userDatasource = new UserDatabaseDAO();  // determine class by a properties file config?
-
-    @Autowired
     LoggingService loggingService;
 
     @Autowired
     DeckService deckService;
+
+    @Resource(name = "userDatasource")
+    IUserDatasource userDatasource;
 
     @Bean
     PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
