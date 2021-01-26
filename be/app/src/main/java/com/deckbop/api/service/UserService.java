@@ -17,6 +17,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +37,9 @@ public class UserService {
 
     @Autowired
     DeckService deckService;
+
+    @Autowired
+    JavaMailSender mailSender;
 
     @Autowired
     @Qualifier("userDatasource")
@@ -93,6 +98,7 @@ public class UserService {
             if (!emailInUse && !usernameInUse) {
                 try {
                     userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
+                    mailSender.send(TestRegistrationEmail());
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {
@@ -182,5 +188,13 @@ public class UserService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return httpHeaders;
+    }
+
+    private SimpleMailMessage TestRegistrationEmail(){
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setTo("EMAIL ADDRESS");
+        email.setSubject("Registration Confirmation Email From DeckBop ");
+        email.setText("Thank you for registering with DeckBop");
+        return email;
     }
 }
