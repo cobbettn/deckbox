@@ -25,14 +25,16 @@ export default {
         // password: String,
     },
     methods: {
-        login: function (username, password) {
+        login: function () {
             const axios = require('axios');
-            axios.post("http://localhost/8080/login",
-                {username:username,password:password},
+            axios.post("http://localhost:8080/user/login",
+                {
+                    credentials: { username : "2testuser" },
+                    password : "pass1234"
+                },
                 {"Content-Type":"application/json"})
-                .then(() =>{
-                    console.log(`login with username: ${username} 
-                        password: ${password}`);
+                .then((res) =>{
+                    console.log(res);
                 });
             
         }
