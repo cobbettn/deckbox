@@ -4,7 +4,7 @@
         <div>
             <h2>
                 Welcome {{ user }} 
-                <a v-if="showLogoutLink" href="/">logout</a>
+                <a v-if="showLogoutLink" v-on:click="onLogout" href="/">logout</a>
                 <router-link v-else to="/login">login</router-link>
             </h2>
         </div>
