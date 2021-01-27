@@ -6,12 +6,14 @@
             <input type="text" v-model="username">
             <h2>Password</h2>
             <input type="password" v-model="password">
-            <button v-on:click.prevent="login(username, password)">login</button>
+            <button v-on:click.prevent="login()">login</button>
         </form>
     </div>
 </template>
 
 <script>
+import { StatusCodes } from 'http-status-codes'
+import { userLoginUrl } from '../../config/api'
 export default {
     name: 'Login',
     data: () => {
@@ -20,21 +22,27 @@ export default {
             password: '',
         }    
     },
-    props: {
-        // username: String,
-        // password: String,
-    },
     methods: {
-        login: function (username, password) {
-            const axios = require('axios');
-            axios.post("http://localhost/8080/login",
-                {username:username,password:password},
-                {"Content-Type":"application/json"})
-                .then(() =>{
-                    console.log(`login with username: ${username} 
-                        password: ${password}`);
-                });
-            
+        login: function () {
+            const vm = this
+            const reqBody = {
+                credentials: {username: vm.username},
+                password: vm.password
+            }
+            const reqHeaders = {"Content-Type":"application/json"}
+            this.$http.post(
+                userLoginUrl,
+                reqBody,
+                reqHeaders
+            ).then(({status, data}) => {
+                if (status === StatusCodes.OK) {
+                    this.$store.state.user.jwt = data.token
+                    console.log(this.$store.getters.userJwt) // remove this line
+                }
+            }).catch(error => {
+                // error handling
+                console.log("login error: ", error)
+            });
         }
     }
 
