@@ -2,11 +2,17 @@
     <div class="login">
         <h1>Login</h1>
         <form id="login-form">
+            
+            <!-- remove -->
+            <h2>store token:</h2>
+            <div>{{ this.$store.state.user.jwt }}</div>
+            <!-- remove -->
+
             <h2>Username</h2>
             <input type="text" v-model="username">
             <h2>Password</h2>
             <input type="password" v-model="password">
-            <button v-on:click.prevent="login(username, password)">login</button>
+            <button v-on:click.prevent="login()">login</button>
         </form>
     </div>
 </template>
@@ -20,23 +26,21 @@ export default {
             password: '',
         }    
     },
-    props: {
-        // username: String,
-        // password: String,
-    },
     methods: {
         login: function () {
+            const vm = this;
+            const reqBody = {
+                credentials: {username: vm.username},
+                password: vm.password
+            }
+            const reqHeaders = {"Content-Type":"application/json"};
             const axios = require('axios');
-            axios.post("http://localhost:8080/user/login",
-                {
-                    credentials: { username : "2testuser" },
-                    password : "pass1234"
-                },
-                {"Content-Type":"application/json"})
-                .then((res) =>{
-                    console.log(res);
-                });
-            
+            axios.post("http://localhost:8081/user/login",
+                reqBody,
+                reqHeaders
+            ).then((res) =>{
+                this.$store.state.user.jwt = res.data.token;
+            });
         }
     }
 
