@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "http-status-codes": "^2.1.4",
     "vue": "^2.6.11",
     "vue-router": "^3.4.9"
   },

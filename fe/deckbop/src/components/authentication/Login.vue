@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { StatusCodes } from 'http-status-codes'
 export default {
     name: 'Login',
     data: () => {
@@ -34,12 +35,17 @@ export default {
                 password: vm.password
             }
             const reqHeaders = {"Content-Type":"application/json"};
-            const axios = require('axios');
-            axios.post("http://localhost:8081/user/login",
+            this.$http.post(
+                "http://localhost:8081/user/login",
                 reqBody,
                 reqHeaders
-            ).then((res) =>{
-                this.$store.state.user.jwt = res.data.token;
+            ).then((res) => {
+                if (res?.status === StatusCodes.OK) {
+                    this.$store.state.user.jwt = res.data.token;
+                }
+            })
+            .catch(err => {
+                console.log(err, 'bad credentials');
             });
         }
     }
