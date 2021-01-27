@@ -2,12 +2,6 @@
     <div class="login">
         <h1>Login</h1>
         <form id="login-form">
-            
-            <!-- remove -->
-            <h2>store token:</h2>
-            <div>{{ this.$store.state.user.jwt }}</div>
-            <!-- remove -->
-
             <h2>Username</h2>
             <input type="text" v-model="username">
             <h2>Password</h2>
@@ -19,6 +13,7 @@
 
 <script>
 import { StatusCodes } from 'http-status-codes'
+import { userLoginUrl } from '../../config/api'
 export default {
     name: 'Login',
     data: () => {
@@ -29,23 +24,24 @@ export default {
     },
     methods: {
         login: function () {
-            const vm = this;
+            const vm = this
             const reqBody = {
                 credentials: {username: vm.username},
                 password: vm.password
             }
-            const reqHeaders = {"Content-Type":"application/json"};
+            const reqHeaders = {"Content-Type":"application/json"}
             this.$http.post(
-                "http://localhost:8081/user/login",
+                userLoginUrl,
                 reqBody,
                 reqHeaders
-            ).then((res) => {
-                if (res?.status === StatusCodes.OK) {
-                    this.$store.state.user.jwt = res.data.token;
+            ).then(({status, data}) => {
+                if (status === StatusCodes.OK) {
+                    this.$store.state.user.jwt = data.token
+                    console.log(this.$store.getters.userJwt) // remove this line
                 }
-            })
-            .catch(err => {
-                console.log(err, 'bad credentials');
+            }).catch(error => {
+                // error handling
+                console.log("login error: ", error)
             });
         }
     }
