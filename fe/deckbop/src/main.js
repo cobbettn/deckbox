@@ -6,6 +6,7 @@ import App from './App.vue'
 import Register from './components/authentication/Register.vue'
 import Login from './components/authentication/Login.vue'
 import ViewDecks from './components/deckManagement/ViewDecks.vue'
+import DeckEditor from './components/deckEditor/DeckEditor.vue'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -15,6 +16,8 @@ const routes = [
   {path: '/register', component: Register},
   {path: '/viewDecks', component: ViewDecks},
   {path: '/', component: ViewDecks},
+  {path: '/deckEditor', component: DeckEditor},
+  {path: '/deckEditor/:id', component: DeckEditor},
 ]
 
 const router = new VueRouter({
