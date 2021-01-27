@@ -4,7 +4,8 @@
         <div>
             <h2>
                 Welcome {{ user }} 
-                <router-link to="/login">login</router-link>
+                <a v-if="showLogoutLink" href="/">logout</a>
+                <router-link v-else to="/login">login</router-link>
             </h2>
         </div>
     </div>
@@ -15,6 +16,17 @@ export default {
     name: 'Header',
     props: {
         user: String
+    },
+    computed: {
+        showLogoutLink() {
+            return !!this.$store.getters.getUserJwt
+        }
+    },
+    methods: {
+        onLogout() {
+            this.$store.dispatch('clearUserJwt')
+            this.$router.push('/login')
+        }
     }
 }
 </script>
