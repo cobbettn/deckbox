@@ -1,15 +1,38 @@
 <template>
     <div class="card-search-results">
-        <h3>Card Search results</h3>
+         <div v-for="(card, index) in populateResults" :key="index"  v-on:click="addToDeck(card)">
+
+            <Card v-bind:card="card"/>
+        </div>
     </div>
 </template>
 
 <script>
+import Card from '../shared/Card'
+
 export default {
-    
+    name: "CardSearchResults",
+    components: {
+        Card,
+    },
+    data: () => {
+        return {}
+    },
+    methods:{
+        addToDeck: function (card){
+            this.$store.commit('ADD_TO_DECK', card)
+        }
+    },
+    computed: {
+        populateResults() {
+            return this.$store.state.searchResults.data
+        }
+    }
 }
 </script>
 
 <style scoped>
-
+    .card-search-results{
+        display: flex;
+    }
 </style>
