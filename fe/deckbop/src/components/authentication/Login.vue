@@ -36,8 +36,8 @@ export default {
                 reqHeaders
             ).then(({status, data}) => {
                 if (status === StatusCodes.OK) {
-                    this.$store.state.user.jwt = data.token
-                    console.log(this.$store.getters.userJwt) // remove this line
+                    this.$store.dispatch('LOGIN', data.token)
+                    this.$router.push('/viewDecks');
                 }
             }).catch(error => {
                 // error handling

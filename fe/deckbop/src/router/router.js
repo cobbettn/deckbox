@@ -9,10 +9,10 @@ import DeckEditor from '../components/deckEditor/DeckEditor.vue'
 Vue.use(VueRouter)
 
 const routes = [
+  {path: '/', component: ViewDecks},
   {path: '/login', component: Login},
   {path: '/register', component: Register},
   {path: '/viewDecks', component: ViewDecks},
-  {path: '/', component: ViewDecks},
   {path: '/deckEditor', component: DeckEditor},
   {path: '/deckEditor/:id', component: DeckEditor},
 ]

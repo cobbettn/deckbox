@@ -19,11 +19,10 @@ export default {
     methods:{
         search: function(){
             const vm = this
-            console.log("searching for ", vm.searchText)
             this.$http.get(
                 `https://api.scryfall.com/cards/search/?q=${vm.searchText}`)
             .then((req) => {
-                this.$store.commit('SET_SEARCH_RESULTS', req.data)
+                this.$store.dispatch('SET_SEARCH_RESULTS', req.data)
             })
             .catch((err) => {
                 console.log("search error: ", err)

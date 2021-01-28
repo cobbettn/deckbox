@@ -20,12 +20,12 @@ export default {
     },
     methods:{
         addToDeck: function (card){
-            this.$store.commit('ADD_TO_DECK', card)
+            this.$store.dispatch('ADD_TO_DECK', card)
         }
     },
     computed: {
         populateResults() {
-            return this.$store.state.searchResults.data
+            return this.$store.getters.searchResults.data
         }
     }
 }

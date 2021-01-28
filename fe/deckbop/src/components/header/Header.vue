@@ -4,7 +4,12 @@
         <div>
             <h2>
                 Welcome {{ user }} 
-                <router-link to="/login">login</router-link>
+                <router-link  
+                    to="/login" 
+                    @click.native="showLogoutLink ? onLogout() : null"
+                >
+                   {{ showLogoutLink ? 'logout' : 'login' }}
+                </router-link>
             </h2>
         </div>
     </div>
@@ -15,6 +20,16 @@ export default {
     name: 'Header',
     props: {
         user: String
+    },
+    computed: {
+        showLogoutLink() {
+            return !!this.$store.getters.userJwt
+        }
+    },
+    methods: {
+        onLogout() {
+            this.$store.dispatch('LOGOUT')
+        }
     }
 }
 </script>

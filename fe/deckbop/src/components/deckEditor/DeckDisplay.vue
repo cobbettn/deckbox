@@ -14,12 +14,12 @@ export default {
     components: {Card},
     methods:{
         removeFromDeck: function (card){
-            this.$store.commit('REMOVE_FROM_DECK', card)
+            this.$store.dispatch('REMOVE_FROM_DECK', card)
         }
     },
     computed: {
         populateDeck: function() {
-            return this.$store.state.deck.cards
+            return this.$store.getters.deck.cards
         }
     }
 }
