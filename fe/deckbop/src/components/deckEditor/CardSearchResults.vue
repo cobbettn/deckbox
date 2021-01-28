@@ -25,7 +25,7 @@ export default {
     },
     computed: {
         populateResults() {
-            return this.$store.state.searchResults.data
+            return this.$store.getters.searchResults.data
         }
     }
 }

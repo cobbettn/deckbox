@@ -19,7 +19,7 @@ export default {
     },
     computed: {
         populateDeck: function() {
-            return this.$store.state.deck.cards
+            return this.$store.getters.deck.cards
         }
     }
 }
