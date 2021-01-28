@@ -9,6 +9,9 @@ export default new Vuex.Store({
       jwt: null
     }
   },
+  getters: {
+    getUserJwt: state => state.user.jwt
+  },
   mutations: {
     setUserJwt(state, data) {
       state.user.jwt = data
@@ -17,15 +20,12 @@ export default new Vuex.Store({
       state.user.jwt = null
     }
   },
-  getters: {
-    getUserJwt: state => state.user.jwt
-  },
   actions: {
     setUserJwt(context, jwt) {
       context.commit('setUserJwt', jwt)
     },
-    clearUserJwt(context, jwt) {
-      context.commit('clearUserJwt', jwt)
+    clearUserJwt(context) {
+      context.commit('clearUserJwt')
     }
   }
 
