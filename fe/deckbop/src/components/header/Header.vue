@@ -4,8 +4,12 @@
         <div>
             <h2>
                 Welcome {{ user }} 
-                <a v-if="showLogoutLink" v-on:click="onLogout" href="/">logout</a>
-                <router-link v-else to="/login">login</router-link>
+                <router-link  
+                    to="/login" 
+                    @click.native="showLogoutLink ? onLogout() : null"
+                >
+                   {{ showLogoutLink ? 'logout' : 'login' }}
+                </router-link>
             </h2>
         </div>
     </div>
@@ -25,7 +29,6 @@ export default {
     methods: {
         onLogout() {
             this.$store.dispatch('clearUserJwt')
-            this.$router.push('/login')
         }
     }
 }
