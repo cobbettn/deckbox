@@ -21,7 +21,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    SET_USER_JWT(context, jwt) {
+    LOGIN(context, jwt) {
       context.commit('SET_USER_JWT', jwt)
     },
     LOGOUT(context) {

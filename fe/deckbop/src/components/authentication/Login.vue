@@ -36,7 +36,7 @@ export default {
                 reqHeaders
             ).then(({status, data}) => {
                 if (status === StatusCodes.OK) {
-                    this.$store.dispatch('SET_USER_JWT', data.token)
+                    this.$store.dispatch('LOGIN', data.token)
                     this.$router.push('/viewDecks');
                 }
             }).catch(error => {
