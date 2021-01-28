@@ -23,12 +23,12 @@ export default {
     },
     computed: {
         showLogoutLink() {
-            return !!this.$store.getters.getUserJwt
+            return !!this.$store.getters.userJwt
         }
     },
     methods: {
         onLogout() {
-            this.$store.dispatch('clearUserJwt')
+            this.$store.dispatch('LOGOUT')
         }
     }
 }

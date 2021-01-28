@@ -10,22 +10,22 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    getUserJwt: state => state.user.jwt
+    userJwt: state => state.user.jwt
   },
   mutations: {
-    setUserJwt(state, data) {
+    SET_USER_JWT(state, data) {
       state.user.jwt = data
     },
-    clearUserJwt(state) {
+    CLEAR_USER_JWT(state) {
       state.user.jwt = null
     }
   },
   actions: {
-    setUserJwt(context, jwt) {
-      context.commit('setUserJwt', jwt)
+    SET_USER_JWT(context, jwt) {
+      context.commit('SET_USER_JWT', jwt)
     },
-    clearUserJwt(context) {
-      context.commit('clearUserJwt')
+    LOGOUT(context) {
+      context.commit('CLEAR_USER_JWT')
     }
   }
 
