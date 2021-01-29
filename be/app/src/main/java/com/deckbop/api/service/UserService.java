@@ -1,5 +1,6 @@
 package com.deckbop.api.service;
 
+import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -97,8 +99,16 @@ public class UserService {
             boolean usernameInUse = usernameResults.next();
             if (!emailInUse && !usernameInUse) {
                 try {
-                    userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
-                    mailSender.send(TestRegistrationEmail());
+                    String uuid = UUID.randomUUID().toString();
+                    int numRowsChanged = 0;
+                    while(numRowsChanged != 1){
+                        try {
+                            numRowsChanged = userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()), uuid);
+                        } catch (Exception e) {
+                            uuid = UUID.randomUUID().toString();
+                        }
+                    }
+                    //mailSender.send(TestRegistrationEmail());
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {
@@ -120,6 +130,10 @@ public class UserService {
             }
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    public void activateUser(UserActivationRequest request) {
+        userDatasource.activateUser(request.getActivation_token());
     }
 
     public void deleteUser(long user_id) {

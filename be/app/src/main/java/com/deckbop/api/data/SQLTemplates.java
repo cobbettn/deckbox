@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
     // user table
     public static final String getUserByLogin =       "SELECT * FROM user_account where username = ?";
     public static final String getUserByEmail =       "SELECT * FROM user_account where email = ?";
-    public static final String registerUser =         "INSERT INTO user_account (username, pw, email, account_role, is_activated) VALUES (?, ?, ?, 'USER', FALSE)";
+    public static final String registerUser =         "INSERT INTO user_account (username, pw, email, account_role, is_activated, activation_token) VALUES (?, ?, ?, 'USER', FALSE, ?)";
     public static final String deleteUser =           "DELETE FROM user_account where user_id = ?";
     public static final String updateUser =           "UPDATE user_account SET username = ?, pw = ?, email = ? WHERE user_id = ?";
+    public static final String activateUser =         "UPDATE user_account SET is_activated = true WHERE activation_token = ?";
     // deck table
     public static final String getDeckById =          "SELECT deck_name, user_id FROM deck WHERE deck_id = ?";
     public static final String deleteDeck =           "DELETE FROM deck WHERE deck_id = ?";
