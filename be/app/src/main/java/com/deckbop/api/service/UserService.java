@@ -12,6 +12,7 @@ import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +50,9 @@ public class UserService {
 
     @Bean
     PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
+
+    @Value("${deckbop.url.activation}")
+    String activationUrl;
 
     public Optional<User> getUserByLogin(String username) {
         User user = null;
@@ -108,7 +112,7 @@ public class UserService {
                             uuid = UUID.randomUUID().toString();
                         }
                     }
-                    //mailSender.send(TestRegistrationEmail());
+                    mailSender.send(setRegistrationEmail(email.get(), uuid));
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {
@@ -204,11 +208,11 @@ public class UserService {
         return httpHeaders;
     }
 
-    private SimpleMailMessage TestRegistrationEmail(){
-        SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo("EMAIL ADDRESS");
-        email.setSubject("Registration Confirmation Email From DeckBop ");
-        email.setText("Thank you for registering with DeckBop");
-        return email;
+    private SimpleMailMessage setRegistrationEmail(String emailAddress, String token){
+        SimpleMailMessage emailMessage = new SimpleMailMessage();
+        emailMessage.setTo(emailAddress);
+        emailMessage.setSubject("Registration Confirmation Email From DeckBop ");
+        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "?token=" + token);
+        return emailMessage;
     }
 }
