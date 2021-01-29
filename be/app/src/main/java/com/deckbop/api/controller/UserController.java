@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/user")
 public class UserController {
     @Autowired

@@ -25,7 +25,7 @@ public class UserModelDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String login) {
-        loggingService.info(UserModelDetailsService.class, "loading user: " + login);
+        loggingService.info(this, "loading user: " + login);
         Optional<User> user = userService.getUserByLogin(login);
         if (user.isPresent()) {
             return createSpringSecurityUser(login, user.get());
