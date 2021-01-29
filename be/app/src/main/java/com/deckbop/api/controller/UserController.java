@@ -1,5 +1,6 @@
 package com.deckbop.api.controller;
 
+import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -29,6 +31,17 @@ public class UserController {
             response = userService.registerUser(request);
         }
         catch (DataAccessException | UserRegisterException e) {
+            response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return response;
+    }
+
+    @PostMapping("/activate")
+    public ResponseEntity<?> activate(@RequestBody UserActivationRequest request){
+        ResponseEntity<?> response = new ResponseEntity<>(HttpStatus.OK);
+        try{
+            userService.activateUser(request);
+        } catch (Exception e) {
             response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return response;

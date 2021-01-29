@@ -10,8 +10,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource {
     @Override
-    public void registerUser(String username, String email, String password) {
-        this.jdbcTemplate.update(SQLTemplates.registerUser, username, password, email);
+    public int registerUser(String username, String email, String password, String uuid) {
+        return this.jdbcTemplate.update(SQLTemplates.registerUser, username, password, email, uuid);
+    }
+
+    @Override
+    public void activateUser(String activationToken){
+        this.jdbcTemplate.update(SQLTemplates.activateUser, activationToken);
     }
 
     @Override
