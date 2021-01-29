@@ -28,7 +28,6 @@ public class UserModelDetailsService implements UserDetailsService {
         loggingService.info(this, "loading user: " + username);
         User user = userService.getUserByUsername(username);
         if (Optional.ofNullable(user).isPresent()) {
-
             return createSpringSecurityUser(username, user);
         }
         else {
