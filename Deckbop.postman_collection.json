@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "16cbccec-b133-4bf6-8e98-48233a949e47",
-		"name": "Deckbop",
+		"_postman_id": "d677f9dd-94cf-49dd-810b-81ebaa6e81e4",
+		"name": "Deckbop(dev)",
 		"description": "Deckbop rest API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"test@user.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/register",
@@ -48,7 +48,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\": \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/login",
@@ -77,7 +77,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"email\" : \"test@user.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"email\": \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/user/login",
@@ -106,13 +106,12 @@
 					{
 						"key": "Authorization",
 						"value": "Bearer ",
-						"description": " ",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"updated@email.com\" },\r\n    \"password\" : \"updatedPassword\"\r\n}",
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"update@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -176,7 +175,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"name\" : \"new deck\", \"userId\" :8 , \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
+					"raw": "{ \"name\" : \"new deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
 				},
 				"url": {
 					"raw": "localhost:8080/deck",
@@ -209,14 +208,14 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/1",
+					"raw": "localhost:8080/deck/3",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"deck",
-						"1"
+						"3"
 					]
 				}
 			},
@@ -243,14 +242,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/deck/1",
+					"raw": "localhost:8080/deck/3",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"deck",
-						"1"
+						"3"
 					]
 				}
 			},
@@ -268,18 +267,77 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/1",
+					"raw": "localhost:8080/deck/3",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"deck",
-						"1"
+						"3"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "activate user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"activation_token\" : \"8c5b46ba-55c6-4f51-b136-9096acb224ab\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/user/activate",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"activate"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
