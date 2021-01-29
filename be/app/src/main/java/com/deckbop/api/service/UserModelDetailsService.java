@@ -24,14 +24,15 @@ public class UserModelDetailsService implements UserDetailsService {
     LoggingService loggingService;
 
     @Override
-    public UserDetails loadUserByUsername(final String login) {
-        loggingService.info(this, "loading user: " + login);
-        Optional<User> user = userService.getUserByLogin(login);
-        if (user.isPresent()) {
-            return createSpringSecurityUser(login, user.get());
+    public UserDetails loadUserByUsername(final String username) {
+        loggingService.info(this, "loading user: " + username);
+        User user = userService.getUserByUsername(username);
+        if (Optional.ofNullable(user).isPresent()) {
+
+            return createSpringSecurityUser(username, user);
         }
         else {
-            throw new UsernameNotFoundException("User " + login + " was not found.");
+            throw new UsernameNotFoundException("User " + username + " was not found.");
         }
     }
 

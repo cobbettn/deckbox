@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,54 +43,50 @@ public class UserService {
     @Bean
     PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
 
-    public Optional<User> getUserByLogin(String username) {
-        User user = null;
+    public User getUserByUsername(String username) {
+        User user;
         try {
-            SqlRowSet results = userDatasource.getUserByLogin(username);
-            if (results.next()) {
-                user = getUserFromResults(results);
-            }
+            user = userDatasource.getUserByUsername(username);
         } catch (DataAccessException e) {
             loggingService.error(this,"SQL error while getting user: username = " + username);
             throw e;
         }
-        return Optional.ofNullable(user);
+        return user;
     }
 
-    public Optional<User> getUserByEmail(String email) {
-        User user = null;
+    public User getUserByEmail(String email) {
+        User user;
         try {
-            SqlRowSet results = userDatasource.getUserByEmail(email);
-            if (results.next()) {
-                user = getUserFromResults(results);
-            }
+            user = userDatasource.getUserByEmail(email);
         } catch (DataAccessException e) {
             loggingService.error(this,"SQL error while getting user: email = " + email);
             throw e;
         }
-        return Optional.ofNullable(user);
-    }
-
-    private User getUserFromResults(SqlRowSet results) {
-        return new User(
-                results.getLong("user_id"),
-                results.getString("username"),
-                results.getString("pw"),
-                results.getString("email"),
-                results.getString("account_role"),
-                results.getBoolean("is_activated")
-        );
+        return user;
     }
 
     public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, CredentialsInUseException {
         Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
         Optional<String> username  = Optional.ofNullable(request.getCredentials().get("username"));
         if (email.isPresent() && username.isPresent()) {
-            SqlRowSet emailResults = userDatasource.getUserByEmail(email.get());
-            SqlRowSet usernameResults = userDatasource.getUserByLogin(username.get());
-            boolean emailInUse = emailResults.next();
-            boolean usernameInUse = usernameResults.next();
-            if (!emailInUse && !usernameInUse) {
+            User user;
+            boolean emailNotTaken;
+            boolean usernameNotTaken;
+            try {
+                user = userDatasource.getUserByEmail(email.get());
+                emailNotTaken = Optional.ofNullable(user).isPresent();
+            }
+            catch (DataAccessException e) {
+                emailNotTaken = true;
+            }
+            try {
+               user = userDatasource.getUserByUsername(username.get());
+               usernameNotTaken = Optional.ofNullable(user).isPresent();
+            }
+            catch (DataAccessException e) {
+                usernameNotTaken = true;
+            }
+            if (emailNotTaken && usernameNotTaken) {
                 try {
                     userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
                     return new ResponseEntity<>(HttpStatus.CREATED);
@@ -102,10 +98,10 @@ public class UserService {
             }
             else {
                 loggingService.error(this,"Credentials already in use");
-                if (emailInUse && usernameInUse) {
+                if (!emailNotTaken && !usernameNotTaken) {
                     throw new CredentialsInUseException("username and email already taken");
                 }
-                else if (emailInUse) {
+                else if (!emailNotTaken) {
                     throw new CredentialsInUseException("email already registered");
                 }
                 else {
@@ -128,7 +124,6 @@ public class UserService {
     }
 
     public void updateUser(long user_id, UserUpdateRequest request) {
-        boolean updated = false;
         try {
             Optional<String> username = Optional.ofNullable(request.getCredentials().get("username"));
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
@@ -146,36 +141,56 @@ public class UserService {
     public Optional<UserLoginResponse> loginUser(UserLoginRequest request) throws UserLoginException {
         UserLoginResponse response = null;
         try {
-            Optional<String> jwt = Optional.ofNullable(authenticationService.authenticateAndGetJWTToken(request));
-            if (jwt.isPresent()) {
-                response = new UserLoginResponse(jwt.get());
+            Optional<User> credentialsUser = this.getUserFromCredentials(request.getCredentials());
+            if (credentialsUser.isPresent()) {
+                User user = credentialsUser.get();
+                Optional<String> jwt = Optional.ofNullable(authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword()));
+                if (jwt.isPresent()) {
+                    response = new UserLoginResponse(jwt.get(), user.getId());
+                }
+            }
+            else {
+                throw new UserLoginException("could not load user from credentials");
             }
         }
-        catch (AuthenticationException | UserLoginException e) {
+        catch (AuthenticationException | DataAccessException | UserLoginException e) {
             loggingService.error(this, e.getMessage());
             throw e;
         }
         return Optional.ofNullable(response);
     }
 
-    public Optional<String> getUsernameFromCredentials(Map<String, String> credentials) throws UserLoginException {
+    public Optional<User> getUserFromCredentials(Map<String, String> credentials) throws UserLoginException {
+        User user = null;
         Optional<String> username = Optional.ofNullable(credentials.get("username"));
-        if (username.isEmpty()) {
-            Optional<String> email = Optional.ofNullable(credentials.get("email"));
-            if (email.isPresent()) {
-                Optional<User> user = getUserByEmail(email.get());
-                if (user.isPresent()) {
-                    username = Optional.ofNullable(user.get().getUsername());
-                }
-                else {
-                    throw new UserLoginException("Invalid email");
-                }
+        Optional<String> email = Optional.ofNullable(credentials.get("email"));
+        boolean validUsername = true, validEmail = true;
+        if (username.isPresent()) {
+            try {
+                user = userDatasource.getUserByUsername(username.get());
             }
-            else {
-                throw new UserLoginException("No credentials provided");
+            catch (EmptyResultDataAccessException e) {
+                validUsername = false;
             }
         }
-        return username;
+        if (Optional.ofNullable(user).isEmpty() && email.isPresent()) {
+            try {
+                user = userDatasource.getUserByEmail(email.get());
+            }
+            catch (EmptyResultDataAccessException e) {
+                validEmail = false;
+            }
+        }
+        if (!validUsername && !validEmail) {
+            throw new UserLoginException("bad email and username");
+        }
+        if (!validEmail) {
+            throw new UserLoginException("bad email");
+        }
+        if (!validUsername) {
+            throw new UserLoginException("bad username");
+        }
+        return Optional.ofNullable(user);
     }
 
     public HttpHeaders getJWTHeaders(String jwt) {

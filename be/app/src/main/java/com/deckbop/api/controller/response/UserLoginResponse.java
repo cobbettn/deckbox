@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UserLoginResponse {
 
     String jwtToken;
+    long userId;
 
-    public UserLoginResponse(String jwtToken) {
+    public UserLoginResponse(String jwtToken, long userId) {
         this.jwtToken = jwtToken;
+        this.userId = userId;
     }
 
     @JsonProperty("token")
@@ -19,4 +21,11 @@ public class UserLoginResponse {
         this.jwtToken = jwtToken;
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 }
