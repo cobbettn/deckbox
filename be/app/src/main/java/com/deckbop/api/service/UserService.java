@@ -44,23 +44,21 @@ public class UserService {
     PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
 
     public User getUserByUsername(String username) {
-        User user;
+        User user = null;
         try {
             user = userDatasource.getUserByUsername(username);
         } catch (DataAccessException e) {
-            loggingService.error(this,"SQL error while getting user: username = " + username);
-            throw e;
+            loggingService.info(this,"Could not find user with username: " + username);
         }
         return user;
     }
 
     public User getUserByEmail(String email) {
-        User user;
+        User user = null;
         try {
             user = userDatasource.getUserByEmail(email);
         } catch (DataAccessException e) {
-            loggingService.error(this,"SQL error while getting user: email = " + email);
-            throw e;
+            loggingService.info(this,"Could not find user with email: " + email);
         }
         return user;
     }
@@ -73,6 +71,7 @@ public class UserService {
             String password = request.getPassword();
             try {
                 userDatasource.registerUser(username, email, getPasswordEncoder().encode(password));
+                loggingService.info(this, username + " registered.");
                 return new ResponseEntity<>(HttpStatus.CREATED);
             }
             catch (DataAccessException e) {
@@ -156,18 +155,8 @@ public class UserService {
                 Optional.ofNullable(username).isPresent() && Optional.ofNullable(email).isPresent() :
                 Optional.ofNullable(username).isPresent() || Optional.ofNullable(email).isPresent()
         ) {
-            try {
-                emailUser = this.getUserByEmail(email);
-            }
-            catch (Exception e) {
-                loggingService.error(this,"validation error");
-            }
-            try {
-                usernameUser = this.getUserByUsername(username);
-            }
-            catch (Exception e) {
-                loggingService.error(this,"validation error");
-            }
+            emailUser = this.getUserByEmail(email);
+            usernameUser = this.getUserByUsername(username);
             isValid = isRegister?
                     Optional.ofNullable(emailUser).isEmpty() && Optional.ofNullable(usernameUser).isEmpty() :
                     Optional.ofNullable(emailUser).isPresent() || Optional.ofNullable(usernameUser).isPresent();

@@ -60,7 +60,7 @@ public class UserController {
         catch (Exception e) {
             response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return  response;
+        return response;
     }
 
     @DeleteMapping("/{id}")
