@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "16cbccec-b133-4bf6-8e98-48233a949e47",
-		"name": "Deckbop",
+		"_postman_id": "d677f9dd-94cf-49dd-810b-81ebaa6e81e4",
+		"name": "Deckbop(dev)",
 		"description": "Deckbop rest API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -19,14 +19,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"test@user.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/user/register",
+					"raw": "localhost:8081/user/register",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"register"
@@ -48,14 +48,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"username\": \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/user/login",
+					"raw": "localhost:8081/user/login",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"login"
@@ -77,14 +77,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"email\" : \"test@user.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
+					"raw": "{\r\n    \"credentials\": { \"email\": \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/user/login",
+					"raw": "localhost:8081/user/login",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"login"
@@ -106,13 +106,12 @@
 					{
 						"key": "Authorization",
 						"value": "Bearer ",
-						"description": " ",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"updated@email.com\" },\r\n    \"password\" : \"updatedPassword\"\r\n}",
+					"raw": "{\r\n    \"credentials\": { \"username\" : \"updated_user\", \"email\" : \"update@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -120,11 +119,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/user/2",
+					"raw": "localhost:8081/user/2",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"2"
@@ -145,11 +144,11 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/user/2",
+					"raw": "localhost:8081/user/2",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"2"
@@ -176,14 +175,14 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"name\" : \"new deck\", \"userId\" :8 , \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
+					"raw": "{ \"name\" : \"new deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
 				},
 				"url": {
-					"raw": "localhost:8080/deck",
+					"raw": "localhost:8081/deck",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck"
 					]
@@ -209,11 +208,11 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/1",
+					"raw": "localhost:8081/deck/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck",
 						"1"
@@ -243,11 +242,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/deck/1",
+					"raw": "localhost:8081/deck/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck",
 						"1"
@@ -268,11 +267,11 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/1",
+					"raw": "localhost:8081/deck/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck",
 						"1"
@@ -280,6 +279,66 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "activate user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"activation_token\" : \"9842e035-91bd-42dd-856c-b58ccb87b011\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/user/activate",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"user",
+						"activate"
+					]
+				},
+				"description": "look at the database for a valid uuid once a user has been created"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }

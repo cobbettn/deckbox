@@ -1,5 +1,6 @@
 package com.deckbop.api.service;
 
+import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
@@ -11,12 +12,16 @@ import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -37,11 +43,17 @@ public class UserService {
     DeckService deckService;
 
     @Autowired
+    JavaMailSender mailSender;
+
+    @Autowired
     @Qualifier("userDatasource")
     IUserDatasource userDatasource;
 
     @Bean
     PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
+
+    @Value("${deckbop.url.activation}")
+    String activationUrl;
 
     public Optional<User> getUserByLogin(String username) {
         User user = null;
@@ -92,7 +104,20 @@ public class UserService {
             boolean usernameInUse = usernameResults.next();
             if (!emailInUse && !usernameInUse) {
                 try {
-                    userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
+                    String uuid = UUID.randomUUID().toString();
+                    int numRowsChanged = 0;
+                    while(numRowsChanged != 1){
+                        try {
+                            numRowsChanged = userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()), uuid);
+                        } catch (Exception e) {
+                            uuid = UUID.randomUUID().toString();
+                        }
+                    }
+                    try {
+                        mailSender.send(setRegistrationEmail(email.get(), uuid));
+                    } catch (MailException e) {
+                        loggingService.error(this, "Error sending activation email");
+                    }
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {
@@ -114,6 +139,10 @@ public class UserService {
             }
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    public void activateUser(UserActivationRequest request) {
+        userDatasource.activateUser(request.getActivation_token());
     }
 
     public void deleteUser(long user_id) {
@@ -182,5 +211,13 @@ public class UserService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return httpHeaders;
+    }
+
+    private SimpleMailMessage setRegistrationEmail(String emailAddress, String token){
+        SimpleMailMessage emailMessage = new SimpleMailMessage();
+        emailMessage.setTo(emailAddress);
+        emailMessage.setSubject("Registration Confirmation Email From DeckBop ");
+        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "?token=" + token);
+        return emailMessage;
     }
 }
