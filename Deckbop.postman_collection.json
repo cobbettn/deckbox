@@ -119,14 +119,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8081/user/1",
+					"raw": "localhost:8081/user/2",
 					"host": [
 						"localhost"
 					],
 					"port": "8081",
 					"path": [
 						"user",
-						"1"
+						"2"
 					]
 				}
 			},
@@ -298,7 +298,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"activation_token\" : \"8c5b46ba-55c6-4f51-b136-9096acb224ab\"\r\n}",
+					"raw": "{\r\n    \"activation_token\" : \"9842e035-91bd-42dd-856c-b58ccb87b011\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
