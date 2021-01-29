@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
@@ -112,7 +113,11 @@ public class UserService {
                             uuid = UUID.randomUUID().toString();
                         }
                     }
-                    mailSender.send(setRegistrationEmail(email.get(), uuid));
+                    try {
+                        mailSender.send(setRegistrationEmail(email.get(), uuid));
+                    } catch (MailException e) {
+                        loggingService.error(this, "Error sending activation email");
+                    }
                     return new ResponseEntity<>(HttpStatus.CREATED);
                 }
                 catch (DataAccessException e) {
