@@ -1,27 +1,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import defaultUser from '../model/user'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: {
-      jwt: null
-    },
+    user: defaultUser,
     deck: {cards:[]},
     searchResults: {data: ""},
   },
   getters: {
-    userJwt: state => state.user.jwt,
+    user: state => state.user,
     searchResults: state => state.searchResults,
     deck: state => state.deck,
   },
   mutations: {
-    SET_USER_JWT(state, data) {
-      state.user.jwt = data
+    SET_USER(state, data) {
+      state.user = data
     },
-    CLEAR_USER_JWT(state) {
-      state.user.jwt = null
+    CLEAR_USER(state) {
+      state.user = defaultUser
     },
     SET_SEARCH_RESULTS(state, data){
       state.searchResults = data;
@@ -34,11 +33,11 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    LOGIN(context, jwt) {
-      context.commit('SET_USER_JWT', jwt)
+    LOGIN(context, data) {
+      context.commit('SET_USER', data)
     },
     LOGOUT(context) {
-      context.commit('CLEAR_USER_JWT')
+      context.commit('CLEAR_USER')
     },
     SET_SEARCH_RESULTS(context, data){
       context.commit('SET_SEARCH_RESULTS', data)

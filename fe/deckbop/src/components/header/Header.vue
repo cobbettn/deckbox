@@ -23,7 +23,7 @@ export default {
     },
     computed: {
         showLogoutLink() {
-            return !!this.$store.getters.userJwt
+            return !!this.$store.getters.user.jwt
         }
     },
     methods: {
