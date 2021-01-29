@@ -1,7 +1,6 @@
 package com.deckbop.api.service;
 
 
-import com.deckbop.api.exception.UserLoginException;
 import com.deckbop.api.security.jwt.JWTProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,7 +29,7 @@ public class AuthenticationService {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
-    public String authenticateAndGetJWTToken(String username, String password) throws AuthenticationException, UserLoginException {
+    public String authenticateAndGetJWTToken(String username, String password) throws AuthenticationException {
         String jwt = null;
         Authentication authentication;
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);

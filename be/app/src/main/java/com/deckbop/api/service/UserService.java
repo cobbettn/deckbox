@@ -91,8 +91,8 @@ public class UserService {
         userDatasource.activateUser(request.getActivation_token());
     }
 
-    public UserLoginResponse loginUser(UserLoginRequest request) throws UserLoginException {
-        UserLoginResponse response;
+    private UserLoginResponse tryLogin(UserLoginRequest request) {
+        UserLoginResponse response = null;
         try {
             boolean validRequest = this.validateLoginRequest(request);
             if (validRequest) {
@@ -100,13 +100,22 @@ public class UserService {
                 String jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
                 response = new UserLoginResponse(jwt, user.getId());
             }
-            else {
-                throw new UserLoginException("could not load user from credentials");
-            }
         }
-        catch (AuthenticationException | DataAccessException | UserLoginException e) {
+        catch (AuthenticationException | DataAccessException e) {
             loggingService.error(this, e.getMessage());
-            throw e;
+        }
+        return response;
+    }
+
+    public ResponseEntity<?> loginUser(UserLoginRequest request) throws UserLoginException {
+        ResponseEntity<?> response = null;
+        UserLoginResponse userLoginResponse = this.tryLogin(request);
+        if (Optional.ofNullable(userLoginResponse).isPresent()) {
+            HttpHeaders httpHeaders = this.getJWTHeaders(userLoginResponse.getJwtToken());
+            response = new ResponseEntity<>(userLoginResponse, httpHeaders, HttpStatus.OK);
+        }
+        else {
+            throw new UserLoginException("failed authentication attempt");
         }
         return response;
     }
@@ -157,7 +166,7 @@ public class UserService {
         return user;
     }
 
-    public User getUserFromCredentials(Map<String, String> credentials) throws UserLoginException {
+    public User getUserFromCredentials(Map<String, String> credentials) {
         User user = null;
         String username = credentials.get("username");
         String email = credentials.get("email");
@@ -171,12 +180,6 @@ public class UserService {
             loggingService.error(this,"validation error: tried to fetch non-existent user");
         }
         return user;
-    }
-
-    public HttpHeaders getJWTHeaders(String jwt) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-        return httpHeaders;
     }
 
     private boolean loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
@@ -215,4 +218,9 @@ public class UserService {
         return emailMessage;
     }
 
+    private HttpHeaders getJWTHeaders(String jwt) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        return httpHeaders;
+    }
 }
