@@ -22,11 +22,11 @@
 					"raw": "{\r\n    \"credentials\": { \"username\" : \"testuser\", \"email\" : \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/user/register",
+					"raw": "localhost:8081/user/register",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"register"
@@ -51,11 +51,11 @@
 					"raw": "{\r\n    \"credentials\": { \"username\": \"testuser\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/user/login",
+					"raw": "localhost:8081/user/login",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"login"
@@ -80,11 +80,11 @@
 					"raw": "{\r\n    \"credentials\": { \"email\": \"user@test.com\" },\r\n    \"password\" : \"pass1234\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/user/login",
+					"raw": "localhost:8081/user/login",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"login"
@@ -119,14 +119,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/user/2",
+					"raw": "localhost:8081/user/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
-						"2"
+						"1"
 					]
 				}
 			},
@@ -144,11 +144,11 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/user/2",
+					"raw": "localhost:8081/user/2",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"2"
@@ -178,11 +178,11 @@
 					"raw": "{ \"name\" : \"new deck\", \"userId\" : 1, \"cardList\": [{\"card_id\":\"foo\",\"card_quantity\":3},{\"card_id\":\"bar\",\"card_quantity\":2}] }"
 				},
 				"url": {
-					"raw": "localhost:8080/deck",
+					"raw": "localhost:8081/deck",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck"
 					]
@@ -208,14 +208,14 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/3",
+					"raw": "localhost:8081/deck/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck",
-						"3"
+						"1"
 					]
 				}
 			},
@@ -242,14 +242,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/deck/3",
+					"raw": "localhost:8081/deck/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck",
-						"3"
+						"1"
 					]
 				}
 			},
@@ -267,14 +267,14 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/deck/3",
+					"raw": "localhost:8081/deck/1",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"deck",
-						"3"
+						"1"
 					]
 				}
 			},
@@ -306,16 +306,17 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/user/activate",
+					"raw": "localhost:8081/user/activate",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"user",
 						"activate"
 					]
-				}
+				},
+				"description": "look at the database for a valid uuid once a user has been created"
 			},
 			"response": []
 		}

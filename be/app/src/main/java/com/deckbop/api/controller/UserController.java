@@ -39,13 +39,12 @@ public class UserController {
 
     @PostMapping("/activate")
     public ResponseEntity<?> activate(@RequestBody UserActivationRequest request){
-        ResponseEntity<?> response = null;
+        ResponseEntity<?> response = new ResponseEntity<>(HttpStatus.OK);
         try{
             userService.activateUser(request);
         } catch (Exception e) {
-
+            response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
         return response;
     }
 
