@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -26,13 +25,14 @@ public class UserModelDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String username) {
         loggingService.info(this, "loading user: " + username);
-        User user = userService.getUserByUsername(username);
-        if (Optional.ofNullable(user).isPresent()) {
-            return createSpringSecurityUser(username, user);
+        User user;
+        try {
+            user = userService.getUserByUsername(username);
         }
-        else {
+        catch (Exception e ) {
             throw new UsernameNotFoundException("User " + username + " was not found.");
         }
+        return createSpringSecurityUser(username, user);
     }
 
     private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {

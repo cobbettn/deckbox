@@ -66,47 +66,18 @@ public class UserService {
     }
 
     public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, CredentialsInUseException {
-        Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
-        Optional<String> username  = Optional.ofNullable(request.getCredentials().get("username"));
-        if (email.isPresent() && username.isPresent()) {
-            User user;
-            boolean emailNotTaken;
-            boolean usernameNotTaken;
+        boolean validRequest = this.validateRegisterRequest(request);
+        if (validRequest) {
+            String username = request.getCredentials().get("username");
+            String email = request.getCredentials().get("email");
+            String password = request.getPassword();
             try {
-                user = userDatasource.getUserByEmail(email.get());
-                emailNotTaken = Optional.ofNullable(user).isPresent();
+                userDatasource.registerUser(username, email, getPasswordEncoder().encode(password));
+                return new ResponseEntity<>(HttpStatus.CREATED);
             }
             catch (DataAccessException e) {
-                emailNotTaken = true;
-            }
-            try {
-               user = userDatasource.getUserByUsername(username.get());
-               usernameNotTaken = Optional.ofNullable(user).isPresent();
-            }
-            catch (DataAccessException e) {
-                usernameNotTaken = true;
-            }
-            if (emailNotTaken && usernameNotTaken) {
-                try {
-                    userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
-                    return new ResponseEntity<>(HttpStatus.CREATED);
-                }
-                catch (DataAccessException e) {
-                    loggingService.error(this,"SQL error while registering a user");
-                    throw e;
-                }
-            }
-            else {
-                loggingService.error(this,"Credentials already in use");
-                if (!emailNotTaken && !usernameNotTaken) {
-                    throw new CredentialsInUseException("username and email already taken");
-                }
-                else if (!emailNotTaken) {
-                    throw new CredentialsInUseException("email already registered");
-                }
-                else {
-                    throw new CredentialsInUseException("username already registered");
-                }
+                loggingService.error(this,"SQL error while registering a user");
+                throw e;
             }
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -138,16 +109,14 @@ public class UserService {
         }
     }
 
-    public Optional<UserLoginResponse> loginUser(UserLoginRequest request) throws UserLoginException {
-        UserLoginResponse response = null;
+    public UserLoginResponse loginUser(UserLoginRequest request) throws UserLoginException {
+        UserLoginResponse response;
         try {
-            Optional<User> credentialsUser = this.getUserFromCredentials(request.getCredentials());
-            if (credentialsUser.isPresent()) {
-                User user = credentialsUser.get();
-                Optional<String> jwt = Optional.ofNullable(authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword()));
-                if (jwt.isPresent()) {
-                    response = new UserLoginResponse(jwt.get(), user.getId());
-                }
+            boolean validRequest = this.validateLoginRequest(request);
+            if (validRequest) {
+                User user = this.getUserFromCredentials(request.getCredentials());
+                String jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
+                response = new UserLoginResponse(jwt, user.getId());
             }
             else {
                 throw new UserLoginException("could not load user from credentials");
@@ -157,40 +126,61 @@ public class UserService {
             loggingService.error(this, e.getMessage());
             throw e;
         }
-        return Optional.ofNullable(response);
+        return response;
     }
 
-    public Optional<User> getUserFromCredentials(Map<String, String> credentials) throws UserLoginException {
+    public User getUserFromCredentials(Map<String, String> credentials) throws UserLoginException {
         User user = null;
-        Optional<String> username = Optional.ofNullable(credentials.get("username"));
-        Optional<String> email = Optional.ofNullable(credentials.get("email"));
-        boolean validUsername = true, validEmail = true;
-        if (username.isPresent()) {
+        String username = credentials.get("username");
+        String email = credentials.get("email");
+        try {
+            user = userDatasource.getUserByUsername(username);
+            if (Optional.ofNullable(user).isEmpty()) {
+                user = userDatasource.getUserByEmail(email);
+            }
+        }
+        catch (EmptyResultDataAccessException e) {
+            loggingService.error(this,"validation error: tried to fetch non-existent user");
+        }
+        return user;
+    }
+
+    private boolean loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
+        boolean isValid = false;
+        boolean isRegister = type.equals("register");
+        User emailUser = null, usernameUser = null;
+        String username, email;
+        username = request.getCredentials().get("username");
+        email = request.getCredentials().get("email");
+        if (isRegister ?
+                Optional.ofNullable(username).isPresent() && Optional.ofNullable(email).isPresent() :
+                Optional.ofNullable(username).isPresent() || Optional.ofNullable(email).isPresent()
+        ) {
             try {
-                user = userDatasource.getUserByUsername(username.get());
+                emailUser = this.getUserByEmail(email);
             }
-            catch (EmptyResultDataAccessException e) {
-                validUsername = false;
+            catch (Exception e) {
+                loggingService.error(this,"validation error");
             }
-        }
-        if (Optional.ofNullable(user).isEmpty() && email.isPresent()) {
             try {
-                user = userDatasource.getUserByEmail(email.get());
+                usernameUser = this.getUserByUsername(username);
             }
-            catch (EmptyResultDataAccessException e) {
-                validEmail = false;
+            catch (Exception e) {
+                loggingService.error(this,"validation error");
             }
+            isValid = isRegister?
+                    Optional.ofNullable(emailUser).isEmpty() && Optional.ofNullable(usernameUser).isEmpty() :
+                    Optional.ofNullable(emailUser).isPresent() || Optional.ofNullable(usernameUser).isPresent();
         }
-        if (!validUsername && !validEmail) {
-            throw new UserLoginException("bad email and username");
-        }
-        if (!validEmail) {
-            throw new UserLoginException("bad email");
-        }
-        if (!validUsername) {
-            throw new UserLoginException("bad username");
-        }
-        return Optional.ofNullable(user);
+        return isValid;
+    }
+
+    private boolean validateRegisterRequest(UserRegisterRequest request) {
+        return loginAndRegisterRequestValidator("register", request);
+    }
+
+    private boolean validateLoginRequest(UserLoginRequest request) {
+        return loginAndRegisterRequestValidator("login", request);
     }
 
     public HttpHeaders getJWTHeaders(String jwt) {
@@ -198,4 +188,5 @@ public class UserService {
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return httpHeaders;
     }
+
 }

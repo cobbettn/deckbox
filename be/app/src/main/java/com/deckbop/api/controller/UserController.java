@@ -24,7 +24,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterRequest request) {
-        ResponseEntity<?> response = null;
+        ResponseEntity<?> response;
         try {
             response = userService.registerUser(request);
         }
@@ -38,10 +38,10 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody UserLoginRequest request) {
         ResponseEntity<?> response = null;
         try {
-            Optional<UserLoginResponse> userLoginResponse = userService.loginUser(request);
-            if (userLoginResponse.isPresent()) {
-                HttpHeaders httpHeaders = userService.getJWTHeaders(userLoginResponse.get().getJwtToken());
-                response = new ResponseEntity<>(userLoginResponse.get(), httpHeaders, HttpStatus.OK);
+            UserLoginResponse userLoginResponse = userService.loginUser(request);
+            if (Optional.ofNullable(userLoginResponse).isPresent()) {
+                HttpHeaders httpHeaders = userService.getJWTHeaders(userLoginResponse.getJwtToken());
+                response = new ResponseEntity<>(userLoginResponse, httpHeaders, HttpStatus.OK);
             }
         }
         catch (Exception e) {
@@ -52,7 +52,7 @@ public class UserController {
 
     @PostMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @RequestBody UserUpdateRequest request) {
-        ResponseEntity<?> response = null;
+        ResponseEntity<?> response;
         try {
             userService.updateUser(id, request);
             response = new ResponseEntity<>(HttpStatus.OK);
@@ -65,7 +65,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
-        ResponseEntity<?> response = null;
+        ResponseEntity<?> response;
         try {
             userService.deleteUser(id);
             response = new ResponseEntity<>(HttpStatus.OK);
