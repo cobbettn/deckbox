@@ -6,8 +6,8 @@ import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
 import com.deckbop.api.controller.response.UserLoginResponse;
 import com.deckbop.api.data.IUserDatasource;
-import com.deckbop.api.exception.CredentialsInUseException;
 import com.deckbop.api.exception.UserLoginException;
+import com.deckbop.api.exception.UserRegisterException;
 import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,36 +55,35 @@ public class UserService {
     @Value("${deckbop.url.activation}")
     String activationUrl;
 
-    public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, CredentialsInUseException {
+    public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, UserRegisterException {
+        ResponseEntity<?> response = null;
         boolean validRequest = this.validateRegisterRequest(request);
         if (validRequest) {
             String username = request.getCredentials().get("username");
             String email = request.getCredentials().get("email");
             String password = request.getPassword();
-            try {
-                String uuid = UUID.randomUUID().toString();
-                int numRowsChanged = 0;
-                while(numRowsChanged != 1){
-                    try {
-                        numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
-                    } catch (Exception e) {
-                        uuid = UUID.randomUUID().toString();
-                    }
-                }
+            String uuid = UUID.randomUUID().toString();
+            int numRowsChanged = 0;
+            while(numRowsChanged != 1){
                 try {
-                    mailSender.send(setRegistrationEmail(email, uuid));
-                } catch (MailException e) {
-                    loggingService.error(this, "Error sending activation email");
+                    numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                } catch (DataAccessException e) {
+                    uuid = UUID.randomUUID().toString();
                 }
-                return new ResponseEntity<>(HttpStatus.CREATED);
-
             }
-            catch (DataAccessException e) {
-                loggingService.error(this,"SQL error while registering a user");
-                throw e;
+            loggingService.info(this, username + "registered");
+            try {
+                mailSender.send(setRegistrationEmail(email, uuid));
+            } catch (MailException e) {
+                loggingService.error(this, "Error sending activation email");
             }
+            loggingService.info(this, username + "sent email to " + email);
+            response = new ResponseEntity<>(HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else {
+            throw new UserRegisterException("invalid register request");
+        }
+        return response;
     }
 
     public void activateUser(UserActivationRequest request) {
