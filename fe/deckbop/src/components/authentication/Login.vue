@@ -13,7 +13,7 @@
 
 <script>
 import { StatusCodes } from 'http-status-codes'
-import { userLoginUrl } from '../../config/api'
+import { userLoginUrl, jsonContentHeader } from '../../config/api'
 export default {
     name: 'Login',
     data: () => {
@@ -29,11 +29,10 @@ export default {
                 credentials: {username: vm.username},
                 password: vm.password
             }
-            const reqHeaders = {"Content-Type":"application/json"}
             this.$http.post(
                 userLoginUrl,
                 reqBody,
-                reqHeaders
+                jsonContentHeader
             ).then(({status, data}) => {
                 if (status === StatusCodes.OK) {
                     this.$store.dispatch('LOGIN', data)

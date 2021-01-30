@@ -30,7 +30,8 @@ public class UserController {
     }
 
     @PostMapping("/activate")
-    public ResponseEntity<?> activate(@RequestBody UserActivationRequest request){
+    public ResponseEntity<?> activate(@RequestBody UserActivationRequest request) {
+
         ResponseEntity<?> response = new ResponseEntity<>(HttpStatus.OK);
         try {
             userService.activateUser(request);

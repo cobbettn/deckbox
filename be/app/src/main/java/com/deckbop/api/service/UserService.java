@@ -75,7 +75,7 @@ public class UserService {
             try {
                 mailSender.send(setRegistrationEmail(email, uuid));
             } catch (MailException e) {
-                loggingService.error(this, "Error sending activation email");
+                loggingService.error(this, "Error sending activation email: "  + e.getMessage());
             }
             loggingService.info(this, username + "sent email to " + email);
             response = new ResponseEntity<>(HttpStatus.CREATED);
@@ -213,7 +213,7 @@ public class UserService {
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(emailAddress);
         emailMessage.setSubject("Registration Confirmation Email From DeckBop ");
-        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "?token=" + token);
+        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "/" + token);
         return emailMessage;
     }
 
