@@ -19,14 +19,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegisterRequest request) {
-        ResponseEntity<?> response;
-        try {
-            response = userService.registerUser(request);
-        }
-        catch (Exception e) {
-            response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        return response;
+        return userService.registerUser(request);
     }
 
     @PostMapping("/activate")
