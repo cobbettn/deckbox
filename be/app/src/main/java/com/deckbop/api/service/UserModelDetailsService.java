@@ -1,6 +1,5 @@
 package com.deckbop.api.service;
 
-import com.deckbop.api.exception.UserNotActivatedException;
 import com.deckbop.api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,13 +30,10 @@ public class UserModelDetailsService implements UserDetailsService {
         if (Optional.ofNullable(user).isEmpty()) {
             throw new UsernameNotFoundException("User " + username + " was not found.");
         }
-        return createSpringSecurityUser(username, user);
+        return createSpringSecurityUser(user);
     }
 
-    private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
-        if (!user.isActivated()) {
-            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
-        }
+    private org.springframework.security.core.userdetails.User createSpringSecurityUser( User user) {
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getName()))
                 .collect(Collectors.toList());

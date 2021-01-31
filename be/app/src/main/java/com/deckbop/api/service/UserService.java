@@ -26,7 +26,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -96,34 +99,38 @@ public class UserService {
     }
 
     public ResponseEntity<?> loginUser(UserLoginRequest request) {
-        ResponseEntity<?> response;
+        ResponseEntity<?> response = null;
         List<String> errorList = this.validateLoginRequest(request);
         if (errorList.isEmpty()) {
-            User user = this.tryLoggingInUser(request); // checks password against credentials
-            if (Optional.ofNullable(user).isPresent()) {
-                String jwt;
-                try {
-                    jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
-                    UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId());
-                    HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
-                    response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
+            User user = this.tryLoggingInUser(request); // check user and password
+             boolean loginSuccessful = Optional.ofNullable(user).isPresent();
+            if (loginSuccessful) {
+                boolean isActivated = user.isActivated();
+                if (isActivated) {
+                    String jwt;
+                    try {
+                        jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
+                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId());
+                        HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
+                        response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
+                    }
+                    catch (AuthenticationException e) {
+                        loggingService.error(this, "login validation failure");
+                        throw e;
+                    }
                 }
-                catch (AuthenticationException e) {
-                    loggingService.error(this, "login validation failure");
-                    throw e;
+                else {
+                    errorList.add("user not activated");
                 }
             }
             else {
                 errorList.add("incorrect password");
-                UserLoginErrorResponse userLoginErrorResponse = new UserLoginErrorResponse(errorList);
-                response = new ResponseEntity<>(userLoginErrorResponse, HttpStatus.BAD_REQUEST);
             }
         }
-        else {
+        if (Optional.ofNullable(response).isEmpty()) {
             UserLoginErrorResponse userLoginErrorResponse = new UserLoginErrorResponse(errorList);
             response = new ResponseEntity<>(userLoginErrorResponse, HttpStatus.BAD_REQUEST);
         }
-
         return response;
     }
 

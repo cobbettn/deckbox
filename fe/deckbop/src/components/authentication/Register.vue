@@ -40,8 +40,7 @@ export default {
                 userRegistrationUrl,
                 reqBody,
                 reqHeaders
-            ).then((res) => {
-                console.log(res);
+            ).then(() => {
                 this.$router.push('/login')
                 
             }).catch((err) => {
