@@ -1,22 +1,27 @@
 package com.deckbop.api.service;
 
+import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
 import com.deckbop.api.controller.response.UserLoginResponse;
 import com.deckbop.api.data.IUserDatasource;
-import com.deckbop.api.exception.CredentialsInUseException;
 import com.deckbop.api.exception.UserLoginException;
+import com.deckbop.api.exception.UserRegisterException;
 import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -37,98 +43,83 @@ public class UserService {
     DeckService deckService;
 
     @Autowired
+    JavaMailSender mailSender;
+
+    @Autowired
     @Qualifier("userDatasource")
     IUserDatasource userDatasource;
 
     @Bean
     PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
 
-    public Optional<User> getUserByLogin(String username) {
-        User user = null;
-        try {
-            SqlRowSet results = userDatasource.getUserByLogin(username);
-            if (results.next()) {
-                user = getUserFromResults(results);
-            }
-        } catch (DataAccessException e) {
-            loggingService.error(this,"SQL error while getting user: username = " + username);
-            throw e;
-        }
-        return Optional.ofNullable(user);
-    }
+    @Value("${deckbop.url.activation}")
+    String activationUrl;
 
-    public Optional<User> getUserByEmail(String email) {
-        User user = null;
-        try {
-            SqlRowSet results = userDatasource.getUserByEmail(email);
-            if (results.next()) {
-                user = getUserFromResults(results);
-            }
-        } catch (DataAccessException e) {
-            loggingService.error(this,"SQL error while getting user: email = " + email);
-            throw e;
-        }
-        return Optional.ofNullable(user);
-    }
-
-    private User getUserFromResults(SqlRowSet results) {
-        return new User(
-                results.getLong("user_id"),
-                results.getString("username"),
-                results.getString("pw"),
-                results.getString("email"),
-                results.getString("account_role"),
-                results.getBoolean("is_activated")
-        );
-    }
-
-    public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, CredentialsInUseException {
-        Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
-        Optional<String> username  = Optional.ofNullable(request.getCredentials().get("username"));
-        if (email.isPresent() && username.isPresent()) {
-            SqlRowSet emailResults = userDatasource.getUserByEmail(email.get());
-            SqlRowSet usernameResults = userDatasource.getUserByLogin(username.get());
-            boolean emailInUse = emailResults.next();
-            boolean usernameInUse = usernameResults.next();
-            if (!emailInUse && !usernameInUse) {
+    public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, UserRegisterException {
+        ResponseEntity<?> response = null;
+        boolean validRequest = this.validateRegisterRequest(request);
+        if (validRequest) {
+            String username = request.getCredentials().get("username");
+            String email = request.getCredentials().get("email");
+            String password = request.getPassword();
+            String uuid = UUID.randomUUID().toString();
+            int numRowsChanged = 0;
+            while(numRowsChanged != 1){
                 try {
-                    userDatasource.registerUser(username.get(), email.get(), getPasswordEncoder().encode(request.getPassword()));
-                    return new ResponseEntity<>(HttpStatus.CREATED);
-                }
-                catch (DataAccessException e) {
-                    loggingService.error(this,"SQL error while registering a user");
-                    throw e;
+                    numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                } catch (DataAccessException e) {
+                    uuid = UUID.randomUUID().toString();
                 }
             }
-            else {
-                loggingService.error(this,"Credentials already in use");
-                if (emailInUse && usernameInUse) {
-                    throw new CredentialsInUseException("username and email already taken");
-                }
-                else if (emailInUse) {
-                    throw new CredentialsInUseException("email already registered");
-                }
-                else {
-                    throw new CredentialsInUseException("username already registered");
-                }
+            loggingService.info(this, username + "registered");
+            try {
+                mailSender.send(setRegistrationEmail(email, uuid));
+            } catch (MailException e) {
+                loggingService.error(this, "Error sending activation email");
             }
+            loggingService.info(this, username + "sent email to " + email);
+            response = new ResponseEntity<>(HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else {
+            throw new UserRegisterException("invalid register request");
+        }
+        return response;
     }
 
-    public void deleteUser(long user_id) {
+    public void activateUser(UserActivationRequest request) {
+        userDatasource.activateUser(request.getActivation_token());
+    }
+
+    private UserLoginResponse tryLogin(UserLoginRequest request) {
+        UserLoginResponse response = null;
         try {
-            deckService.deleteUserDecks(user_id);
-            userDatasource.deleteUser(user_id);
+            boolean validRequest = this.validateLoginRequest(request);
+            if (validRequest) {
+                User user = this.getUserFromCredentials(request.getCredentials());
+                String jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
+                response = new UserLoginResponse(jwt, user.getId());
+            }
         }
-        catch (DataAccessException e) {
-            loggingService.error(this,"SQL error while deleting user");
-            throw e;
+        catch (AuthenticationException | DataAccessException e) {
+            loggingService.error(this, e.getMessage());
         }
+        return response;
+    }
+
+    public ResponseEntity<?> loginUser(UserLoginRequest request) throws UserLoginException {
+        ResponseEntity<?> response = null;
+        UserLoginResponse userLoginResponse = this.tryLogin(request);
+        if (Optional.ofNullable(userLoginResponse).isPresent()) {
+            HttpHeaders httpHeaders = this.getJWTHeaders(userLoginResponse.getJwtToken());
+            response = new ResponseEntity<>(userLoginResponse, httpHeaders, HttpStatus.OK);
+        }
+        else {
+            throw new UserLoginException("failed authentication attempt");
+        }
+        return response;
     }
 
     public void updateUser(long user_id, UserUpdateRequest request) {
-        boolean updated = false;
         try {
             Optional<String> username = Optional.ofNullable(request.getCredentials().get("username"));
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
@@ -143,42 +134,90 @@ public class UserService {
         }
     }
 
-    public Optional<UserLoginResponse> loginUser(UserLoginRequest request) throws UserLoginException {
-        UserLoginResponse response = null;
+    public void deleteUser(long user_id) {
         try {
-            Optional<String> jwt = Optional.ofNullable(authenticationService.authenticateAndGetJWTToken(request));
-            if (jwt.isPresent()) {
-                response = new UserLoginResponse(jwt.get());
-            }
+            deckService.deleteUserDecks(user_id);
+            userDatasource.deleteUser(user_id);
         }
-        catch (AuthenticationException | UserLoginException e) {
-            loggingService.error(this, e.getMessage());
+        catch (DataAccessException e) {
+            loggingService.error(this,"SQL error while deleting user");
             throw e;
         }
-        return Optional.ofNullable(response);
     }
 
-    public Optional<String> getUsernameFromCredentials(Map<String, String> credentials) throws UserLoginException {
-        Optional<String> username = Optional.ofNullable(credentials.get("username"));
-        if (username.isEmpty()) {
-            Optional<String> email = Optional.ofNullable(credentials.get("email"));
-            if (email.isPresent()) {
-                Optional<User> user = getUserByEmail(email.get());
-                if (user.isPresent()) {
-                    username = Optional.ofNullable(user.get().getUsername());
-                }
-                else {
-                    throw new UserLoginException("Invalid email");
-                }
-            }
-            else {
-                throw new UserLoginException("No credentials provided");
+    public User getUserByUsername(String username) {
+        User user = null;
+        try {
+            user = userDatasource.getUserByUsername(username);
+        } catch (DataAccessException e) {
+            loggingService.info(this,"Could not find user with username: " + username);
+        }
+        return user;
+    }
+
+    public User getUserByEmail(String email) {
+        User user = null;
+        try {
+            user = userDatasource.getUserByEmail(email);
+        } catch (DataAccessException e) {
+            loggingService.info(this,"Could not find user with email: " + email);
+        }
+        return user;
+    }
+
+    public User getUserFromCredentials(Map<String, String> credentials) {
+        User user = null;
+        String username = credentials.get("username");
+        String email = credentials.get("email");
+        try {
+            user = userDatasource.getUserByUsername(username);
+            if (Optional.ofNullable(user).isEmpty()) {
+                user = userDatasource.getUserByEmail(email);
             }
         }
-        return username;
+        catch (EmptyResultDataAccessException e) {
+            loggingService.error(this,"validation error: tried to fetch non-existent user");
+        }
+        return user;
     }
 
-    public HttpHeaders getJWTHeaders(String jwt) {
+    private boolean loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
+        boolean isValid = false;
+        boolean isRegister = type.equals("register");
+        User emailUser, usernameUser;
+        String username, email;
+        username = request.getCredentials().get("username");
+        email = request.getCredentials().get("email");
+        if (isRegister ?
+                Optional.ofNullable(username).isPresent() && Optional.ofNullable(email).isPresent() :
+                Optional.ofNullable(username).isPresent() || Optional.ofNullable(email).isPresent()
+        ) {
+            emailUser = this.getUserByEmail(email);
+            usernameUser = this.getUserByUsername(username);
+            isValid = isRegister?
+                    Optional.ofNullable(emailUser).isEmpty() && Optional.ofNullable(usernameUser).isEmpty() :
+                    Optional.ofNullable(emailUser).isPresent() || Optional.ofNullable(usernameUser).isPresent();
+        }
+        return isValid;
+    }
+
+    private boolean validateRegisterRequest(UserRegisterRequest request) {
+        return loginAndRegisterRequestValidator("register", request);
+    }
+
+    private boolean validateLoginRequest(UserLoginRequest request) {
+        return loginAndRegisterRequestValidator("login", request);
+    }
+
+    private SimpleMailMessage setRegistrationEmail(String emailAddress, String token){
+        SimpleMailMessage emailMessage = new SimpleMailMessage();
+        emailMessage.setTo(emailAddress);
+        emailMessage.setSubject("Registration Confirmation Email From DeckBop ");
+        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "?token=" + token);
+        return emailMessage;
+    }
+
+    private HttpHeaders getJWTHeaders(String jwt) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return httpHeaders;

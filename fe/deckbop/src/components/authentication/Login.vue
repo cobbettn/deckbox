@@ -38,7 +38,7 @@ export default {
                 reqHeaders
             ).then(({status, data}) => {
                 if (status === StatusCodes.OK) {
-                    this.$store.dispatch('LOGIN', data.token)
+                    this.$store.dispatch('LOGIN', data)
                     this.$router.push('/viewDecks');
                 }
             }).catch(error => {

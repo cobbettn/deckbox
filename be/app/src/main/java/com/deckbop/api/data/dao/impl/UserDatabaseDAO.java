@@ -3,24 +3,30 @@ package com.deckbop.api.data.dao.impl;
 import com.deckbop.api.data.IUserDatasource;
 import com.deckbop.api.data.SQLTemplates;
 import com.deckbop.api.data.dao.DatabaseDAO;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import com.deckbop.api.data.dao.impl.rowmapper.UserRowMapper;
+import com.deckbop.api.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource  {
+public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource {
     @Override
-    public void registerUser(String username, String email, String password) {
-        this.jdbcTemplate.update(SQLTemplates.registerUser, username, password, email);
+    public int registerUser(String username, String email, String password, String uuid) {
+        return this.jdbcTemplate.update(SQLTemplates.registerUser, username, password, email, uuid);
     }
 
     @Override
-    public SqlRowSet getUserByLogin(String username) {
-        return this.jdbcTemplate.queryForRowSet(SQLTemplates.getUserByLogin, username);
+    public void activateUser(String activationToken){
+        this.jdbcTemplate.update(SQLTemplates.activateUser, activationToken);
     }
 
     @Override
-    public SqlRowSet getUserByEmail(String email) {
-        return this.jdbcTemplate.queryForRowSet(SQLTemplates.getUserByEmail, email);
+    public User getUserByUsername(String username) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.getUserByUsername, new UserRowMapper(), username);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.getUserByEmail, new UserRowMapper(), email);
     }
 
     @Override
