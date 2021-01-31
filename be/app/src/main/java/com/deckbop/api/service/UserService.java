@@ -93,7 +93,7 @@ public class UserService {
         ResponseEntity<?> response;
         List<String> errorList = this.validateLoginRequest(request);
         if (errorList.isEmpty()) {
-            User user = this.getUserFromValidCredentials(request); // checks password against credentials
+            User user = this.tryLoggingInUser(request); // checks password against credentials
             if (Optional.ofNullable(user).isPresent()) {
                 String jwt;
                 try {
@@ -103,7 +103,7 @@ public class UserService {
                     response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
                 }
                 catch (AuthenticationException e) {
-                    loggingService.error(this, "validation failed");
+                    loggingService.error(this, "login validation failure");
                     throw e;
                 }
             }
@@ -167,7 +167,7 @@ public class UserService {
         return user;
     }
 
-    private User getUserFromValidCredentials(UserLoginRequest request) {
+    private User tryLoggingInUser(UserLoginRequest request) {
         User user = null;
         String username = request.getCredentials().get("username");
         String email = request.getCredentials().get("email");
@@ -175,7 +175,7 @@ public class UserService {
         if (Optional.ofNullable(username).isPresent()) {
             user = this.loginUserByUsername(username, password);
         }
-        if (Optional.ofNullable(email).isPresent()) {
+        if (Optional.ofNullable(user).isEmpty() && Optional.ofNullable(email).isPresent()) {
             user = this.loginUserByEmail(email, password);
         }
         return user;
@@ -198,7 +198,6 @@ public class UserService {
     }
 
     private List<String> loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
-        List<String> errorList = new ArrayList<>();
         String username = request.getCredentials().get("username");
         String email = request.getCredentials().get("email");
         boolean isRegister = type.equals("register");
@@ -208,37 +207,54 @@ public class UserService {
         boolean hasUsernameUser = Optional.ofNullable(this.getUserByUsername(username)).isPresent();
         boolean hasPassword = Optional.ofNullable(request.getPassword()).isPresent();
 
-        // register
-        if (isRegister) {
-            if (!hasUsername) {
-                errorList.add("no username provided");
-            }
-            if (!hasEmail) {
-                errorList.add("no email provided");
-            }
-            if (hasEmailUser) {
-                errorList.add("email taken");
-            }
-            if (hasUsernameUser) {
-                errorList.add("username taken");
-            }
+        return isRegister ?
+                getRegisterErrors(hasUsername, hasEmail, hasEmailUser, hasUsernameUser):
+                getLoginErrors(hasUsername, hasEmail, hasEmailUser, hasUsernameUser, hasPassword);
+    }
+
+    private List<String> getRegisterErrors(
+            boolean hasUsername,
+            boolean hasEmail,
+            boolean hasEmailUser,
+            boolean hasUsernameUser
+    ) {
+        List<String> errorList = new ArrayList<>();
+        if (!hasUsername) {
+            errorList.add("no username provided");
         }
-        // login
-        else {
-            if (!hasEmail && !hasUsername) {
-                errorList.add("No credentials provided");
-            }
-            if (!hasPassword) {
-                errorList.add("No credentials provided");
-            }
-            if (hasUsername && !hasUsernameUser) {
-                errorList.add("username not registered");
-            }
-            if (hasEmail && !hasEmailUser) {
-                errorList.add("email not registered");
-            }
+        if (!hasEmail) {
+            errorList.add("no email provided");
+        }
+        if (hasEmailUser) {
+            errorList.add("email taken");
+        }
+        if (hasUsernameUser) {
+            errorList.add("username taken");
         }
         return errorList;
+    }
+
+    private List<String> getLoginErrors(
+            boolean hasUsername,
+            boolean hasEmail,
+            boolean hasEmailUser,
+            boolean hasUsernameUser,
+            boolean hasPassword
+    ) {
+        List<String> errorList = new ArrayList<>();
+        if (!hasEmail && !hasUsername) {
+            errorList.add("No credentials provided");
+        }
+        if (!hasPassword) {
+            errorList.add("No credentials provided");
+        }
+        if (hasUsername && !hasUsernameUser) {
+            errorList.add("username not registered");
+        }
+        if (hasEmail && !hasEmailUser) {
+            errorList.add("email not registered");
+        }
+        return  errorList;
     }
 
     private List<String> validateRegisterRequest(UserRegisterRequest request) {
