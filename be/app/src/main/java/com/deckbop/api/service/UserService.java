@@ -63,21 +63,21 @@ public class UserService {
             String email = request.getCredentials().get("email");
             String password = request.getPassword();
             String uuid = UUID.randomUUID().toString();
-            int numRowsChanged = 0;
-            while(numRowsChanged != 1){
+            while(true){
                 try {
-                    numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                    int numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                    if (numRowsChanged == 1) {
+                        loggingService.info(this, username + "registered");
+                        mailSender.send(this.setRegistrationEmail(email, uuid));
+                        loggingService.info(this, username + "sent email to " + email);
+                        break;
+                    }
                 } catch (DataAccessException e) {
                     uuid = UUID.randomUUID().toString();
+                } catch (MailException e) {
+                    loggingService.error(this, "Error sending activation email");
                 }
             }
-            loggingService.info(this, username + "registered");
-            try {
-                mailSender.send(setRegistrationEmail(email, uuid));
-            } catch (MailException e) {
-                loggingService.error(this, "Error sending activation email");
-            }
-            loggingService.info(this, username + "sent email to " + email);
             response = new ResponseEntity<>(HttpStatus.CREATED);
         }
         else {
@@ -88,6 +88,7 @@ public class UserService {
 
     public void activateUser(UserActivationRequest request) {
         userDatasource.activateUser(request.getActivation_token());
+        userDatasource.deleteActivationToken(request.getActivation_token());
     }
 
     private UserLoginResponse tryLogin(UserLoginRequest request) {
