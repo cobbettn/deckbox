@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { userRegistrationUrl } from '../../config/api'
 export default {
     name: 'Register',
     data() {
@@ -26,32 +27,28 @@ export default {
         }
     },
     methods: {
-        register: function (email, username, password){
-            const base_url = "http://localhost/8080/";
-            const axios = require('axios');
-            
-            axios.post(base_url + 'register',
-                {
-                    username:username,
-                    password:password
-                },
-                {'Content-Type': "application/json"})
-            .then(function(response){
-                console.log(response);
-            })
-            .catch((err) => {
-                console.log(err);
+        register: function (){
+            const vm = this
+            const reqBody = {
+                credentials: {username: vm.username, email: vm.email},
+                password: vm.password
+            }
+            const reqHeaders = {"Content-Type":"application/json"}
+            this.$http.post(
+                userRegistrationUrl,
+                reqBody,
+                reqHeaders
+            ).then((res) => {
+                console.log(res);
+                this.$router.push('/login')
+                
+            }).catch((err) => {
+                console.log("registration error: ", err);
             });
-            //alternative axios syntax
-            // axios({
-            //     method: 'post',
-            //     url: base_url + 'register',
-            //     data: {username:username, password:password},
-            //     headers: {'Content-Type': "application/json"}
-            // })
         }
     }
 }
+
 </script>
     
 <style scoped>
