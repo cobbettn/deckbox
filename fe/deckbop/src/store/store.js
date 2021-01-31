@@ -21,6 +21,7 @@ export default new Vuex.Store({
     searchResults: state => state.searchResults,
     deck: state => state.deck,
     viewSearch: state => state.viewSearch,
+    deckTitle: state => state.deck.title,
   },
   mutations: {
     SET_USER_JWT(state, data) {

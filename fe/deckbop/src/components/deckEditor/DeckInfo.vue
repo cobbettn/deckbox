@@ -5,8 +5,7 @@
         <input 
             type="text" 
             placeholder="Deck Title" 
-            v-model="title"
-            @change="setTitle(title)" 
+            v-model="deckTitle"
         />
         <button>save</button>
       </div>
@@ -22,16 +21,18 @@ export default {
         SidebarNav,
     },
     methods: {
-        setTitle: function(title) {
-            this.$store.dispatch("SET_DECK_TITLE", title)
-        }
     },
     computed:{
         deckImage: function() {
             return null
         },
-        deckTitle: function() {
-            return this.$store.getters.deck.title
+        deckTitle: {
+            set(deckTitle) {
+                this.$store.dispatch('SET_DECK_TITLE', deckTitle)
+            },
+            get() {
+                return this.$store.getters.deckTitle
+            }
         }
     },
 }
