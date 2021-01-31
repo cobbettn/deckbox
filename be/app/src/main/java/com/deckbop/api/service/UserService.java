@@ -18,7 +18,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
@@ -72,7 +71,7 @@ public class UserService {
                     }
                 } catch (DataAccessException e) {
                     uuid = UUID.randomUUID().toString();
-                } catch (MailException e) {
+                } catch (Exception e) {
                     loggingService.error(this, "Error sending activation email");
                 }
             }
@@ -270,7 +269,7 @@ public class UserService {
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(emailAddress);
         emailMessage.setSubject("Registration Confirmation Email From DeckBop ");
-        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "?token=" + token);
+        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "/" + token);
         return emailMessage;
     }
 
