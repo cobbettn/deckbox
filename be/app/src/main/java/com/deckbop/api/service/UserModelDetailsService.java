@@ -1,5 +1,6 @@
 package com.deckbop.api.service;
 
+import com.deckbop.api.exception.UserNotActivatedException;
 import com.deckbop.api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,21 +25,19 @@ public class UserModelDetailsService implements UserDetailsService {
     LoggingService loggingService;
 
     @Override
-    public UserDetails loadUserByUsername(final String login) {
-        loggingService.info(this, "loading user: " + login);
-        Optional<User> user = userService.getUserByLogin(login);
-        if (user.isPresent()) {
-            return createSpringSecurityUser(login, user.get());
+    public UserDetails loadUserByUsername(final String username) {
+        loggingService.info(this, "loading user: " + username);
+        User user = userService.getUserByUsername(username);
+        if (Optional.ofNullable(user).isEmpty()) {
+            throw new UsernameNotFoundException("User " + username + " was not found.");
         }
-        else {
-            throw new UsernameNotFoundException("User " + login + " was not found.");
-        }
+        return createSpringSecurityUser(username, user);
     }
 
     private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
-//        if (!user.isActivated()) {
-//            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
-//        }
+        if (!user.isActivated()) {
+            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
+        }
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getName()))
                 .collect(Collectors.toList());

@@ -28,6 +28,7 @@ CREATE TABLE user_account
         email varchar(64) NOT NULL UNIQUE,
         account_role user_role NOT NULL,
         is_activated boolean NOT NULL,
+        activation_token varchar(36) UNIQUE,
 
         constraint pk_User primary key(user_id)
 );

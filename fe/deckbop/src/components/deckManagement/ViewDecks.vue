@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="new-deck">
+        <div v-if="showLoggedInView" class="new-deck">
             <h1>+ New Deck</h1>
         </div>
         <div class="view-decks">
@@ -44,7 +44,12 @@ export default {
                 deck_name: "red deck wins"
                 }
             ]
-            }
+        }
+    },
+    computed: {
+        showLoggedInView() {
+            return !!this.$store.getters.user.token
+        }
     }
 }
 
