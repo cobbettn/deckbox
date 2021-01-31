@@ -87,4 +87,7 @@ export default {
         border-radius: 5em;
         font-size: 1.2em;
     }
+    div.error {
+        color: red;
+    }
 </style>
