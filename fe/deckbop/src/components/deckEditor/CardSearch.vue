@@ -1,22 +1,26 @@
 <template>
     <div class="card-search">
-        <h3>card search</h3>   
-            <form id="search-form"> 
-            <input type="text" v-model="searchText">
-            <button v-on:click.prevent="search()">search</button>
-        </form>
+       <sidebar-nav></sidebar-nav>
+        <div>
+            <form class="column-content" id="search-form" > 
+                <input type="text" v-model="searchText" placeholder="Search">
+                <button v-on:click.prevent="search()">search</button>
+            </form>
+        </div>
     </div>    
 </template>
 
 <script>
+import SidebarNav from './SidebarNav.vue'
 export default {
+  components: { SidebarNav },
     name: "CardSearch",
     data: () => {
         return {
-            searchText: '',
+            searchText: ''
         }
     },
-    methods:{
+    methods: {
         search: function(){
             const vm = this
             this.$http.get(
@@ -27,11 +31,19 @@ export default {
             .catch((err) => {
                 console.log("search error: ", err)
             })
-        }
+        },
+        
+    },
+    computed:{
+        
     }
 }
 </script>
 
 <style scoped>
-   
+    @import "../../style/style.css";
+    
+
+    
+    
 </style>

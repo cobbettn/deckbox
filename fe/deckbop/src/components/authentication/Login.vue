@@ -6,7 +6,9 @@
             <input type="text" v-model="username">
             <h2>Password</h2>
             <input type="password" v-model="password">
-            <button v-on:click.prevent="login()">login</button>
+            <div class="column-content">
+              <button v-on:click.prevent="login()">login</button>
+            </div>
         </form>
     </div>
 </template>
@@ -50,36 +52,20 @@ export default {
 </script>
 
 <style scoped>
+    @import '../../style/style.css';
+
     .login {
         display: flex;
         flex-flow: column;
         flex: 0 0 100%;
         align-items: center;
-        border: 1px #747474 solid;
-        border-radius: 2em;
-        margin: 10em 15em;
         padding: 5em;
+        width: auto;
         
     }
     h1 {
         padding-bottom: 2em;
     }
-    input {
-        margin-bottom: 3em;
-        background: #272727;
-        color: #ffffff;
-        border-top: #747474;
-        border-left: #747474;
-        border-right: #747474;
-    } 
-    input:focus{
-        outline-width: 0;
-    }
-    button {
-        width: 80%;
-        background: #14a76c;
-        border: none;
-        border-radius: 5em;
-        font-size: 1.2em;
-    }
+  
+    
 </style>

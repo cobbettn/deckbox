@@ -1,8 +1,10 @@
 <template>
     <div class="deck-editor">
-        <card-search id="a"></card-search>
-        <card-search-results id="b"></card-search-results>
-        <deck-display id="c"></deck-display>
+        
+        <deck-info v-if="viewSearch" class="container" id="deck-info"></deck-info>
+        <card-search v-else class="container" id="search"></card-search>    
+        <card-search-results class="container" id="search-results"></card-search-results>
+        <deck-display class="container" id="deck-display"></deck-display>
     </div>    
 </template>
 
@@ -10,37 +12,55 @@
 import CardSearch from './CardSearch';
 import CardSearchResults from './CardSearchResults';
 import DeckDisplay from './DeckDisplay';
+import DeckInfo from './DeckInfo.vue';
 export default {
-  components: { 
+    name: "DeckEditor",
+    components: { 
       CardSearch,
       CardSearchResults,
-      DeckDisplay },
+      DeckDisplay,
+      DeckInfo,
+    },
+    computed: {
+        viewSearch(){
+            return this.$store.getters.viewSearch
+        },
+    }
     
 }
 </script>
 
 <style scoped>
     .deck-editor{
-        height: 80vh;
-        width: 100%;
+        height: 93vh;
+        width: auto;
         display: grid;
-        grid-template-columns: 1fr 3fr;
+        grid-template-columns: 1fr 6fr;
         grid-template-rows: 1fr 3fr;
         grid-template-areas:
-                    "a b"
-                    "a c";
+                    "info-search search-results"
+                    "info-search deck-display";
+        grid-gap: 1%;
+        padding: 1%;
     }
-    #a {
-        grid-area: a;
-        border: red solid;
+
+    .container {
+        border: #747474 solid;
+        border-radius: 1em;
+        padding: 1em;
     }
-    #b {
-        grid-area: b;
-        border: red solid;
+
+    #search {
+        grid-area: info-search;
+    }
+    #deck-info {
+        grid-area: info-search;
+    }
+    #search-results {
+        grid-area: search-results;
     }   
-    #c {
-        grid-area: c;
-        border: red solid;
+    #deck-display {
+        grid-area: deck-display;
     }
 
 </style>
