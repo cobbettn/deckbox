@@ -1,7 +1,9 @@
 <template>
     <div class="login">
         <h1>Login</h1>
+        
         <form id="login-form">
+            <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Username</h2>
             <input type="text" v-model="username">
             <h2>Password</h2>
@@ -20,6 +22,7 @@ export default {
         return {
             username: '',
             password: '',
+            errorList: [],
         }    
     },
     methods: {
@@ -39,10 +42,9 @@ export default {
                     this.$router.push('/viewDecks');
                 }
             }).catch(error => {
-                // error handling
-                console.log("login error: ", error)
+                this.errorList = error.response.data.errorList
             });
-        }
+        },
     }
 
 }
@@ -80,5 +82,8 @@ export default {
         border: none;
         border-radius: 5em;
         font-size: 1.2em;
+    }
+    div.error {
+        color: red;
     }
 </style>

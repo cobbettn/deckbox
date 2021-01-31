@@ -2,12 +2,12 @@ package com.deckbop.api.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserLoginResponse {
+public class UserLoginSuccessResponse {
 
     String jwtToken;
     long userId;
 
-    public UserLoginResponse(String jwtToken, long userId) {
+    public UserLoginSuccessResponse(String jwtToken, long userId) {
         this.jwtToken = jwtToken;
         this.userId = userId;
     }
