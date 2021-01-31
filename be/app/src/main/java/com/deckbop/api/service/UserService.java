@@ -4,7 +4,8 @@ import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
-import com.deckbop.api.controller.response.UserLoginResponse;
+import com.deckbop.api.controller.response.UserLoginErrorResponse;
+import com.deckbop.api.controller.response.UserLoginSuccessResponse;
 import com.deckbop.api.controller.response.UserRegisterErrorResponse;
 import com.deckbop.api.data.IUserDatasource;
 import com.deckbop.api.model.User;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +47,8 @@ public class UserService {
     IUserDatasource userDatasource;
 
     @Bean
-    PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
+    PasswordEncoder
+    getPasswordEncoder() {return new BCryptPasswordEncoder();}
 
     @Value("${deckbop.url.activation}")
     String activationUrl;
@@ -54,7 +57,6 @@ public class UserService {
         ResponseEntity<?> response;
         List<String> errorList = this.validateRegisterRequest(request);
         if (errorList.isEmpty()) {
-            System.out.println("u8hoh");
             String username = request.getCredentials().get("username");
             String email = request.getCredentials().get("email");
             String password = request.getPassword();
@@ -62,12 +64,12 @@ public class UserService {
             int numRowsChanged = 0;
             while(numRowsChanged != 1){
                 try {
-                    numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                    numRowsChanged = userDatasource.registerUser(username, email, this.getPasswordEncoder().encode(password), uuid);
+                    loggingService.info(this, username + " registered");
                 } catch (DataAccessException e) {
                     uuid = UUID.randomUUID().toString();
                 }
             }
-            loggingService.info(this, username + " registered");
             try {
                 mailSender.send(setRegistrationEmail(email, uuid));
                 loggingService.info(this, username + "sent email to " + email);
@@ -88,21 +90,34 @@ public class UserService {
     }
 
     public ResponseEntity<?> loginUser(UserLoginRequest request) {
-        ResponseEntity<?> response = null;
+        ResponseEntity<?> response;
         List<String> errorList = this.validateLoginRequest(request);
         if (errorList.isEmpty()) {
-            User user = this.getUserFromCredentials(request.getCredentials());
+            User user = this.getUserFromValidCredentials(request); // checks password against credentials
             if (Optional.ofNullable(user).isPresent()) {
-                String jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
-                UserLoginResponse userLoginResponse = new UserLoginResponse(jwt, user.getId());
-                HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
-                response = new ResponseEntity<>(userLoginResponse, httpHeaders, HttpStatus.OK);
+                String jwt;
+                try {
+                    jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
+                    UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId());
+                    HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
+                    response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
+                }
+                catch (AuthenticationException e) {
+                    loggingService.error(this, "validation failed");
+                    throw e;
+                }
+            }
+            else {
+                errorList.add("incorrect password");
+                UserLoginErrorResponse userLoginErrorResponse = new UserLoginErrorResponse(errorList);
+                response = new ResponseEntity<>(userLoginErrorResponse, HttpStatus.BAD_REQUEST);
             }
         }
         else {
-            UserRegisterErrorResponse userRegisterErrorResponse = new UserRegisterErrorResponse(errorList);
-            response = new ResponseEntity<>(userRegisterErrorResponse, HttpStatus.BAD_REQUEST);
+            UserLoginErrorResponse userLoginErrorResponse = new UserLoginErrorResponse(errorList);
+            response = new ResponseEntity<>(userLoginErrorResponse, HttpStatus.BAD_REQUEST);
         }
+
         return response;
     }
 
@@ -112,7 +127,7 @@ public class UserService {
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
             Optional<String> password = Optional.ofNullable(request.getPassword());
             if (username.isPresent() && email.isPresent() && password.isPresent()) {
-                userDatasource.updateUser(user_id, username.get(), getPasswordEncoder().encode(password.get()), email.get());
+                userDatasource.updateUser(user_id, username.get(), this.getPasswordEncoder().encode(password.get()), email.get());
             }
         }
         catch (DataAccessException e) {
@@ -136,31 +151,48 @@ public class UserService {
         User user = null;
         try {
             user = userDatasource.getUserByUsername(username);
-        } catch (DataAccessException  e) {
-            loggingService.info(this,"Could not find user with username: " + username);
+        } catch (DataAccessException e) {
+            loggingService.info(this,"Tried to find user with username: " + username);
         }
         return user;
     }
 
-    public User getUserByEmail(String email) {
+    private User getUserByEmail(String email) {
         User user = null;
         try {
             user = userDatasource.getUserByEmail(email);
         } catch (DataAccessException e) {
-            loggingService.info(this,"Could not find user with email: " + email);
+            loggingService.info(this,"Tried to find user with email: " + email);
         }
         return user;
     }
 
-    public User getUserFromCredentials(Map<String, String> credentials) {
+    private User getUserFromValidCredentials(UserLoginRequest request) {
         User user = null;
-        String username = credentials.get("username");
-        String email = credentials.get("email");
+        String username = request.getCredentials().get("username");
+        String email = request.getCredentials().get("email");
+        String password = request.getPassword();
         if (Optional.ofNullable(username).isPresent()) {
-            user = this.getUserByUsername(username);
+            user = this.loginUserByUsername(username, password);
         }
-        if (Optional.ofNullable(user).isEmpty() && Optional.ofNullable(email).isPresent()) {
-            user = this.getUserByEmail(email);
+        if (Optional.ofNullable(email).isPresent()) {
+            user = this.loginUserByEmail(email, password);
+        }
+        return user;
+    }
+
+    private User loginUserByUsername (String username, String password) {
+        User user = this.getUserByUsername(username);
+        if (Optional.ofNullable(user).isPresent() && !this.getPasswordEncoder().matches(password, user.getPassword())) {
+            user = null;
+        }
+        return user;
+    }
+
+    private User loginUserByEmail(String email, String password) {
+        User user = this.getUserByEmail(email);
+        if (Optional.ofNullable(user).isPresent() && !this.getPasswordEncoder().matches(password, user.getPassword())) {
+            user = null;
         }
         return user;
     }
@@ -174,11 +206,7 @@ public class UserService {
         boolean hasUsername = Optional.ofNullable(username).isPresent();
         boolean hasEmailUser = Optional.ofNullable(this.getUserByEmail(email)).isPresent();
         boolean hasUsernameUser = Optional.ofNullable(this.getUserByUsername(username)).isPresent();
-
-        System.out.println(hasEmail);
-        System.out.println(hasUsername);
-        System.out.println(hasEmailUser);
-        System.out.println(hasUsernameUser);
+        boolean hasPassword = Optional.ofNullable(request.getPassword()).isPresent();
 
         // register
         if (isRegister) {
@@ -198,13 +226,16 @@ public class UserService {
         // login
         else {
             if (!hasEmail && !hasUsername) {
-                errorList.add("No username or email provided");
+                errorList.add("No credentials provided");
             }
-            if (hasEmail && !hasEmailUser) {
-                errorList.add("Email not registered");
+            if (!hasPassword) {
+                errorList.add("No credentials provided");
             }
             if (hasUsername && !hasUsernameUser) {
-                errorList.add("Username not registered");
+                errorList.add("username not registered");
+            }
+            if (hasEmail && !hasEmailUser) {
+                errorList.add("email not registered");
             }
         }
         return errorList;

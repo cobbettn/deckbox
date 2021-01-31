@@ -35,14 +35,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequest request) {
-        ResponseEntity<?> response;
-        try {
-            response = userService.loginUser(request);
-        }
-        catch (Exception e) {
-            response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        return response;
+
+        return userService.loginUser(request);
     }
 
     @PostMapping("/{id}")

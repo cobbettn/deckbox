@@ -1,6 +1,9 @@
 <template>
     <div class="login">
         <h1>Login</h1>
+        <ul>
+            <li v-for="(error, i) in errors" :key="i">{{ error }}</li>
+        </ul>
         <form id="login-form">
             <h2>Username</h2>
             <input type="text" v-model="username">
@@ -20,6 +23,7 @@ export default {
         return {
             username: '',
             password: '',
+            errors: [],
         }    
     },
     methods: {
@@ -41,9 +45,12 @@ export default {
                 }
             }).catch(error => {
                 // error handling
-                console.log("login error: ", error)
+                if (error.response) {
+                    console.log(error.response)
+                }
+                
             });
-        }
+        },
     }
 
 }
