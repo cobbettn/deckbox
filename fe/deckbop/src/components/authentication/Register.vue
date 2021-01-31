@@ -1,12 +1,8 @@
 <template>
     <div class="register">
         <h1>Register</h1>
-        <p v-if="errors.length"> 
-            <ul>
-                <li v-for="(error, i) in errors" :key="i">{{ error }}</li>
-            </ul>
-        </p>
         <form id="register-form">
+            <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Email</h2>
             <input type="email" v-model="email">
             <h2>Username</h2>
@@ -26,6 +22,7 @@ export default {
             email: '',
             username: '',
             password: '',
+            errorList: [],
         }
     },
     methods: {

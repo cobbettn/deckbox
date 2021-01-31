@@ -18,6 +18,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.AuthenticationException;
@@ -60,7 +61,8 @@ public class UserService {
             String email = request.getCredentials().get("email");
             String password = request.getPassword();
             String uuid = UUID.randomUUID().toString();
-            while(true){
+            int maxAttempts = 10;
+            while (maxAttempts > 0) {
                 try {
                     int numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
                     if (numRowsChanged == 1) {
@@ -69,11 +71,15 @@ public class UserService {
                         loggingService.info(this, username + "sent email to " + email);
                         break;
                     }
+                } catch (MailException e) {
+                    loggingService.error(this, "Error sending activation email");
                 } catch (DataAccessException e) {
                     uuid = UUID.randomUUID().toString();
-                } catch (Exception e) {
-                    loggingService.error(this, "Error sending activation email");
                 }
+                maxAttempts--;
+            }
+            if (maxAttempts == 0) {
+                loggingService.warn(this, "10 requests were made to send an registration  email to " + email);
             }
             response = new ResponseEntity<>(HttpStatus.CREATED);
         }
