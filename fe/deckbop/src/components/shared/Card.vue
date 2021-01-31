@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div>
         <img :src="card.image_uris.small"/>
     </div>
 </template>
@@ -12,5 +12,7 @@ export default {
 </script>
 
 <style>
-
+    img {
+        margin: .5em;
+    }
 </style>

@@ -1,0 +1,26 @@
+input {
+    margin-bottom: 3em;
+    background: #272727;
+    color: #ffffff;
+    border-top: #747474;
+    border-left: #747474;
+    border-right: #747474;
+    font-size: 1.5em;
+} 
+input:focus{
+    outline-width: 0;
+}
+button {
+    width: 40%;
+    background: #14a76c;
+    border: none;
+    border-radius: 5em;
+    font-size: 1.2em;
+    color: #fff;
+}
+
+.column-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

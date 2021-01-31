@@ -8,7 +8,9 @@
             <input type="text" v-model="username">
             <h2>Password</h2>
             <input type="password" v-model="password">
-            <button v-on:click.prevent="login()">login</button>
+            <div class="column-content">
+              <button v-on:click.prevent="login()">login</button>
+            </div>
         </form>
     </div>
 </template>
@@ -51,15 +53,15 @@ export default {
 </script>
 
 <style scoped>
+    @import '../../style/style.css';
+
     .login {
         display: flex;
         flex-flow: column;
         flex: 0 0 100%;
         align-items: center;
-        border: 1px #747474 solid;
-        border-radius: 2em;
-        margin: 10em 15em;
         padding: 5em;
+        width: auto;
         
     }
     h1 {

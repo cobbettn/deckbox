@@ -32,7 +32,11 @@ export default {
 </script>
 
 <style scoped>
-    .card-search-results{
+    .card-search-results {
         display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-height: 275px;
     }
+    
 </style>
