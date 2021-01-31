@@ -25,6 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String loginEndpoint = "/user/login";
     private static final String registerEndpoint = "/user/register";
+    private static final String activateEndpoint = "/user/activate";
 
     public WebSecurityConfig(
             JWTProvider JWTProvider,
@@ -44,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");  // CORS
-        web.ignoring().antMatchers(HttpMethod.POST, loginEndpoint, registerEndpoint);
+        web.ignoring().antMatchers(HttpMethod.POST, registerEndpoint, activateEndpoint, loginEndpoint);
     }
 
     /**
@@ -58,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, loginEndpoint, registerEndpoint)
+                .antMatchers(HttpMethod.POST,  registerEndpoint, activateEndpoint, loginEndpoint)
                 .permitAll().anyRequest().authenticated()
 
                 .and()

@@ -2,6 +2,7 @@
     <div class="register">
         <h1>Register</h1>
         <form id="register-form">
+            <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Email</h2>
             <input type="email" v-model="email">
             <h2>Username</h2>
@@ -16,6 +17,7 @@
 </template>
 
 <script>
+import { userRegistrationUrl } from '../../config/api'
 export default {
     name: 'Register',
     data() {
@@ -23,35 +25,32 @@ export default {
             email: '',
             username: '',
             password: '',
+            errorList: [],
         }
     },
     methods: {
-        register: function (email, username, password){
-            const base_url = "http://localhost/8080/";
-            const axios = require('axios');
-            
-            axios.post(base_url + 'register',
-                {
-                    username:username,
-                    password:password
-                },
-                {'Content-Type': "application/json"})
-            .then(function(response){
-                console.log(response);
-            })
-            .catch((err) => {
-                console.log(err);
+        register: function (){
+            const vm = this
+            const reqBody = {
+                credentials: {username: vm.username, email: vm.email},
+                password: vm.password
+            }
+            const reqHeaders = {"Content-Type":"application/json"}
+            this.$http.post(
+                userRegistrationUrl,
+                reqBody,
+                reqHeaders
+            ).then((res) => {
+                console.log(res);
+                this.$router.push('/login')
+                
+            }).catch((err) => {
+                console.log("registration error: ", err);
             });
-            //alternative axios syntax
-            // axios({
-            //     method: 'post',
-            //     url: base_url + 'register',
-            //     data: {username:username, password:password},
-            //     headers: {'Content-Type': "application/json"}
-            // })
         }
     }
 }
+
 </script>
     
 <style scoped>
@@ -69,5 +68,26 @@ export default {
     h1 {
         padding-bottom: 2em;
     }
-    
+
+    input {
+        margin-bottom: 3em;
+        background: #272727;
+        color: #ffffff;
+        border-top: #747474;
+        border-left: #747474;
+        border-right: #747474;
+    } 
+    input:focus{
+        outline-width: 0;
+    }
+    button {
+        width: 80%;
+        background: #14a76c;
+        border: none;
+        border-radius: 5em;
+        font-size: 1.2em;
+    }
+    div.error {
+        color: red;
+    }
 </style>
