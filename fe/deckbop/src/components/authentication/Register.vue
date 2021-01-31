@@ -2,6 +2,7 @@
     <div class="register">
         <h1>Register</h1>
         <form id="register-form">
+            <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Email</h2>
             <input type="email" v-model="email">
             <h2>Username</h2>
@@ -23,6 +24,7 @@ export default {
             email: '',
             username: '',
             password: '',
+            errorList: [],
         }
     },
     methods: {
@@ -69,5 +71,26 @@ export default {
     h1 {
         padding-bottom: 2em;
     }
-    
+
+    input {
+        margin-bottom: 3em;
+        background: #272727;
+        color: #ffffff;
+        border-top: #747474;
+        border-left: #747474;
+        border-right: #747474;
+    } 
+    input:focus{
+        outline-width: 0;
+    }
+    button {
+        width: 80%;
+        background: #14a76c;
+        border: none;
+        border-radius: 5em;
+        font-size: 1.2em;
+    }
+    div.error {
+        color: red;
+    }
 </style>

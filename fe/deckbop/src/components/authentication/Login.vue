@@ -1,7 +1,9 @@
 <template>
     <div class="login">
         <h1>Login</h1>
+        
         <form id="login-form">
+            <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Username</h2>
             <input type="text" v-model="username">
             <h2>Password</h2>
@@ -15,13 +17,14 @@
 
 <script>
 import { StatusCodes } from 'http-status-codes'
-import { userLoginUrl } from '../../config/api'
+import { userLoginUrl, jsonContentHeader } from '../../config/api'
 export default {
     name: 'Login',
     data: () => {
         return {
             username: '',
             password: '',
+            errorList: [],
         }    
     },
     methods: {
@@ -31,21 +34,19 @@ export default {
                 credentials: {username: vm.username},
                 password: vm.password
             }
-            const reqHeaders = {"Content-Type":"application/json"}
             this.$http.post(
                 userLoginUrl,
                 reqBody,
-                reqHeaders
+                jsonContentHeader
             ).then(({status, data}) => {
                 if (status === StatusCodes.OK) {
                     this.$store.dispatch('LOGIN', data)
                     this.$router.push('/viewDecks');
                 }
             }).catch(error => {
-                // error handling
-                console.log("login error: ", error)
+                this.errorList = error.response.data.errorList
             });
-        }
+        },
     }
 
 }
@@ -66,6 +67,25 @@ export default {
     h1 {
         padding-bottom: 2em;
     }
-  
-    
+    input {
+        margin-bottom: 3em;
+        background: #272727;
+        color: #ffffff;
+        border-top: #747474;
+        border-left: #747474;
+        border-right: #747474;
+    } 
+    input:focus{
+        outline-width: 0;
+    }
+    button {
+        width: 80%;
+        background: #14a76c;
+        border: none;
+        border-radius: 5em;
+        font-size: 1.2em;
+    }
+    div.error {
+        color: red;
+    }
 </style>

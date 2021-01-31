@@ -4,10 +4,10 @@ import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
-import com.deckbop.api.controller.response.UserLoginResponse;
+import com.deckbop.api.controller.response.UserLoginErrorResponse;
+import com.deckbop.api.controller.response.UserLoginSuccessResponse;
+import com.deckbop.api.controller.response.UserRegisterErrorResponse;
 import com.deckbop.api.data.IUserDatasource;
-import com.deckbop.api.exception.UserLoginException;
-import com.deckbop.api.exception.UserRegisterException;
 import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -50,72 +47,83 @@ public class UserService {
     IUserDatasource userDatasource;
 
     @Bean
-    PasswordEncoder getPasswordEncoder() {return new BCryptPasswordEncoder();}
+    PasswordEncoder
+    getPasswordEncoder() {return new BCryptPasswordEncoder();}
 
     @Value("${deckbop.url.activation}")
     String activationUrl;
 
-    public ResponseEntity<?> registerUser(UserRegisterRequest request) throws DataAccessException, UserRegisterException {
-        ResponseEntity<?> response = null;
-        boolean validRequest = this.validateRegisterRequest(request);
-        if (validRequest) {
+    public ResponseEntity<?> registerUser(UserRegisterRequest request) {
+        ResponseEntity<?> response;
+        List<String> errorList = this.validateRegisterRequest(request);
+        if (errorList.isEmpty()) {
             String username = request.getCredentials().get("username");
             String email = request.getCredentials().get("email");
             String password = request.getPassword();
             String uuid = UUID.randomUUID().toString();
-            int numRowsChanged = 0;
-            while(numRowsChanged != 1){
+            int maxAttempts = 10;
+            while (maxAttempts > 0) {
                 try {
-                    numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                    int numRowsChanged = userDatasource.registerUser(username, email, getPasswordEncoder().encode(password), uuid);
+                    if (numRowsChanged == 1) {
+                        loggingService.info(this, username + "registered");
+                        mailSender.send(this.setRegistrationEmail(email, uuid));
+                        loggingService.info(this, username + "sent email to " + email);
+                        break;
+                    }
+                } catch (MailException e) {
+                    loggingService.error(this, "Error sending activation email");
                 } catch (DataAccessException e) {
                     uuid = UUID.randomUUID().toString();
                 }
+                maxAttempts--;
             }
-            loggingService.info(this, username + "registered");
-            try {
-                mailSender.send(setRegistrationEmail(email, uuid));
-            } catch (MailException e) {
-                loggingService.error(this, "Error sending activation email");
+            if (maxAttempts == 0) {
+                loggingService.warn(this, "10 requests were made to send an registration  email to " + email);
             }
-            loggingService.info(this, username + "sent email to " + email);
             response = new ResponseEntity<>(HttpStatus.CREATED);
         }
         else {
-            throw new UserRegisterException("invalid register request");
+            UserRegisterErrorResponse userRegisterErrorResponse = new UserRegisterErrorResponse(errorList);
+            response = new ResponseEntity<>(userRegisterErrorResponse, HttpStatus.BAD_REQUEST);
         }
         return response;
     }
 
     public void activateUser(UserActivationRequest request) {
         userDatasource.activateUser(request.getActivation_token());
+        userDatasource.deleteActivationToken(request.getActivation_token());
     }
 
-    private UserLoginResponse tryLogin(UserLoginRequest request) {
-        UserLoginResponse response = null;
-        try {
-            boolean validRequest = this.validateLoginRequest(request);
-            if (validRequest) {
-                User user = this.getUserFromCredentials(request.getCredentials());
-                String jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
-                response = new UserLoginResponse(jwt, user.getId());
+    public ResponseEntity<?> loginUser(UserLoginRequest request) {
+        ResponseEntity<?> response;
+        List<String> errorList = this.validateLoginRequest(request);
+        if (errorList.isEmpty()) {
+            User user = this.tryLoggingInUser(request); // checks password against credentials
+            if (Optional.ofNullable(user).isPresent()) {
+                String jwt;
+                try {
+                    jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
+                    UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId());
+                    HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
+                    response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
+                }
+                catch (AuthenticationException e) {
+                    loggingService.error(this, "login validation failure");
+                    throw e;
+                }
+            }
+            else {
+                errorList.add("incorrect password");
+                UserLoginErrorResponse userLoginErrorResponse = new UserLoginErrorResponse(errorList);
+                response = new ResponseEntity<>(userLoginErrorResponse, HttpStatus.BAD_REQUEST);
             }
         }
-        catch (AuthenticationException | DataAccessException e) {
-            loggingService.error(this, e.getMessage());
-        }
-        return response;
-    }
-
-    public ResponseEntity<?> loginUser(UserLoginRequest request) throws UserLoginException {
-        ResponseEntity<?> response = null;
-        UserLoginResponse userLoginResponse = this.tryLogin(request);
-        if (Optional.ofNullable(userLoginResponse).isPresent()) {
-            HttpHeaders httpHeaders = this.getJWTHeaders(userLoginResponse.getJwtToken());
-            response = new ResponseEntity<>(userLoginResponse, httpHeaders, HttpStatus.OK);
-        }
         else {
-            throw new UserLoginException("failed authentication attempt");
+            UserLoginErrorResponse userLoginErrorResponse = new UserLoginErrorResponse(errorList);
+            response = new ResponseEntity<>(userLoginErrorResponse, HttpStatus.BAD_REQUEST);
         }
+
         return response;
     }
 
@@ -125,7 +133,7 @@ public class UserService {
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
             Optional<String> password = Optional.ofNullable(request.getPassword());
             if (username.isPresent() && email.isPresent() && password.isPresent()) {
-                userDatasource.updateUser(user_id, username.get(), getPasswordEncoder().encode(password.get()), email.get());
+                userDatasource.updateUser(user_id, username.get(), this.getPasswordEncoder().encode(password.get()), email.get());
             }
         }
         catch (DataAccessException e) {
@@ -150,62 +158,116 @@ public class UserService {
         try {
             user = userDatasource.getUserByUsername(username);
         } catch (DataAccessException e) {
-            loggingService.info(this,"Could not find user with username: " + username);
+            loggingService.info(this,"Tried to find user with username: " + username);
         }
         return user;
     }
 
-    public User getUserByEmail(String email) {
+    private User getUserByEmail(String email) {
         User user = null;
         try {
             user = userDatasource.getUserByEmail(email);
         } catch (DataAccessException e) {
-            loggingService.info(this,"Could not find user with email: " + email);
+            loggingService.info(this,"Tried to find user with email: " + email);
         }
         return user;
     }
 
-    public User getUserFromCredentials(Map<String, String> credentials) {
+    private User tryLoggingInUser(UserLoginRequest request) {
         User user = null;
-        String username = credentials.get("username");
-        String email = credentials.get("email");
-        try {
-            user = userDatasource.getUserByUsername(username);
-            if (Optional.ofNullable(user).isEmpty()) {
-                user = userDatasource.getUserByEmail(email);
-            }
+        String username = request.getCredentials().get("username");
+        String email = request.getCredentials().get("email");
+        String password = request.getPassword();
+        if (Optional.ofNullable(username).isPresent()) {
+            user = this.loginUserByUsername(username, password);
         }
-        catch (EmptyResultDataAccessException e) {
-            loggingService.error(this,"validation error: tried to fetch non-existent user");
+        if (Optional.ofNullable(user).isEmpty() && Optional.ofNullable(email).isPresent()) {
+            user = this.loginUserByEmail(email, password);
         }
         return user;
     }
 
-    private boolean loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
-        boolean isValid = false;
-        boolean isRegister = type.equals("register");
-        User emailUser, usernameUser;
-        String username, email;
-        username = request.getCredentials().get("username");
-        email = request.getCredentials().get("email");
-        if (isRegister ?
-                Optional.ofNullable(username).isPresent() && Optional.ofNullable(email).isPresent() :
-                Optional.ofNullable(username).isPresent() || Optional.ofNullable(email).isPresent()
-        ) {
-            emailUser = this.getUserByEmail(email);
-            usernameUser = this.getUserByUsername(username);
-            isValid = isRegister?
-                    Optional.ofNullable(emailUser).isEmpty() && Optional.ofNullable(usernameUser).isEmpty() :
-                    Optional.ofNullable(emailUser).isPresent() || Optional.ofNullable(usernameUser).isPresent();
+    private User loginUserByUsername (String username, String password) {
+        User user = this.getUserByUsername(username);
+        if (Optional.ofNullable(user).isPresent() && !this.getPasswordEncoder().matches(password, user.getPassword())) {
+            user = null;
         }
-        return isValid;
+        return user;
     }
 
-    private boolean validateRegisterRequest(UserRegisterRequest request) {
+    private User loginUserByEmail(String email, String password) {
+        User user = this.getUserByEmail(email);
+        if (Optional.ofNullable(user).isPresent() && !this.getPasswordEncoder().matches(password, user.getPassword())) {
+            user = null;
+        }
+        return user;
+    }
+
+    private List<String> loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
+        String username = request.getCredentials().get("username");
+        String email = request.getCredentials().get("email");
+        boolean isRegister = type.equals("register");
+        boolean hasEmail = Optional.ofNullable(email).isPresent();
+        boolean hasUsername = Optional.ofNullable(username).isPresent();
+        boolean hasEmailUser = Optional.ofNullable(this.getUserByEmail(email)).isPresent();
+        boolean hasUsernameUser = Optional.ofNullable(this.getUserByUsername(username)).isPresent();
+        boolean hasPassword = Optional.ofNullable(request.getPassword()).isPresent();
+
+        return isRegister ?
+                getRegisterErrors(hasUsername, hasEmail, hasEmailUser, hasUsernameUser):
+                getLoginErrors(hasUsername, hasEmail, hasEmailUser, hasUsernameUser, hasPassword);
+    }
+
+    private List<String> getRegisterErrors(
+            boolean hasUsername,
+            boolean hasEmail,
+            boolean hasEmailUser,
+            boolean hasUsernameUser
+    ) {
+        List<String> errorList = new ArrayList<>();
+        if (!hasUsername) {
+            errorList.add("no username provided");
+        }
+        if (!hasEmail) {
+            errorList.add("no email provided");
+        }
+        if (hasEmailUser) {
+            errorList.add("email taken");
+        }
+        if (hasUsernameUser) {
+            errorList.add("username taken");
+        }
+        return errorList;
+    }
+
+    private List<String> getLoginErrors(
+            boolean hasUsername,
+            boolean hasEmail,
+            boolean hasEmailUser,
+            boolean hasUsernameUser,
+            boolean hasPassword
+    ) {
+        List<String> errorList = new ArrayList<>();
+        if (!hasEmail && !hasUsername) {
+            errorList.add("No credentials provided");
+        }
+        if (!hasPassword) {
+            errorList.add("No credentials provided");
+        }
+        if (hasUsername && !hasUsernameUser) {
+            errorList.add("username not registered");
+        }
+        if (hasEmail && !hasEmailUser) {
+            errorList.add("email not registered");
+        }
+        return  errorList;
+    }
+
+    private List<String> validateRegisterRequest(UserRegisterRequest request) {
         return loginAndRegisterRequestValidator("register", request);
     }
 
-    private boolean validateLoginRequest(UserLoginRequest request) {
+    private List<String> validateLoginRequest(UserLoginRequest request) {
         return loginAndRegisterRequestValidator("login", request);
     }
 
@@ -213,7 +275,7 @@ public class UserService {
         SimpleMailMessage emailMessage = new SimpleMailMessage();
         emailMessage.setTo(emailAddress);
         emailMessage.setSubject("Registration Confirmation Email From DeckBop ");
-        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "?token=" + token);
+        emailMessage.setText("Thank you for registering with DeckBop \nClick here to activate:  " + activationUrl + "/" + token);
         return emailMessage;
     }
 
