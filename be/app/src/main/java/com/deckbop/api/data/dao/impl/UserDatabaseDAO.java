@@ -20,6 +20,11 @@ public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource {
     }
 
     @Override
+    public void deleteActivationToken(String activationToken){
+        this.jdbcTemplate.update(SQLTemplates.deleteActivationToken, activationToken);
+    }
+
+    @Override
     public User getUserByUsername(String username) {
         return this.jdbcTemplate.queryForObject(SQLTemplates.getUserByUsername, new UserRowMapper(), username);
     }
