@@ -43,8 +43,8 @@ export default {
             ).then(() => {
                 this.$router.push('/login')
                 
-            }).catch((err) => {
-                console.log("registration error: ", err);
+            }).catch(error => {
+                this.errorList = error.response.data.errorList
             });
         }
     }
