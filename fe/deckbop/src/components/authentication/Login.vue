@@ -10,6 +10,8 @@
             <input type="password" v-model="password">
             <div class="column-content">
               <button v-on:click.prevent="login()">login</button>
+              <h3>Don't have an account?</h3>
+              <button v-on:click.prevent="goToRegister()">Register Now</button>
             </div>
         </form>
     </div>
@@ -41,12 +43,15 @@ export default {
             ).then(({status, data}) => {
                 if (status === StatusCodes.OK) {
                     this.$store.dispatch('LOGIN', data)
-                    this.$router.push('/viewDecks');
+                    this.$router.push('/viewDecks')
                 }
             }).catch(error => {
                 this.errorList = error.response.data.errorList
             });
         },
+        goToRegister() {
+            this.$router.push('/register')
+        }
     }
 
 }
