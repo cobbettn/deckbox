@@ -2,7 +2,6 @@ package com.deckbop.api.data;
 
 import com.deckbop.api.controller.response.UpdateUserSuccessResponse;
 import com.deckbop.api.model.User;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 public interface IUserDatasource {
     User getUserByUsername(String username);
