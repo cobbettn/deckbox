@@ -45,7 +45,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");  // CORS
-        web.ignoring().antMatchers(HttpMethod.POST, registerEndpoint, activateEndpoint, loginEndpoint);
     }
 
     /**

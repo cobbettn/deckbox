@@ -1,13 +1,14 @@
 <template>
     <div class="header">
-        <h2>DeckBop</h2>
+        <router-link to="/">Deckbox</router-link>
         <div>
-            <h2>
-                Welcome {{ getUser }} 
-                <router-link to="/login" @click.native="showLogoutLink ? onLogout() : null">
-                   {{ showLogoutLink ? 'logout' : 'login' }}
-                </router-link>
-            </h2>
+            <div v-if="showLogoutLink"> Welcome, {{ getUser }}</div>
+            <router-link v-if="showLogoutLink" to="/profile">profile</router-link>
+            <router-link 
+                to="/login"
+                class="marginLeft" 
+                @click.native="showLogoutLink ? onLogout() : null"
+            >{{showLogoutLink ? 'logout' : 'login'}}</router-link>
         </div>
     </div>
 </template>
@@ -32,12 +33,14 @@ export default {
 </script>
 
 <style scoped>
-
     .header{
         padding: .7em;
         background: #747474;
         color: #272727;
         display: flex;
         justify-content: space-between;
+    }
+    .marginLeft {
+        margin-left: 0.5rem;
     }
 </style>
