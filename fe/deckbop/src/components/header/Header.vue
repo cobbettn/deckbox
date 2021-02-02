@@ -3,7 +3,7 @@
         <h2>DeckBop</h2>
         <div>
             <h2>
-                Welcome {{ user }} 
+                Welcome {{ getUser }} 
                 <router-link to="/login" @click.native="showLogoutLink ? onLogout() : null">
                    {{ showLogoutLink ? 'logout' : 'login' }}
                 </router-link>
@@ -15,12 +15,12 @@
 <script>
 export default {
     name: 'Header',
-    props: {
-        user: String
-    },
     computed: {
         showLogoutLink() {
             return !!this.$store.getters.user.token
+        },
+        getUser() {
+            return this.$store.getters.user.userName
         }
     },
     methods: {
