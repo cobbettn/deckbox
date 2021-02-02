@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Login from '../components/authentication/Login.vue'
-import Register from '../components/authentication/Register.vue'
+import Login from '../components/user/Login.vue'
+import Register from '../components/user/Register.vue'
 import ViewDecks from '../components/deckManagement/ViewDecks.vue'
 import DeckEditor from '../components/deckEditor/DeckEditor.vue'
-import Activate from '../components/authentication/Activate.vue'
+import Activate from '../components/user/Activate.vue'
+import Profile from '../components/user/Profile.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +18,7 @@ const routes = [
   {path: '/viewDecks', component: ViewDecks},
   {path: '/deckEditor', component: DeckEditor},
   {path: '/deckEditor/:id', component: DeckEditor},
+  {path: '/profile', component: Profile},
 ]
 
 const router = new VueRouter({

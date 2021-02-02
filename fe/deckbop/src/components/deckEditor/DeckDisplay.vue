@@ -1,42 +1,7 @@
 <template>
     <div class="deck-display">
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC0" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC1" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC2" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC3" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC4" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC5" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC6" :key="index"  v-on:click="removeFromDeck(card)">
-                <Card v-bind:card="card"/>
-            </span>
-        </div>
-        <div class="card-stack">
-            <span class="card"  v-for="(card, index) in filterByCMC7Plus" :key="index"  v-on:click="removeFromDeck(card)">
+        <div v-for="cmc in cmcColumns" :key="cmc+'cmc'" class="card-stack"> {{cmc}}
+            <span class="card" v-for="(card, index) in filterByCMC(cmc)" :key="index" @click="removeFromDeck(card)">
                 <Card v-bind:card="card"/>
             </span>
         </div>
@@ -53,44 +18,26 @@ import Card from "../shared/Card"
 export default {
     name: "DeckDisplay",
     components: {Card},
+    data() {
+        return {
+            cmcColumns: 7
+        }
+    },
     methods: {
         removeFromDeck: function (card){
             this.$store.dispatch('REMOVE_FROM_DECK', card)
-        }
+        },
+        filterByCMC: function(cmc) {
+            return this.$store.getters.deck.cards.filter(
+                card => (cmc === this.cmcColumns ? card.cmc >= this.cmcColumns : cmc === card.cmc) 
+                    && !card.type_line.includes("Land")
+            )
+        },
     },
     computed: {
-        filterByCMC0: function() {
-            return this.$store.getters.deck.cards.filter(
-                card => card.cmc == 0 && !card.type_line.includes("Land"))
-        },
-        filterByCMC1: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc == 1)
-        },
-        filterByCMC2: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc == 2)
-        },
-        filterByCMC3: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc == 3)
-        },
-        filterByCMC4: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc == 4)
-        },
-        filterByCMC5: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc == 5)
-        },
-        filterByCMC6: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc == 6)
-        },
-        filterByCMC7Plus: function() {
-            return this.$store.getters.deck.cards.filter(card => card.cmc >= 7)
-        },
         filterByLand: function() {
             return this.$store.getters.deck.cards.filter(card => card.type_line.includes("Land"))
         },
-        populateDeck: function() {
-            console.log(this.$store.getters.deck.cards)
-            return this.$store.getters.deck.cards
-        }
     }
 }
 </script>
