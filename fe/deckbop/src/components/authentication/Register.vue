@@ -1,61 +1,61 @@
 <template>
-    <div class="login">
-        <h1>Login</h1>
-        
-        <form id="login-form">
+    <div class="register">
+        <h1>Register</h1>
+        <form id="register-form">
             <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
+            <h2>Email</h2>
+            <input type="email" v-model="email">
             <h2>Username</h2>
             <input type="text" v-model="username">
             <h2>Password</h2>
             <input type="password" v-model="password">
             <div class="column-content">
-              <button v-on:click.prevent="login()">login</button>
+                <button v-on:click.prevent="register(email, username, password)">register</button>
             </div>
         </form>
     </div>
 </template>
 
 <script>
-import { StatusCodes } from 'http-status-codes'
-import { userLoginUrl, jsonContentHeader } from '../../config/api'
+import { userRegistrationUrl } from '../../config/api'
 export default {
-    name: 'Login',
-    data: () => {
-        return {
+    name: 'Register',
+    data() {
+        return{
+            email: '',
             username: '',
             password: '',
             errorList: [],
-        }    
+        }
     },
     methods: {
-        login: function () {
+        register: function (){
             const vm = this
             const reqBody = {
-                credentials: {username: vm.username},
+                credentials: {username: vm.username, email: vm.email},
                 password: vm.password
             }
+            const reqHeaders = {"Content-Type":"application/json"}
             this.$http.post(
-                userLoginUrl,
+                userRegistrationUrl,
                 reqBody,
-                jsonContentHeader
-            ).then(({status, data}) => {
-                if (status === StatusCodes.OK) {
-                    this.$store.dispatch('LOGIN', data)
-                    this.$router.push('/viewDecks');
-                }
+                reqHeaders
+            ).then(() => {
+                this.$router.push('/login')
+                
             }).catch(error => {
                 this.errorList = error.response.data.errorList
             });
-        },
+        }
     }
-
 }
-</script>
 
+</script>
+    
 <style scoped>
     @import '../../style/style.css';
 
-    .login {
+    .register {
         display: flex;
         flex-flow: column;
         flex: 0 0 100%;
@@ -67,6 +67,7 @@ export default {
     h1 {
         padding-bottom: 2em;
     }
+
     input {
         margin-bottom: 3em;
         background: #272727;

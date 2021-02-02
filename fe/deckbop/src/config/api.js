@@ -1,25 +1,20 @@
+const baseUrl = baseLocalURL;
 const baseLocalURL = 'http://localhost:8081';
 
-const baseUrl = baseLocalURL;
+const userLogin = '/user/login';
+const userLoginUrl = baseLocalURL + userLogin;
+const userRegistration = '/user/register';
+const userRegistrationUrl = baseLocalURL + userRegistration;
 
-const user = "/user"
-const userUrl = baseUrl + user
-const userLogin = `${user}/login`;
-const userLoginUrl = baseUrl + userLogin;
-const userRegistration = `${user}/register`;
-const userRegistrationUrl = baseUrl + userRegistration;
-const activate = `${user}/activate`;
-const activateUrl = baseUrl + activate;
+const activate = "/user/activate"
+const activateUrl = baseLocalURL + activate;
 
 const jsonContentHeader = {"Content-Type":"application/json"}
-const authBearerToken = token => ({"Authorization": `Bearer ${token}`})
 
 export {
   baseUrl,
-  userUrl,
   userLoginUrl,
   userRegistrationUrl,
   activateUrl,
   jsonContentHeader,
-  authBearerToken
 };
