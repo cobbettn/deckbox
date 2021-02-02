@@ -4,6 +4,7 @@ import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
+import com.deckbop.api.controller.response.UpdateUserSuccessResponse;
 import com.deckbop.api.controller.response.UserLoginErrorResponse;
 import com.deckbop.api.controller.response.UserLoginSuccessResponse;
 import com.deckbop.api.controller.response.UserRegisterErrorResponse;
@@ -134,19 +135,22 @@ public class UserService {
         return response;
     }
 
-    public void updateUser(long user_id, UserUpdateRequest request) {
+    public ResponseEntity<?> updateUser(long user_id, UserUpdateRequest request) {
+        ResponseEntity<?> response = null;
         try {
             Optional<String> username = Optional.ofNullable(request.getCredentials().get("username"));
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
             Optional<String> password = Optional.ofNullable(request.getPassword());
             if (username.isPresent() && email.isPresent() && password.isPresent()) {
-                userDatasource.updateUser(user_id, username.get(), this.getPasswordEncoder().encode(password.get()), email.get());
+                UpdateUserSuccessResponse successResponse =  userDatasource.updateUser(user_id, username.get(), this.getPasswordEncoder().encode(password.get()), email.get());
+                response = new ResponseEntity<>(successResponse, HttpStatus.OK);
             }
         }
         catch (DataAccessException e) {
             loggingService.error(this,"SQL Error while updating user");
             throw e;
         }
+        return response;
     }
 
     public void deleteUser(long user_id) {
