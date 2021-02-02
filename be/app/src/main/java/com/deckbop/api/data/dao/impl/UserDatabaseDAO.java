@@ -7,7 +7,6 @@ import com.deckbop.api.data.dao.DatabaseDAO;
 import com.deckbop.api.data.dao.impl.rowmapper.UpdateUserResponseRowMapper;
 import com.deckbop.api.data.dao.impl.rowmapper.UserRowMapper;
 import com.deckbop.api.model.User;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 @Component
