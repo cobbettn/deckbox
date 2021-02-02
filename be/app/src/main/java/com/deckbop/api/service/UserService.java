@@ -110,7 +110,7 @@ public class UserService {
                     String jwt;
                     try {
                         jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
-                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId());
+                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getPassword());
                         HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
                         response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
                     }
