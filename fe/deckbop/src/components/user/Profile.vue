@@ -28,6 +28,7 @@
 
 <script>
 import { userUrl } from '../../config/api'
+
 // cant bundle bcrypt with webpack
 const bcrypt = require('../../../node_modules/bcryptjs/') 
 
@@ -73,7 +74,10 @@ export default {
         reqBody,
         config
       )
-      .then(res => console.log(res))
+      .then(({data}) => {
+        const token = this.$store.getters.user.token;
+        this.$store.dispatch('UPDATE_USER', {...data, token: token})
+      })
       .catch(err => console.log(err))
     },
     getUpdateRequestBody(field) {

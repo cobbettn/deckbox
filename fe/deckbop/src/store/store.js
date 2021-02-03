@@ -43,7 +43,7 @@ export default new Vuex.Store({
     },
     SET_DECK_TITLE(state, data) {
       state.deck.title = data
-    }
+    },
     
   },
   actions: {
@@ -67,6 +67,9 @@ export default new Vuex.Store({
     },
     SET_DECK_TITLE(context, data) {
       context.commit('SET_DECK_TITLE', data)
-    }
+    },
+    UPDATE_USER(context, data) {
+      context.commit('SET_USER', data)
+    },
   }
 })
