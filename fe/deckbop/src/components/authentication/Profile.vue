@@ -58,6 +58,21 @@ export default {
     checkPassword() {
       return bcrypt.compareSync(this.currentPassword, this.$store.getters.user.password)
     },
+    getUpdateRequestBody(field) {
+      const reqBody = {
+        credentials: {}
+      }
+      if (field === 'username') {
+        reqBody.credentials.username = this.newUsername
+      }
+      if (field === 'email') {
+        reqBody.credentials.email = this.newEmail
+      }
+      if (field === 'password') {
+        reqBody.password = this.newPassword
+      }
+      return reqBody
+    },
     updateUser(field) {
       const vm = this
       const { userId, token } = vm.$store.getters.user
@@ -75,25 +90,10 @@ export default {
         reqHeaders
       )
       .then(({data}) => {
-        this.successMsg = 'user succesfully updated'
+        this.successMsg = `${field} succesfully updated`
         this.$store.dispatch('UPDATE_USER', {...data, token: token})
       })
-      .catch(err => this.error = err)
-    },
-    getUpdateRequestBody(field) {
-      return {
-        credentials: {
-          username: field === 'username' ?
-            this.newUsername :
-            this.$store.getters.user.username,
-          email: field === 'email' ?
-            this.newEmail :
-            this.$store.getters.user.email
-        },
-        password: field === 'password' ?
-          this.newPassword :
-          this.currentPassword
-      }
+      .catch(() => this.errorList.push(`error updating ${field}`))
     },
   }
 }

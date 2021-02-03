@@ -9,6 +9,8 @@ public interface IUserDatasource {
     int registerUser(String username, String email, String password, String uuid);
     void activateUser(String activationToken);
     void deleteActivationToken(String activationToken);
-    UpdateUserSuccessResponse updateUser(long user_id, String username, String password, String email);
+    UpdateUserSuccessResponse updateUserUsername(String username, long user_id);
+    UpdateUserSuccessResponse updateUserEmail(String email, long user_id);
+    UpdateUserSuccessResponse updateUserPassword(String password, long user_id);
     void deleteUser(long user_id);
 }

@@ -4,10 +4,10 @@
         <form id="register-form">
             <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <div class="success" v-if="successMsg">{{successMsg}}</div>
-            <h2>Email</h2>
-            <input type="email" v-model="email">
             <h2>Username</h2>
             <input type="text" v-model="username">
+            <h2>Email</h2>
+            <input type="email" v-model="email">
             <h2>Password</h2>
             <input type="password" v-model="password">
             <div class="column-content">

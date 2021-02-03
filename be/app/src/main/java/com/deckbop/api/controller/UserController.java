@@ -43,7 +43,7 @@ public class UserController {
     public ResponseEntity<?> update(@PathVariable long id, @RequestBody UserUpdateRequest request) {
         ResponseEntity<?> response;
         try {
-            return userService.updateUser(id, request);
+            return userService.updateUserById(id, request);
         }
         catch (Exception e) {
             response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

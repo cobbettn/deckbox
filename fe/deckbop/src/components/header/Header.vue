@@ -2,7 +2,7 @@
     <div class="header">
         <router-link to="/">Deckbox</router-link>
         <div>
-            <div v-if="showLogoutLink"> Welcome, {{ getUser }}</div>
+            <div v-if="showLogoutLink"> Welcome, {{ getUsername }}</div>
             <router-link v-if="showLogoutLink" to="/profile">profile</router-link>
             <router-link 
                 to="/login"
@@ -20,8 +20,8 @@ export default {
         showLogoutLink() {
             return !!this.$store.getters.user.token
         },
-        getUser() {
-            return this.$store.getters.user.userName
+        getUsername() {
+            return this.$store.getters.user.username
         }
     },
     methods: {
