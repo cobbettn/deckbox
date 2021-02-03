@@ -1,7 +1,6 @@
 <template>
     <div class="login">
         <h1>Login</h1>
-        
         <form id="login-form">
             <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Username</h2>
@@ -10,8 +9,8 @@
             <input type="password" v-model="password">
             <div class="column-content">
               <button v-on:click.prevent="login()">login</button>
-              <h3>Don't have an account?</h3>
-              <button v-on:click.prevent="goToRegister()">Register Now</button>
+              <h3 class="mt4">Don't have an account?</h3>
+              <button class="registerBtn" v-on:click.prevent="goToRegister()">register now</button>
             </div>
         </form>
     </div>
@@ -92,5 +91,12 @@ export default {
     }
     div.error {
         color: red;
+    }
+    .mt4 {
+        margin-top: 4rem;
+    }
+    .registerBtn {
+        width: 60%;
+        margin: 1rem;
     }
 </style>

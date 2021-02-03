@@ -3,6 +3,7 @@
         <h1>Register</h1>
         <form id="register-form">
             <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
+            <div class="success" v-if="successMsg">{{successMsg}}</div>
             <h2>Email</h2>
             <input type="email" v-model="email">
             <h2>Username</h2>
@@ -10,14 +11,14 @@
             <h2>Password</h2>
             <input type="password" v-model="password">
             <div class="column-content">
-                <button v-on:click.prevent="register(email, username, password)">register</button>
+                <button v-on:click.prevent="register()">register</button>
             </div>
         </form>
     </div>
 </template>
 
 <script>
-import { userRegistrationUrl } from '../../config/api'
+import { userRegistrationUrl , jsonContentHeader} from '../../config/api'
 export default {
     name: 'Register',
     data() {
@@ -26,23 +27,24 @@ export default {
             username: '',
             password: '',
             errorList: [],
+            successMsg: ''
         }
     },
     methods: {
-        register: function (){
+        register() {
+            this.errorList = []
+            this.successMsg = ''
             const vm = this
             const reqBody = {
                 credentials: {username: vm.username, email: vm.email},
                 password: vm.password
             }
-            const reqHeaders = {"Content-Type":"application/json"}
             this.$http.post(
                 userRegistrationUrl,
                 reqBody,
-                reqHeaders
+                jsonContentHeader
             ).then(() => {
-                this.$router.push('/login')
-                
+                this.successMsg = 'congrats, check your email for activation link'
             }).catch(error => {
                 this.errorList = error.response.data.errorList
             });
@@ -86,7 +88,11 @@ export default {
         border-radius: 5em;
         font-size: 1.2em;
     }
+   
     div.error {
         color: red;
+    }
+     div.success {
+        color: #14a76c;
     }
 </style>
