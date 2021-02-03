@@ -41,16 +41,18 @@ const defaultState = {
 export default {
   name: 'Profile',
   data() {
-    return defaultState
+    return {...defaultState}
   },
   methods: {
     tryUpdate(field) {
+      this.errorList = []
+      this.successMsg = ''
       this.currentPassword = prompt("enter password")
       if (this.checkPassword()) {
         this.updateUser(field)
       }
       else {
-        this.error = 'wrong password'
+        this.errorList.push('wrong password')
       }
     },
     checkPassword() {

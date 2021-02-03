@@ -2,24 +2,24 @@ package com.deckbop.api.controller.response;
 
 public class UpdateUserSuccessResponse {
 
-    Long user_id;
+    Long userId;
     String userName;
     String password;
     String email;
 
-    public UpdateUserSuccessResponse(Long user_id, String userName, String password, String email) {
-        this.user_id = user_id;
+    public UpdateUserSuccessResponse(Long userId, String userName, String password, String email) {
+        this.userId = userId;
         this.userName = userName;
         this.password = password;
         this.email = email;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUserName() {
