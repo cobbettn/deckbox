@@ -1,8 +1,10 @@
 package com.deckbop.api.data.dao.impl;
 
+import com.deckbop.api.controller.response.UpdateUserSuccessResponse;
 import com.deckbop.api.data.IUserDatasource;
 import com.deckbop.api.data.SQLTemplates;
 import com.deckbop.api.data.dao.DatabaseDAO;
+import com.deckbop.api.data.dao.impl.rowmapper.UpdateUserResponseRowMapper;
 import com.deckbop.api.data.dao.impl.rowmapper.UserRowMapper;
 import com.deckbop.api.model.User;
 import org.springframework.stereotype.Component;
@@ -35,8 +37,8 @@ public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource {
     }
 
     @Override
-    public void updateUser(long user_id, String username, String password, String email) {
-        this.jdbcTemplate.update(SQLTemplates.updateUser, username, password, email, user_id);
+    public UpdateUserSuccessResponse updateUser(long user_id, String username, String password, String email) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.updateUser, new UpdateUserResponseRowMapper(), username, password, email, user_id);
     }
 
     @Override
