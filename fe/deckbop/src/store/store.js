@@ -24,10 +24,10 @@ export default new Vuex.Store({
   },
   mutations: {
     SET_USER(state, data) {
-      state.user = data
+      state.user = {...data}
     },
     CLEAR_USER(state) {
-      state.user = defaultUser
+      state.user = {...defaultUser}
     },
     SET_SEARCH_RESULTS(state, data) {
       state.searchResults = data;
@@ -44,7 +44,6 @@ export default new Vuex.Store({
     SET_DECK_TITLE(state, data) {
       state.deck.title = data
     }
-    
   },
   actions: {
     LOGIN(context, data) {
@@ -67,6 +66,9 @@ export default new Vuex.Store({
     },
     SET_DECK_TITLE(context, data) {
       context.commit('SET_DECK_TITLE', data)
-    }
+    },
+    UPDATE_USER(context, data) {
+      context.commit('SET_USER', data)
+    },
   }
 })

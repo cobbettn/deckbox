@@ -1,7 +1,7 @@
 export default {
   userId: null,
   token: null,
-  userName: null,
+  username: null,
   password: null,
   email: null
 }

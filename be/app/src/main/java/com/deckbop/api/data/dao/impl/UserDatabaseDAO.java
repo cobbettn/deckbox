@@ -37,8 +37,18 @@ public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource {
     }
 
     @Override
-    public UpdateUserSuccessResponse updateUser(long user_id, String username, String password, String email) {
-        return this.jdbcTemplate.queryForObject(SQLTemplates.updateUser, new UpdateUserResponseRowMapper(), username, password, email, user_id);
+    public UpdateUserSuccessResponse updateUserUsername(String username, long user_id) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.updateUserUsername, new UpdateUserResponseRowMapper(), username, user_id);
+    }
+
+    @Override
+    public UpdateUserSuccessResponse updateUserEmail(String email, long user_id) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.updateUserEmail, new UpdateUserResponseRowMapper(), email, user_id);
+    }
+
+    @Override
+    public UpdateUserSuccessResponse updateUserPassword(String password, long user_id) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.updateUserPassword, new UpdateUserResponseRowMapper(), password, user_id);
     }
 
     @Override

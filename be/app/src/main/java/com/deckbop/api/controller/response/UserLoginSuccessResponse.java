@@ -6,14 +6,14 @@ public class UserLoginSuccessResponse {
 
     String jwtToken;
     long userId;
-    String userName;
+    String username;
     String email;
     String password;
 
-    public UserLoginSuccessResponse(String jwtToken, long userId, String userName, String email, String password) {
+    public UserLoginSuccessResponse(String jwtToken, long userId, String username, String email, String password) {
         this.jwtToken = jwtToken;
         this.userId = userId;
-        this.userName = userName;
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -35,9 +35,9 @@ public class UserLoginSuccessResponse {
         this.userId = userId;
     }
 
-    public String getUserName() { return userName; }
+    public String getUsername() { return username; }
 
-    public void setUserName(String userName) { this.userName = userName; }
+    public void setUsername(String username) { this.username = username; }
 
     public String getEmail() { return email; }
 

@@ -1,7 +1,6 @@
 <template>
     <div class="login">
         <h1>Login</h1>
-        
         <form id="login-form">
             <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <h2>Username</h2>
@@ -10,8 +9,8 @@
             <input type="password" v-model="password">
             <div class="column-content">
               <button v-on:click.prevent="login()">login</button>
-              <h3>Don't have an account?</h3>
-              <button v-on:click.prevent="goToRegister()">Register Now</button>
+              <h3 class="mt4">Don't have an account?</h3>
+              <router-link class="registerLink" to="/register">register now</router-link>
             </div>
         </form>
     </div>
@@ -59,7 +58,6 @@ export default {
 
 <style scoped>
     @import '../../style/style.css';
-
     .login {
         display: flex;
         flex-flow: column;
@@ -67,7 +65,6 @@ export default {
         align-items: center;
         padding: 5em;
         width: auto;
-        
     }
     h1 {
         padding-bottom: 2em;
@@ -83,14 +80,15 @@ export default {
     input:focus{
         outline-width: 0;
     }
-    button {
-        width: 80%;
-        background: #14a76c;
-        border: none;
-        border-radius: 5em;
-        font-size: 1.2em;
-    }
     div.error {
         color: red;
+    }
+    .mt4 {
+        margin-top: 4rem;
+    }
+    .registerLink {
+        color: #14a76c;
+        display: flex;
+        justify-content: center;
     }
 </style>

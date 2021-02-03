@@ -135,19 +135,27 @@ public class UserService {
         return response;
     }
 
-    public ResponseEntity<?> updateUser(long user_id, UserUpdateRequest request) {
+    public ResponseEntity<?> updateUserById (long user_id, UserUpdateRequest request) {
         ResponseEntity<?> response = null;
         try {
             Optional<String> username = Optional.ofNullable(request.getCredentials().get("username"));
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
             Optional<String> password = Optional.ofNullable(request.getPassword());
-            if (username.isPresent() && email.isPresent() && password.isPresent()) {
-                UpdateUserSuccessResponse successResponse =  userDatasource.updateUser(user_id, username.get(), this.getPasswordEncoder().encode(password.get()), email.get());
+            if (username.isPresent()) {
+                UpdateUserSuccessResponse successResponse =  userDatasource.updateUserUsername(username.get(), user_id);
+                response = new ResponseEntity<>(successResponse, HttpStatus.OK);
+            }
+            if (email.isPresent()) {
+                UpdateUserSuccessResponse successResponse =  userDatasource.updateUserEmail(email.get(), user_id);
+                response = new ResponseEntity<>(successResponse, HttpStatus.OK);
+            }
+            if (password.isPresent()) {
+                UpdateUserSuccessResponse successResponse =  userDatasource.updateUserPassword(this.getPasswordEncoder().encode(password.get()), user_id);
                 response = new ResponseEntity<>(successResponse, HttpStatus.OK);
             }
         }
         catch (DataAccessException e) {
-            loggingService.error(this,"SQL Error while updating user");
+            loggingService.error(this,"SQL Error while updating user: " +  e.getMessage());
             throw e;
         }
         return response;
