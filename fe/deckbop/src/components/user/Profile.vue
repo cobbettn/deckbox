@@ -2,6 +2,7 @@
   <div class="profile">
     <div>
       <div v-if="error.length > 0">{{ error }}</div>
+      
       <div class="field">
         <div>new email:</div>
         <input type="email" v-model="newEmail">
@@ -27,7 +28,7 @@
 
 <script>
 import { userUrl } from '../../config/api'
-// bcrypt expects a node env with c++, we are in the browser so no c++, so we bring in bcrypt here
+// cant bundle bcrypt with webpack
 const bcrypt = require('../../../node_modules/bcryptjs/') 
 
 const defaultState = {
