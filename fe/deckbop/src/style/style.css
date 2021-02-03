@@ -12,11 +12,18 @@ input:focus{
 }
 button {
     width: 40%;
+    height: 1.75rem;
     background: #14a76c;
     border: none;
     border-radius: 5em;
     font-size: 1.2em;
     color: #fff;
+}
+button:hover {
+background: #13925f;
+}
+button:active{
+background: #0d6843;
 }
 
 .column-content {

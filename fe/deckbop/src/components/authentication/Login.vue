@@ -10,7 +10,7 @@
             <div class="column-content">
               <button v-on:click.prevent="login()">login</button>
               <h3 class="mt4">Don't have an account?</h3>
-              <button class="registerBtn" v-on:click.prevent="goToRegister()">register now</button>
+              <router-link class="registerLink" to="/register">register now</router-link>
             </div>
         </form>
     </div>
@@ -58,7 +58,6 @@ export default {
 
 <style scoped>
     @import '../../style/style.css';
-
     .login {
         display: flex;
         flex-flow: column;
@@ -66,7 +65,6 @@ export default {
         align-items: center;
         padding: 5em;
         width: auto;
-        
     }
     h1 {
         padding-bottom: 2em;
@@ -82,21 +80,15 @@ export default {
     input:focus{
         outline-width: 0;
     }
-    button {
-        width: 80%;
-        background: #14a76c;
-        border: none;
-        border-radius: 5em;
-        font-size: 1.2em;
-    }
     div.error {
         color: red;
     }
     .mt4 {
         margin-top: 4rem;
     }
-    .registerBtn {
-        width: 60%;
-        margin: 1rem;
+    .registerLink {
+        color: #14a76c;
+        display: flex;
+        justify-content: center;
     }
 </style>

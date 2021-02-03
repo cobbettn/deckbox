@@ -129,12 +129,7 @@ export default {
         outline-width: 0;
     }
     button {
-        width: 15rem;
-        height: 1.75rem;
-        background: #14a76c;
-        border: none;
-        border-radius: 5em;
-        font-size: 1.2em;
+      width: 15rem;
     }
     button:hover {
       background: #13925f;

@@ -81,14 +81,6 @@ export default {
     input:focus{
         outline-width: 0;
     }
-    button {
-        width: 80%;
-        background: #14a76c;
-        border: none;
-        border-radius: 5em;
-        font-size: 1.2em;
-    }
-   
     div.error {
         color: red;
     }
