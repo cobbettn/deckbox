@@ -41,9 +41,9 @@ public class UserController {
 
     @PostMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @RequestBody UserUpdateRequest request) {
-        ResponseEntity<?> response =new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<?> response;
         try {
-            userService.updateUser(id, request);
+            return userService.updateUser(id, request);
         }
         catch (Exception e) {
             response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
