@@ -29,8 +29,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (!!store.getters.user.token || !!to.meta.noAuth) next()
-  else next('/login')
+  (store.getters.user.token || to.meta.noAuth) ? next() : next('/login')
 })
 
 export default router;
