@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="showLoggedInView" class="new-deck">
-            <h1>+ New Deck</h1>
+            <router-link to="/deckEditor"><h1>+ New Deck</h1></router-link>
         </div>
         <div class="view-decks">
             <div v-for="(deck, index) in decks" :key="index">
