@@ -48,11 +48,13 @@ export default {
       this.errorList = []
       this.successMsg = ''
       this.currentPassword = prompt("enter password")
-      if (this.checkPassword()) {
-        this.updateUser(field)
-      }
-      else {
-        this.errorList.push('wrong password')
+      if (this.currentPassword) {
+        if (this.checkPassword()) {
+          this.updateUser(field)
+        }
+        else {
+          this.errorList.push('wrong password')
+        }
       }
     },
     checkPassword() {
