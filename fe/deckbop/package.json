@@ -14,6 +14,7 @@
     "http-status-codes": "^2.1.4",
     "vue": "^2.6.11",
     "vue-router": "^3.4.9",
+    "vue-spinner": "^1.0.4",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

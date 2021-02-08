@@ -1,33 +1,38 @@
 <template>
     <div class="register">
-        <h1>Register</h1>
-        <form id="register-form">
-            <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
-            <div class="success" v-if="successMsg">{{successMsg}}</div>
-            <h2>Username</h2>
-            <input type="text" v-model="username">
-            <h2>Email</h2>
-            <input type="email" v-model="email">
-            <h2>Password</h2>
-            <input type="password" v-model="password">
-            <div class="column-content">
-                <button v-on:click.prevent="register()">register</button>
-            </div>
-        </form>
-    </div>
+            <h1>Register</h1>
+            <pulse-loader :loading="isLoading" :color=spinnerColor></pulse-loader>
+            <form id="register-form">
+                <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
+                <div class="success" v-if="successMsg">{{successMsg}}</div>
+                <h2>Username</h2>
+                <input type="text" v-model="username">
+                <h2>Email</h2>
+                <input type="email" v-model="email">
+                <h2>Password</h2>
+                <input type="password" v-model="password">
+                <div class="column-content">
+                    <button v-on:click.prevent="register()">register</button>
+                </div>
+            </form>
+        </div>
 </template>
 
 <script>
 import { userRegistrationUrl , jsonContentHeader} from '../../config/api'
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 export default {
     name: 'Register',
+    components: {PulseLoader},
     data() {
         return{
             email: '',
             username: '',
             password: '',
             errorList: [],
-            successMsg: ''
+            successMsg: '',
+            isLoading: false,
+            spinnerColor: "#14a76c",
         }
     },
     methods: {
@@ -35,6 +40,7 @@ export default {
             this.errorList = []
             this.successMsg = ''
             const vm = this
+            vm.isLoading = true
             const reqBody = {
                 credentials: {username: vm.username, email: vm.email},
                 password: vm.password
@@ -47,6 +53,8 @@ export default {
                 this.successMsg = 'congrats, check your email for activation link'
             }).catch(error => {
                 this.errorList = error.response.data.errorList
+            }).finally(() => {
+                this.isLoading = false
             });
         }
     }
