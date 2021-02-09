@@ -33,7 +33,9 @@ export default {
                 reqUrl,
                 reqBody,
                 reqHeaders
-            ).then(data=>console.log(data))
+            ).then(() => {
+                this.$toasted.show('Deck saved', { position: 'bottom-center', duration: 2000})
+            })
             .catch(e => console.log(e))
         },
         getRequestData() {
