@@ -7,32 +7,58 @@
             placeholder="Deck Title" 
             v-model="deckTitle"
         />
-        <button>save</button>
+        <button @click="saveDeck">save</button>
       </div>
       
   </div>
 </template>
 
 <script>
+import { jsonContentHeader, authTokenFactory, deckUrl } from '../../config/api'
 import SidebarNav from './SidebarNav.vue'
 export default {
     name: "DeckInfo",
     components: {
         SidebarNav,
     },
-    methods: {
+    data() {
+        return {
+            deckTitle: ''
+        }
     },
-    computed:{
-        deckImage: function() {
-            return null
+    methods: {
+        saveDeck() {
+            const {reqUrl, reqBody, reqHeaders} = this.getRequestData()
+            this.$http.post(
+                reqUrl,
+                reqBody,
+                reqHeaders
+            ).then(data=>console.log(data))
+            .catch(e => console.log(e))
         },
-        deckTitle: {
-            set(deckTitle) {
-                this.$store.dispatch('SET_DECK_TITLE', deckTitle)
-            },
-            get() {
-                return this.$store.getters.deckTitle
+        getRequestData() {
+            const vm = this
+            const reqBody = {
+                name: vm.deckTitle,
+                userId: this.$store.getters.user.userId,
+                cardList: []
             }
+            const cards = this.$store.getters.deck.cards
+            const map = {}
+            cards.forEach(({id}) => {
+                map[id] = map[id] ? map[id] + 1 : 1;
+            });
+            Object.entries(map).forEach(([key, value]) => {
+                reqBody.cardList.push({card_id: key, card_quantity: value})
+            })
+
+            const reqHeaders = {
+                headers: {
+                    ...jsonContentHeader,
+                    ...authTokenFactory(this.$store.getters.user.token)
+                }
+            }
+            return {reqUrl: deckUrl, reqBody, reqHeaders}
         }
     },
 }
@@ -40,5 +66,4 @@ export default {
 
 <style>
     @import '../../style/style.css';
-    
 </style>

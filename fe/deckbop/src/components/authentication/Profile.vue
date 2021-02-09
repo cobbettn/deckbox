@@ -1,8 +1,10 @@
 <template>
   <div class="profile">
     <div>
+      
       <div class="error" v-if="errorList.length > 0">{{ errorList[0] }}</div>
       <div class="success" v-if="successMsg">{{ successMsg }}</div>
+      
       <div class="field">
         <div>new email:</div>
         <input type="email" v-model="newEmail">
@@ -20,6 +22,7 @@
         <input type="password" v-model="newPassword">
         <button @click="tryUpdate('password')">change password</button>
       </div>
+
     </div>
 
   </div>
