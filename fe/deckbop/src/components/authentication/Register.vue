@@ -1,6 +1,7 @@
 <template>
     <div class="register">
         <h1>Register</h1>
+        <pulse-loader :loading="isLoading" :color=spinnerColor></pulse-loader>
         <form id="register-form">
             <div class="error" v-for="(error, i) in errorList" :key="i">{{ error }}</div>
             <div class="success" v-if="successMsg">{{successMsg}}</div>
@@ -19,15 +20,19 @@
 
 <script>
 import { userRegistrationUrl , jsonContentHeader} from '../../config/api'
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 export default {
     name: 'Register',
+    components: {PulseLoader},
     data() {
         return{
             email: '',
             username: '',
             password: '',
             errorList: [],
-            successMsg: ''
+            successMsg: '',
+            isLoading: false,
+            spinnerColor: "#14a76c",
         }
     },
     methods: {
@@ -35,6 +40,7 @@ export default {
             this.errorList = []
             this.successMsg = ''
             const vm = this
+            vm.isLoading = true
             const reqBody = {
                 credentials: {username: vm.username, email: vm.email},
                 password: vm.password
@@ -47,6 +53,8 @@ export default {
                 this.successMsg = 'congrats, check your email for activation link'
             }).catch(error => {
                 this.errorList = error.response.data.errorList
+            }).finally(() => {
+                this.isLoading = false
             });
         }
     }
