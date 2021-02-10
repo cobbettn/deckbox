@@ -49,4 +49,9 @@ public class DeckDatabaseDAO extends DatabaseDAO implements IDeckDatasource {
         this.jdbcTemplate.update(sql);  // int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
     }
 
+    @Override
+    public SqlRowSet checkDeckInDeckTable(long userId, String deckName){
+        return this.jdbcTemplate.queryForRowSet(SQLTemplates.checkDeckInDeckTable, userId, deckName);
+    }
+
 }

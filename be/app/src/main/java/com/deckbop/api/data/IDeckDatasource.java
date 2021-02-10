@@ -6,6 +6,7 @@ public interface IDeckDatasource {
     SqlRowSet getDeckById(long deck_id);
     SqlRowSet getCardsByDeckId(long deck_id);
     SqlRowSet getDeckIdsByUserId(long userId);
+    SqlRowSet checkDeckInDeckTable(long userId, String deckName);
     Long insertDeck(String deckName, long userId);
     void deleteDeck(long deck_id);
     void deleteCardsFromDeck(long deck_id);

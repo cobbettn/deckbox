@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
     public static final String getDeckIdsByUserId =      "SELECT deck_id FROM deck WHERE user_id = ?";
     public static final String insertDeck =              "INSERT INTO deck(user_id, deck_name) VALUES (?, ?) RETURNING deck_id";
     public static final String updateDeckTable =         "UPDATE deck SET deck_name = ? WHERE deck_id = ?";
+    public static final String checkDeckInDeckTable =    "SELECT * FROM deck WHERE user_id = ? AND deck_name = ?";
     // card table
     public static final String deleteCardsFromDeck =     "DELETE FROM card WHERE deck_id = ?";
     public static final String addCardsToDeck =          "INSERT INTO card (deck_id, card_id, card_quantity) VALUES ";
