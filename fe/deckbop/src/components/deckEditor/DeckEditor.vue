@@ -1,6 +1,5 @@
 <template>
     <div class="deck-editor">
-        
         <deck-info v-if="viewSearch" class="container" id="deck-info"></deck-info>
         <card-search v-else class="container" id="search"></card-search>    
         <card-search-results class="container" id="search-results"></card-search-results>
@@ -25,9 +24,19 @@ export default {
         viewSearch(){
             return this.$store.getters.viewSearch
         },
+        // called when a route param is passed
+        getDeck() {
+            return this.$store.getters.deck
+        }
+    },
+    mounted() {
+        if (this.$route.params.id) {
+            // const deck = getDeckById(this.$route.params.id) // TODO
+            // this.$store.dispatch('SET_DECK', deck)
+        }
     }
-    
-}
+} 
+
 </script>
 
 <style scoped>

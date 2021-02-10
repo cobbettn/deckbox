@@ -4,8 +4,7 @@
             <router-link to="/deckEditor"><h1>+ New Deck</h1></router-link>
         </div>
         <div class="view-decks">
-            <div v-for="(deck, index) in decks" :key="index">
-
+            <div v-for="(deck, index) in getDecks" :key="index">
                 <DeckBox v-bind:deck="deck" />
             </div>
         </div>    
@@ -21,34 +20,22 @@ export default {
     components: {
         DeckBox
     },
-    props: [],
-    data() {
-        return {
-            decks: [
-                {
-                deck_id: 1,
-                user_id: 1,
-                decklist_id: 1,
-                deck_name: "burn"
-                },
-                {
-                deck_id: 2,
-                user_id: 1,
-                decklist_id: 2,
-                deck_name: "storm"
-                },
-                {
-                deck_id: 3,
-                user_id: 1,
-                decklist_id: 3,
-                deck_name: "red deck wins"
-                }
-            ]
-        }
-    },
     computed: {
         showLoggedInView() {
             return !!this.$store.getters.user.token
+        },
+        getDecks() {
+            // TODO: call api
+            return [
+                { 
+                    id: 1,
+                    name : "isochron", 
+                    userId : 1, 
+                    cardList: [
+                        { card_id: "2aa24fe0-e275-4307-b26c-2a656068a451", card_quantity: 1 }
+                    ] 
+                }
+            ]
         }
     }
 }
@@ -62,8 +49,10 @@ export default {
     .view-decks {
         display: flex;
         flex-flow: row wrap;
-        justify-content: space-around;
-        
+        justify-content: center;
+    }
+    .view-decks > * {
+        padding: 0.5rem;
     }
     .new-deck {
         padding-left: 2em;

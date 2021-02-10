@@ -1,17 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import defaultUser from '../model/user'
+import defaultDeck from '../model/deck'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: defaultUser,
-    deck: {
-      cards:[],
-      title: "",
-      image: "",
-    },
+    user: {...defaultUser},
+    deck: {...defaultDeck},
     searchResults: {data: ""},
     viewSearch: false,
   },
@@ -43,7 +40,10 @@ export default new Vuex.Store({
     },
     SET_DECK_TITLE(state, data) {
       state.deck.title = data
-    }
+    },
+    SET_DECK(state, data) {
+      state.deck = {...data}
+    },
   },
   actions: {
     LOGIN(context, data) {
@@ -69,6 +69,9 @@ export default new Vuex.Store({
     },
     UPDATE_USER(context, data) {
       context.commit('SET_USER', data)
+    },
+    SET_DECK(context, data) {
+      context.commit('SET_DECK', data)
     },
   }
 })
