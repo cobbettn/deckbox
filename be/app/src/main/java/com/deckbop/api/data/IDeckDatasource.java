@@ -1,12 +1,15 @@
 package com.deckbop.api.data;
 
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import com.deckbop.api.model.Card;
+import com.deckbop.api.model.Deck;
+
+import java.util.List;
 
 public interface IDeckDatasource {
-    SqlRowSet getDeckById(long deck_id);
-    SqlRowSet getCardsByDeckId(long deck_id);
-    SqlRowSet getDeckIdsByUserId(long userId);
-    SqlRowSet checkDeckInDeckTable(long userId, String deckName);
+    Deck getDeckById(long deck_id);
+    List<Card> getCardsByDeckId(long deck_id);
+    List<Deck> getDecksByUserId(long user_id);
+    Long getNumDeckNameCollisions(long userId, String deckName, long deckId);
     Long insertDeck(String deckName, long userId);
     void deleteDeck(long deck_id);
     void deleteCardsFromDeck(long deck_id);

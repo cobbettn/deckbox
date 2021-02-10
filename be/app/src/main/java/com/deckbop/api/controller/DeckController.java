@@ -1,9 +1,9 @@
 package com.deckbop.api.controller;
 
 import com.deckbop.api.controller.request.DeckRequest;
-import com.deckbop.api.controller.response.DeckResponse;
 import com.deckbop.api.controller.response.ErrorMessageResponse;
 import com.deckbop.api.exception.DeckNameExistsException;
+import com.deckbop.api.model.Deck;
 import com.deckbop.api.service.DeckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,7 +49,7 @@ public class DeckController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getDeck(@PathVariable long id) {
         try {
-            DeckResponse response = deckService.getDeck(id);
+            Deck response = deckService.getDeck(id);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         catch (Exception e) {

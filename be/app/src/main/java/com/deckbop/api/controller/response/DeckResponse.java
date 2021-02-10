@@ -1,14 +1,12 @@
 package com.deckbop.api.controller.response;
 
-import com.deckbop.api.controller.request.DeckRequest;
 import com.deckbop.api.model.Card;
+import com.deckbop.api.model.Deck;
 
 import java.util.List;
 
-public class DeckResponse extends DeckRequest {
-    private long id;
-    public DeckResponse(String name, List<Card> cardList, long userId, long id) {
-        super(name, cardList, userId);
-        this.id = id;
+public class DeckResponse extends Deck {
+    public DeckResponse(long deckId, long userId, String deckName, List<Card> cardList) {
+        super(deckId, userId, deckName, cardList);
     }
 }

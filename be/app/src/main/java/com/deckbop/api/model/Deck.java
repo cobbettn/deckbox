@@ -1,51 +1,57 @@
 package com.deckbop.api.model;
 
 
+import java.util.List;
+
 public class Deck {
     
-    private int deckId;
-    private int userId;
-    private int deckListId;
-    String deckName;
+    private long id;
+    private long userId;
+    String name;
+    List<Card> cardList;
     
-    public Deck(int deckId, int userId, int deckListId, String deckName){
-        this.deckId = deckId;
+    public Deck(long id, long userId, String deckName, List<Card> cardList){
+        this.id = id;
         this.userId = userId;
-        this.deckListId = deckListId;
-        this.deckName = deckName;
+        this.name = deckName;
+        this.cardList = cardList;
+    }
+
+    public Deck(long id, long userId, String deckName){
+        this.id = id;
+        this.userId = userId;
+        this.name = deckName;
     }
     
-    public int getDeckId() {
-        return deckId;
+    public long getId() {
+        return id;
     }
 
-    public void setDeckId(int deckId) {
-        this.deckId = deckId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public int getDeckListId() {
-        return deckListId;
+    public List<Card> getCardList() {
+        return cardList;
     }
 
-    public void setDeckListId(int deckListId) {
-        this.deckListId = deckListId;
+    public void setCardList(List<Card> cardList) {
+        this.cardList = cardList;
     }
 
-    public String getDeckName() {
-        return deckName;
+    public String getName() {
+        return name;
     }
 
-    public void setDeckName(String deckName) {
-        this.deckName = deckName;
+    public void setName(String name) {
+        this.name = name;
     }
-    
-
 }
