@@ -3,5 +3,6 @@ export default {
   token: null,
   username: null,
   password: null,
-  email: null
+  email: null,
+  decks: [],
 }

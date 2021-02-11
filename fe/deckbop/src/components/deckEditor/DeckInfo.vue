@@ -4,8 +4,8 @@
       <div class="column-content">
         <input 
             type="text" 
-            placeholder="Deck Title" 
-            v-model="deckTitle"
+            placeholder="Deck Name" 
+            v-model="getDeckName"
         />
         <button @click="saveDeck">save</button>
       </div>
@@ -21,13 +21,9 @@ export default {
     components: {
         SidebarNav,
     },
-    data() {
-        return {
-            deckTitle: ''
-        }
-    },
     methods: {
         saveDeck() {
+            // update or create?
             const {reqUrl, reqBody, reqHeaders} = this.getRequestData()
             this.$http.post(
                 reqUrl,
@@ -41,7 +37,7 @@ export default {
         getRequestData() {
             const vm = this
             const reqBody = {
-                name: vm.deckTitle,
+                name: vm.deckName,
                 userId: this.$store.getters.user.userId,
                 cardList: []
             }
@@ -63,6 +59,11 @@ export default {
             return {reqUrl: deckUrl, reqBody, reqHeaders}
         }
     },
+    computed: {
+        getDeckName() {
+            return this.$store.getters.editorMode === 'edit' ? this.$store.getters.deck.name : ''
+        }
+    }
 }
 </script>
 

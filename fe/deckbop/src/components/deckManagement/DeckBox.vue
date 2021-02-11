@@ -20,6 +20,7 @@ export default {
     },
     methods: {
         edit() {
+            this.$store.dispatch('SET_EDITOR_MODE', 'edit')
             this.$router.push(`/deckEditor/${this.deck.id}`)
         }
     }

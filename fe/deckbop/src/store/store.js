@@ -9,6 +9,7 @@ export default new Vuex.Store({
   state: {
     user: {...defaultUser},
     deck: {...defaultDeck},
+    editorMode: '',
     searchResults: {data: ""},
     viewSearch: false,
   },
@@ -17,7 +18,8 @@ export default new Vuex.Store({
     searchResults: state => state.searchResults,
     deck: state => state.deck,
     viewSearch: state => state.viewSearch,
-    deckTitle: state => state.deck.title,
+    deckName: state => state.deck.name,
+    editorMode: state => state.editorMode,
   },
   mutations: {
     SET_USER(state, data) {
@@ -38,11 +40,17 @@ export default new Vuex.Store({
     TOGGLE_VIEW_SEARCH(state) {
       state.viewSearch = !state.viewSearch
     },
-    SET_DECK_TITLE(state, data) {
-      state.deck.title = data
+    SET_DECK_NAME(state, data) {
+      state.deck.name = data
     },
     SET_DECK(state, data) {
       state.deck = {...data}
+    },
+    SET_EDITOR_MODE(state, data) {
+      state.editorMode = data
+    },
+    CLEAR_DECK(state) {
+      state.deck = {...defaultDeck}
     },
   },
   actions: {
@@ -64,14 +72,20 @@ export default new Vuex.Store({
     TOGGLE_VIEW_SEARCH(context) {
       context.commit('TOGGLE_VIEW_SEARCH')
     },
-    SET_DECK_TITLE(context, data) {
-      context.commit('SET_DECK_TITLE', data)
+    SET_DECK_NAME(context, data) {
+      context.commit('SET_DECK_NAME', data)
     },
     UPDATE_USER(context, data) {
       context.commit('SET_USER', data)
     },
     SET_DECK(context, data) {
       context.commit('SET_DECK', data)
+    },
+    SET_EDITOR_MODE(context, data) {
+      context.commit('SET_EDITOR_MODE', data)
+    },
+    CLEAR_DECK(context) {
+      context.commit('CLEAR_DECK')
     },
   }
 })

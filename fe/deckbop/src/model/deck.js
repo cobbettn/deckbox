@@ -1,6 +1,7 @@
 export default {
   id: null,
-  title: '',
+  userId: null,
+  name: '',
   cards: [],
   image: '',
 }

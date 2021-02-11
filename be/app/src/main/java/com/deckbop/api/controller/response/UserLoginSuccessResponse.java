@@ -1,6 +1,9 @@
 package com.deckbop.api.controller.response;
 
+import com.deckbop.api.model.Deck;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 public class UserLoginSuccessResponse {
 
@@ -9,13 +12,15 @@ public class UserLoginSuccessResponse {
     String username;
     String email;
     String password;
+    List<Deck> decks;
 
-    public UserLoginSuccessResponse(String jwtToken, long userId, String username, String email, String password) {
+    public UserLoginSuccessResponse(String jwtToken, long userId, String username, String email, String password, List<Deck> decks) {
         this.jwtToken = jwtToken;
         this.userId = userId;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.decks = decks;
     }
 
     @JsonProperty("token")
@@ -46,4 +51,12 @@ public class UserLoginSuccessResponse {
     public String getPassword() { return password; }
 
     public void setPassword(String password) { this.password = password; }
+
+    public List<Deck> getDecks() {
+        return decks;
+    }
+
+    public void setDecks(List<Deck> decks) {
+        this.decks = decks;
+    }
 }

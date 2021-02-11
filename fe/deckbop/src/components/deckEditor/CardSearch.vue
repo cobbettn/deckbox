@@ -12,6 +12,7 @@
 
 <script>
 import SidebarNav from './SidebarNav.vue'
+import { getSearchUrl } from '../../config/scryfall'
 export default {
   components: { SidebarNav },
     name: "CardSearch",
@@ -23,8 +24,8 @@ export default {
     methods: {
         search: function(){
             const vm = this
-            this.$http.get(
-                `https://api.scryfall.com/cards/search/?q=${vm.searchText}`)
+            const reqUrl = getSearchUrl(vm.searchText)
+            this.$http.get(reqUrl)
             .then((req) => {
                 this.$store.dispatch('SET_SEARCH_RESULTS', req.data)
             })

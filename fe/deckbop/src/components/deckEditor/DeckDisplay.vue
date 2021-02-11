@@ -28,7 +28,7 @@ export default {
             this.$store.dispatch('REMOVE_FROM_DECK', card)
         },
         filterByCMC: function(cmc) {
-            return this.$store.getters.deck.cards.filter(
+            return this.$store.getters.deck.cards?.filter(
                 card => (cmc === this.cmcColumns ? card.cmc >= this.cmcColumns : cmc === card.cmc) 
                     && !card.type_line.includes("Land")
             )
@@ -36,7 +36,7 @@ export default {
     },
     computed: {
         filterByLand: function() {
-            return this.$store.getters.deck?.cards.filter(card => card.type_line.includes("Land"))
+            return this.$store.getters.deck.cards?.filter(card => card.type_line.includes("Land"))
         },
     }
 }

@@ -1,7 +1,6 @@
 <template>
     <div class="card-search-results">
          <div v-for="(card, index) in populateResults" :key="index"  v-on:click="addToDeck(card)">
-
             <Card v-bind:card="card"/>
         </div>
     </div>
@@ -25,6 +24,7 @@ export default {
     },
     computed: {
         populateResults() {
+            // populate with store data when edtign
             return this.$store.getters.searchResults.data
         }
     }

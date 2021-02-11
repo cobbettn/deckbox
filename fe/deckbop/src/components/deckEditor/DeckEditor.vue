@@ -23,17 +23,16 @@ export default {
     computed: {
         viewSearch(){
             return this.$store.getters.viewSearch
-        },
-        // called when a route param is passed
-        getDeck() {
-            return this.$store.getters.deck
         }
     },
-    mounted() {
+    created() {
         if (this.$route.params.id) {
-            // const deck = getDeckById(this.$route.params.id) // TODO
-            // this.$store.dispatch('SET_DECK', deck)
+            const deck = this.$store.getters.user.decks.find(deck => deck.id == this.$route.params.id)
+            this.$store.dispatch('SET_DECK', deck)
         }
+    },
+    destroyed() {
+        this.$store.dispatch('CLEAR_DECK')
     }
 } 
 

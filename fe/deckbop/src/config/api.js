@@ -18,12 +18,12 @@ const jsonContentHeader = {"Content-Type": "application/json"}
 const authTokenFactory = token => ({"Authorization": `Bearer ${token}`})
 
 export {
+  authTokenFactory,
+  jsonContentHeader,
   baseUrl,
   userUrl,
   userLoginUrl,
   userRegistrationUrl,
   activateUrl,
   deckUrl,
-  jsonContentHeader,
-  authTokenFactory
 };

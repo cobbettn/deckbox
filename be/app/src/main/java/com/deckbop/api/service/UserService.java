@@ -9,6 +9,7 @@ import com.deckbop.api.controller.response.UserLoginErrorResponse;
 import com.deckbop.api.controller.response.UserLoginSuccessResponse;
 import com.deckbop.api.controller.response.UserRegisterErrorResponse;
 import com.deckbop.api.data.IUserDatasource;
+import com.deckbop.api.model.Deck;
 import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,16 @@ public class UserService {
                     String jwt;
                     try {
                         jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
-                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getPassword());
+                        List<Deck> userDeckList = deckService.getUserDecks(user.getId());
+                        System.out.println(userDeckList.size());
+                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(
+                                jwt,
+                                user.getId(),
+                                user.getUsername(),
+                                user.getEmail(),
+                                user.getPassword(),
+                                userDeckList
+                        );
                         HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
                         response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
                     }
