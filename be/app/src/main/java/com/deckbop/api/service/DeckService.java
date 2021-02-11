@@ -1,7 +1,6 @@
 package com.deckbop.api.service;
 
 import com.deckbop.api.controller.request.DeckRequest;
-import com.deckbop.api.controller.response.DeckResponse;
 import com.deckbop.api.data.SQLTemplates;
 import com.deckbop.api.data.dao.impl.DeckDatabaseDAO;
 import com.deckbop.api.exception.CreateDeckException;
@@ -10,11 +9,11 @@ import com.deckbop.api.model.Card;
 import com.deckbop.api.model.Deck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DeckService  {
@@ -48,27 +47,22 @@ public class DeckService  {
         }
     }
 
-    public Deck getDeck(long deck_id) {
-        DeckResponse response = null;
+    public Deck getDeck(long deck_id) throws Exception {
+        Deck deck;
         try {
-            Optional<DeckResponse> deck = this.getDeckResponse(deck_id);
-            if (deck.isPresent()) {
-                response = deck.get();
-            }
+            Deck deckTable = deckDatabaseDAO.getDeckById(deck_id);
+            List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck_id);
+            deck = new Deck(deck_id, deckTable.getUserId(), deckTable.getName(), cardList);
         }
-        catch (Exception e) {
-            loggingService.error(this,"Error while retrieving deck");
+        catch (EmptyResultDataAccessException e) {
+            loggingService.error(this,"deck with id: " + deck_id + " does not exist");
+            throw new Exception("deck does not exist");
+        }
+        catch (DataAccessException e) {
+            loggingService.error(this,"SQL Error while retrieving deck");
             throw e;
         }
-        return response;
-    }
-
-    private Optional<DeckResponse> getDeckResponse(long deck_id) {
-        DeckResponse response = null;
-        Deck deck = deckDatabaseDAO.getDeckById(deck_id);
-        List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck_id);
-        response = new DeckResponse( deck_id, deck.getUserId(), deck.getName(), cardList);
-        return Optional.ofNullable(response);
+        return deck;
     }
 
     public void updateDeck(DeckRequest request, long deck_id) throws DeckNameExistsException {

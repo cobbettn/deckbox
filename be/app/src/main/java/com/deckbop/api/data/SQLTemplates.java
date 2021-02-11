@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
     public static final String activateUser =            "UPDATE user_account SET is_activated = true WHERE activation_token = ?";
     public static final String deleteActivationToken =   "UPDATE user_account SET activation_token = NULL WHERE activation_token = ?";
     // deck table
-    public static final String getDeckById =             "SELECT deck_name, user_id FROM deck WHERE deck_id = ?";
+    public static final String getDeckById =             "SELECT * FROM deck WHERE deck_id = ?";
     public static final String deleteDeck =              "DELETE FROM deck WHERE deck_id = ?";
     public static final String getDecksByUserId =        "SELECT * FROM deck WHERE user_id = ?";
     public static final String insertDeck =              "INSERT INTO deck(user_id, deck_name) VALUES (?, ?) RETURNING deck_id";
