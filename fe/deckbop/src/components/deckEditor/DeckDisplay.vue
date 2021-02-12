@@ -1,6 +1,6 @@
 <template>
     <div class="deck-display">
-        <div v-for="cmc of cmcColumns" :key="`${cmc}-cmc`" class="card-stack">
+        <div v-for="cmc of cmcColumns.keys()" :key="`${cmc}-cmc`" class="card-stack">
             <span class="card" v-for="(card, index) in filterByCMC(cmc)" :key="index" @click="removeFromDeck(card)">
                 <Card v-bind:card="card"/>
             </span>
@@ -20,7 +20,7 @@ export default {
     components: {Card},
     data() {
         return {
-            cmcColumns: new Array(8).keys()
+            cmcColumns: new Array(8),
         }
     },
     methods: {
@@ -28,16 +28,20 @@ export default {
             this.$store.dispatch('REMOVE_FROM_DECK', card)
         },
         filterByCMC: function(cmc) {
-            return this.$store.getters.deck.cards?.filter(
-                card => (cmc === this.cmcColumns ? card.cmc >= this.cmcColumns : cmc === card.cmc) 
-                    && !card.type_line.includes("Land")
+            const vm = this
+            return vm.getCards.filter(
+                card => (cmc === this.cmcColumns.length - 1 ? card.cmc >= this.cmcColumns.length - 1 : cmc === card.cmc) 
+                    && !card.type_line?.includes("Land")
             )
         },
     },
     computed: {
         filterByLand: function() {
-            return this.$store.getters.deck.cards?.filter(card => card.type_line.includes("Land"))
+            return this.getCards.filter(card => card.type_line?.includes("Land"))
         },
+        getCards() {
+            return this.$store.getters.deck.cards
+        }      
     }
 }
 </script>

@@ -8,13 +8,13 @@ public class Deck {
     private long id;
     private long userId;
     String name;
-    List<Card> cardList;
+    List<Card> cards;
     
-    public Deck(long id, long userId, String deckName, List<Card> cardList){
+    public Deck(long id, long userId, String deckName, List<Card> cards){
         this.id = id;
         this.userId = userId;
         this.name = deckName;
-        this.cardList = cardList;
+        this.cards = cards;
     }
 
     public Deck(long id, long userId, String deckName){
@@ -39,12 +39,12 @@ public class Deck {
         this.userId = userId;
     }
 
-    public List<Card> getCardList() {
-        return cardList;
+    public List<Card> getCards() {
+        return cards;
     }
 
-    public void setCardList(List<Card> cardList) {
-        this.cardList = cardList;
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
     public String getName() {

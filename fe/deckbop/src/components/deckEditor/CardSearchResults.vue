@@ -18,13 +18,12 @@ export default {
         return {}
     },
     methods:{
-        addToDeck: function (card){
+        addToDeck: function (card) {
             this.$store.dispatch('ADD_TO_DECK', card)
         }
     },
     computed: {
         populateResults() {
-            // populate with store data when edtign
             return this.$store.getters.searchResults.data
         }
     }

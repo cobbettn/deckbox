@@ -1,6 +1,6 @@
 <template>
-    <div @click="edit" class="deck-box">
-        <h3>{{deck.name}}</h3>
+    <div @click="editDeck" class="deck-box">
+        <h3>{{ deck.name }}</h3>
         <img :src="imgSrc"/>
     </div>    
 </template>
@@ -14,13 +14,10 @@ export default {
             imgSrc: '',
         }
     },
-    mounted() {    
-        // data.image_uris.art_crop needs to be saved to the deck table for one of the cards in the deck
-        // load the url here and assign to imgSrc
-    },
     methods: {
-        edit() {
+        editDeck() {
             this.$store.dispatch('SET_EDITOR_MODE', 'edit')
+            this.$store.dispatch('SET_DECK', {...this.deck})
             this.$router.push(`/deckEditor/${this.deck.id}`)
         }
     }

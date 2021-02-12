@@ -25,7 +25,7 @@ public class DeckService  {
     LoggingService loggingService;
 
     public void createDeck(DeckRequest request) throws CreateDeckException, DeckNameExistsException {
-        if (this.validateDeckRequest(request)) {
+        if (this.validateDeckRequest(request, -1)) {
             try {
                 String deckName = request.getName();
                 long userId = request.getUserId();
@@ -66,7 +66,7 @@ public class DeckService  {
     }
 
     public void updateDeck(DeckRequest request, long deck_id) throws DeckNameExistsException {
-        if (this.validateDeckRequest(request)) {
+        if (this.validateDeckRequest(request, deck_id)) {
             try {
                 deckDatabaseDAO.updateDeckTable(request.getName(), deck_id);
                 deckDatabaseDAO.deleteCardsFromDeck(deck_id);
@@ -104,7 +104,7 @@ public class DeckService  {
             decks = deckDatabaseDAO.getDecksByUserId(userId);
             decks.forEach(deck -> {
                 List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck.getId());
-                deck.setCardList(cardList);
+                deck.setCards(cardList);
             });
         }
         catch (DataAccessException e) {
@@ -125,7 +125,7 @@ public class DeckService  {
     }
 
     private String getCardDataSQL(DeckRequest request, long deckId){
-        List<Card> cards = request.getCardList();
+        List<Card> cards = request.getCards();
         String[] values = new String[cards.size()];
         for (int i = 0; i < values.length; i++) {
             Card c = cards.get(i);
@@ -136,7 +136,7 @@ public class DeckService  {
         return String.join(", ", values);
     }
 
-    private boolean validateDeckRequest(DeckRequest request) {
-        return 0 == deckDatabaseDAO.getNumDeckNameCollisions(request.getUserId(), request.getName(), request.getId());
+    private boolean validateDeckRequest(DeckRequest request, long deckId) {
+        return 0 == deckDatabaseDAO.getNumDeckNameCollisions(request.getUserId(), request.getName(), deckId);
     }
 }

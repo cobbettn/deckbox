@@ -3,5 +3,4 @@ export default {
   userId: null,
   name: '',
   cards: [],
-  image: '',
 }

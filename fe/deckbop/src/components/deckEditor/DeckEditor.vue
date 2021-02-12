@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { scryfallCollectionUrl } from '../../config/scryfall';
 import CardSearch from './CardSearch';
 import CardSearchResults from './CardSearchResults';
 import DeckDisplay from './DeckDisplay';
@@ -21,21 +22,39 @@ export default {
       DeckInfo,
     },
     computed: {
-        viewSearch(){
+        viewSearch() {
             return this.$store.getters.viewSearch
-        }
-    },
-    created() {
-        if (this.$route.params.id) {
-            const deck = this.$store.getters.user.decks.find(deck => deck.id == this.$route.params.id)
-            this.$store.dispatch('SET_DECK', deck)
+        },
+        getDeck() {
+            return this.$store.getters.deck
+        },
+        isEditMode() {
+            return this.$store.getters.editorMode === 'edit'
         }
     },
     destroyed() {
+        // resetting state in store?
         this.$store.dispatch('CLEAR_DECK')
-    }
-} 
-
+        this.$store.dispatch('SET_SEARCH_RESULTS', {data: ""})
+    },
+    mounted() {
+        if (this.isEditMode) {
+            const reqBody = { identifiers: [] }
+            this.getDeck.cards.forEach(card => {
+                for (let i = 0; i < card.card_quantity; i++) {
+                    reqBody.identifiers.push({id: card.card_id})
+                }
+            })
+            this.$http.post(
+                scryfallCollectionUrl,
+                reqBody
+            ).then(res => {
+                const scryfallDeck = res.data.data
+                this.$store.dispatch('SET_DECK',{...this.getDeck, cards: scryfallDeck})
+            }).catch(err => console.log(err))
+        }
+    },
+}
 </script>
 
 <style scoped>

@@ -113,7 +113,6 @@ public class UserService {
                     try {
                         jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
                         List<Deck> userDeckList = deckService.getUserDecks(user.getId());
-                        System.out.println(userDeckList.size());
                         UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(
                                 jwt,
                                 user.getId(),
