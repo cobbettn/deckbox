@@ -1,6 +1,8 @@
 package com.deckbop.api.model;
 
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Deck {
@@ -9,6 +11,7 @@ public class Deck {
     private long userId;
     String name;
     List<Card> cards;
+    ArrayList<LinkedHashMap> scryFallCards;
     
     public Deck(long id, long userId, String deckName, List<Card> cards){
         this.id = id;
@@ -53,5 +56,13 @@ public class Deck {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ArrayList<LinkedHashMap> getScryFallCards() {
+        return scryFallCards;
+    }
+
+    public void setScryFallCards(ArrayList<LinkedHashMap> scryFallCards) {
+        this.scryFallCards = scryFallCards;
     }
 }
