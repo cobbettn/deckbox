@@ -5,10 +5,14 @@ import com.deckbop.api.controller.response.ErrorMessageResponse;
 import com.deckbop.api.exception.DeckNameExistsException;
 import com.deckbop.api.model.Deck;
 import com.deckbop.api.service.DeckService;
+import com.deckbop.api.service.ScryfallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 
 @RestController
@@ -17,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class DeckController {
     @Autowired
     DeckService deckService;
+
+    @Autowired
+    ScryfallService scryfallService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createDeck(@RequestBody DeckRequest request){
@@ -50,6 +57,8 @@ public class DeckController {
     public ResponseEntity<?> getDeck(@PathVariable long id) {
         try {
             Deck response = deckService.getDeck(id);
+            LinkedHashMap<String, ArrayList> cards = scryfallService.getCardChunk(response.getCards());
+            response.setScryFallCards(cards.get("data"));
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         catch (Exception e) {
