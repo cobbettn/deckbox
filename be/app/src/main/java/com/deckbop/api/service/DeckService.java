@@ -98,13 +98,13 @@ public class DeckService  {
     }
 
     public List<Deck> getUserDecks(long userId) {
-        // scryfall
         List<Deck> decks;
         try {
             decks = deckDatabaseDAO.getDecksByUserId(userId);
             decks.forEach(deck -> {
                 List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck.getId());
                 deck.setCards(cardList);
+                deck.setScryFallCards(scryfallService.fetchCardList(cardList));
             });
         }
         catch (DataAccessException e) {
