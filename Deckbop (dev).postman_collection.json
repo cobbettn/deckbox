@@ -240,7 +240,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"first deck\",\r\n    \"userId\": 1,\r\n    \"cards\": [\r\n        {\r\n            \"card_id\": \"2aa24fe0-e275-4307-b26c-2a656068a41\",\r\n            \"card_quantity\": 3\r\n        }\r\n    ]\r\n}"
+							"raw": "{\r\n    \"name\": \"first deck\",\r\n    \"userId\": 1,\r\n    \"cards\": [\r\n        {\r\n            \"card_id\": \"f340cbf7-5bbe-45b9-a4bf-d1caa500ff93\",\r\n            \"card_quantity\": 3\r\n        }\r\n    ]\r\n}"
 						},
 						"url": {
 							"raw": "localhost:8081/deck",

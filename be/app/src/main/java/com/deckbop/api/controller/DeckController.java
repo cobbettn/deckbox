@@ -1,6 +1,5 @@
 package com.deckbop.api.controller;
 
-import com.deckbop.api.controller.request.DeckRequest;
 import com.deckbop.api.controller.response.ErrorMessageResponse;
 import com.deckbop.api.exception.DeckNameExistsException;
 import com.deckbop.api.model.Deck;
@@ -23,7 +22,7 @@ public class DeckController {
     ScryfallService scryfallService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createDeck(@RequestBody DeckRequest request){
+    public ResponseEntity<?> createDeck(@RequestBody Deck request){
         try {
             deckService.createDeck(request);
         }
@@ -37,7 +36,7 @@ public class DeckController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckRequest request){
+    public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody Deck request){
         try {
             Deck response = deckService.updateDeck(request, id);
             return new ResponseEntity<>(response, HttpStatus.OK);

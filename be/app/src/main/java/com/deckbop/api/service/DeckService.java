@@ -1,6 +1,5 @@
 package com.deckbop.api.service;
 
-import com.deckbop.api.controller.request.DeckRequest;
 import com.deckbop.api.data.SQLTemplates;
 import com.deckbop.api.data.dao.impl.DeckDatabaseDAO;
 import com.deckbop.api.exception.CreateDeckException;
@@ -27,7 +26,7 @@ public class DeckService  {
     @Autowired
     ScryfallService scryfallService;
 
-    public void createDeck(DeckRequest request) throws CreateDeckException, DeckNameExistsException {
+    public void createDeck(Deck request) throws CreateDeckException, DeckNameExistsException {
         if (this.validateDeckRequest(request, -1)) {
             try {
                 String deckName = request.getName();
@@ -69,7 +68,7 @@ public class DeckService  {
         return deck;
     }
 
-    public Deck updateDeck(DeckRequest request, long deck_id) throws DeckNameExistsException {
+    public Deck updateDeck(Deck request, long deck_id) throws DeckNameExistsException {
         if (this.validateDeckRequest(request, deck_id)) {
             try {
                 deckDatabaseDAO.updateDeckTable(request.getName(), deck_id);
@@ -125,7 +124,7 @@ public class DeckService  {
         }
     }
 
-    private String getCardDataSQL(DeckRequest request, long deckId){
+    private String getCardDataSQL(Deck request, long deckId){
         List<Card> cards = request.getCards();
         String[] values = new String[cards.size()];
         for (int i = 0; i < values.length; i++) {
@@ -143,7 +142,7 @@ public class DeckService  {
         return deckIds;
     }
 
-    private boolean validateDeckRequest(DeckRequest request, long deckId) {
+    private boolean validateDeckRequest(Deck request, long deckId) {
         return 0 == deckDatabaseDAO.getNumDeckNameCollisions(request.getUserId(), request.getName(), deckId);
     }
 }

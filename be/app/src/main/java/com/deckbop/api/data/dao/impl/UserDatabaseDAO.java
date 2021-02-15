@@ -1,6 +1,6 @@
 package com.deckbop.api.data.dao.impl;
 
-import com.deckbop.api.controller.response.UpdateUserSuccessResponse;
+import com.deckbop.api.controller.response.UpdateUserResponse;
 import com.deckbop.api.data.IUserDatasource;
 import com.deckbop.api.data.SQLTemplates;
 import com.deckbop.api.data.dao.DatabaseDAO;
@@ -37,17 +37,17 @@ public class UserDatabaseDAO extends DatabaseDAO implements IUserDatasource {
     }
 
     @Override
-    public UpdateUserSuccessResponse updateUserUsername(String username, long user_id) {
+    public UpdateUserResponse updateUserUsername(String username, long user_id) {
         return this.jdbcTemplate.queryForObject(SQLTemplates.updateUserUsername, new UpdateUserResponseRowMapper(), username, user_id);
     }
 
     @Override
-    public UpdateUserSuccessResponse updateUserEmail(String email, long user_id) {
+    public UpdateUserResponse updateUserEmail(String email, long user_id) {
         return this.jdbcTemplate.queryForObject(SQLTemplates.updateUserEmail, new UpdateUserResponseRowMapper(), email, user_id);
     }
 
     @Override
-    public UpdateUserSuccessResponse updateUserPassword(String password, long user_id) {
+    public UpdateUserResponse updateUserPassword(String password, long user_id) {
         return this.jdbcTemplate.queryForObject(SQLTemplates.updateUserPassword, new UpdateUserResponseRowMapper(), password, user_id);
     }
 

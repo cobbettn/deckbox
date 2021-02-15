@@ -13,18 +13,26 @@ public class Deck {
     List<Card> cards;
     ArrayList<LinkedHashMap> scryFallCards;
     
-    public Deck(long id, long userId, String deckName, List<Card> cards){
+    public Deck(long id, long userId, String name, List<Card> cards){
         this.id = id;
         this.userId = userId;
-        this.name = deckName;
+        this.name = name;
         this.cards = cards;
     }
 
-    public Deck(long id, long userId, String deckName){
+    public Deck(long userId, String name, List<Card> cards) {
+        this.userId = userId;
+        this.name = name;
+        this.cards = cards;
+    }
+
+    public Deck(long id, long userId, String name) {
         this.id = id;
         this.userId = userId;
-        this.name = deckName;
+        this.name = name;
     }
+
+    public Deck() {}
     
     public long getId() {
         return id;
