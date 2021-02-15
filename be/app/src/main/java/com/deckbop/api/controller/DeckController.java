@@ -39,7 +39,8 @@ public class DeckController {
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody DeckRequest request){
         try {
-            deckService.updateDeck(request, id);
+            Deck response = deckService.updateDeck(request, id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         catch (DeckNameExistsException e){
             return new ResponseEntity<>(new ErrorMessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
@@ -47,7 +48,6 @@ public class DeckController {
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return  new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

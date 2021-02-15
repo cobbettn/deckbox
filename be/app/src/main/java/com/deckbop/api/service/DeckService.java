@@ -69,14 +69,14 @@ public class DeckService  {
         return deck;
     }
 
-    public void updateDeck(DeckRequest request, long deck_id) throws DeckNameExistsException {
-        // scryfall
+    public Deck updateDeck(DeckRequest request, long deck_id) throws DeckNameExistsException {
         if (this.validateDeckRequest(request, deck_id)) {
             try {
                 deckDatabaseDAO.updateDeckTable(request.getName(), deck_id);
                 deckDatabaseDAO.deleteCardsFromDeck(deck_id);
                 String cardValues = this.getCardDataSQL(request, deck_id);
                 deckDatabaseDAO.addCardsToDeck(SQLTemplates.addCardsToDeck + cardValues);
+                request.setScryFallCards(scryfallService.fetchCardList(request.getCards()));
             } catch (Exception e) {
                 loggingService.error(this, "SQL error in updateDeck");
                 throw e;
@@ -84,6 +84,7 @@ public class DeckService  {
         } else {
             throw new DeckNameExistsException("Could not update, deck name exists");
         }
+        return request;
     }
 
     public void deleteDeck(long deck_id) {
