@@ -24,6 +24,9 @@ public class DeckService  {
     @Autowired
     LoggingService loggingService;
 
+    @Autowired
+    ScryfallService scryfallService;
+
     public void createDeck(DeckRequest request) throws CreateDeckException, DeckNameExistsException {
         if (this.validateDeckRequest(request, -1)) {
             try {
@@ -53,6 +56,7 @@ public class DeckService  {
             Deck deckTable = deckDatabaseDAO.getDeckById(deck_id);
             List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck_id);
             deck = new Deck(deck_id, deckTable.getUserId(), deckTable.getName(), cardList);
+            deck.setScryFallCards(scryfallService.fetchCardList(deck.getCards()));
         }
         catch (EmptyResultDataAccessException e) {
             loggingService.error(this,"deck with id: " + deck_id + " does not exist");
@@ -66,6 +70,7 @@ public class DeckService  {
     }
 
     public void updateDeck(DeckRequest request, long deck_id) throws DeckNameExistsException {
+        // scryfall
         if (this.validateDeckRequest(request, deck_id)) {
             try {
                 deckDatabaseDAO.updateDeckTable(request.getName(), deck_id);
@@ -92,13 +97,8 @@ public class DeckService  {
         }
     }
 
-    private List<Long> getUserDeckIds(long userId) {
-        List<Long> deckIds = new ArrayList<>();
-        this.getUserDecks(userId).forEach(deck -> deckIds.add(deck.getId()));
-        return deckIds;
-    }
-
     public List<Deck> getUserDecks(long userId) {
+        // scryfall
         List<Deck> decks;
         try {
             decks = deckDatabaseDAO.getDecksByUserId(userId);
@@ -134,6 +134,12 @@ public class DeckService  {
             values[i] =  "(" + deckId + ", '" + cardId + "', " + cardQuantity + ")";
         }
         return String.join(", ", values);
+    }
+
+    private List<Long> getUserDeckIds(long userId) {
+        List<Long> deckIds = new ArrayList<>();
+        this.getUserDecks(userId).forEach(deck -> deckIds.add(deck.getId()));
+        return deckIds;
     }
 
     private boolean validateDeckRequest(DeckRequest request, long deckId) {

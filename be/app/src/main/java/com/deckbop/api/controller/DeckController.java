@@ -11,9 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 
 @RestController
 @CrossOrigin
@@ -57,8 +54,6 @@ public class DeckController {
     public ResponseEntity<?> getDeck(@PathVariable long id) {
         try {
             Deck response = deckService.getDeck(id);
-            LinkedHashMap<String, ArrayList> cards = scryfallService.getCardChunk(response.getCards());
-            response.setScryFallCards(cards.get("data"));
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         catch (Exception e) {
