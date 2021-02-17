@@ -26,14 +26,15 @@ public class DeckService  {
     @Autowired
     ScryfallService scryfallService;
 
-    public void createDeck(Deck request) throws CreateDeckException, DeckNameExistsException {
-        if (this.validateDeckRequest(request, -1)) {
+    public long createDeck(Deck request) throws CreateDeckException, DeckNameExistsException {
+        long deckId = 0;
+        if (this.validateDeckRequest(request, deckId)) {
             try {
                 String deckName = request.getName();
                 long userId = request.getUserId();
-                Long deck_id = deckDatabaseDAO.insertDeck(deckName, userId);
-                if (deck_id > 0) {
-                    String cardValues = this.getCardDataSQL(request, deck_id);
+                deckId = deckDatabaseDAO.insertDeck(deckName, userId);
+                if (deckId > 0) {
+                    String cardValues = this.getCardDataSQL(request, deckId);
                     deckDatabaseDAO.addCardsToDeck(SQLTemplates.addCardsToDeck + cardValues);
 
                 } else {
@@ -47,6 +48,7 @@ public class DeckService  {
         } else {
             throw new DeckNameExistsException("Could not create, deck name exists");
         }
+        return deckId;
     }
 
     public Deck getDeck(long deck_id) throws Exception {
@@ -55,7 +57,7 @@ public class DeckService  {
             Deck deckTable = deckDatabaseDAO.getDeckById(deck_id);
             List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck_id);
             deck = new Deck(deck_id, deckTable.getUserId(), deckTable.getName(), cardList);
-            deck.setScryFallCards(scryfallService.fetchCardList(deck.getCards()));
+            deck.setScryfallCards(scryfallService.fetchCardList(deck.getCards()));
         }
         catch (EmptyResultDataAccessException e) {
             loggingService.error(this,"deck with id: " + deck_id + " does not exist");
@@ -75,7 +77,7 @@ public class DeckService  {
                 deckDatabaseDAO.deleteCardsFromDeck(deck_id);
                 String cardValues = this.getCardDataSQL(request, deck_id);
                 deckDatabaseDAO.addCardsToDeck(SQLTemplates.addCardsToDeck + cardValues);
-                request.setScryFallCards(scryfallService.fetchCardList(request.getCards()));
+                request.setScryfallCards(scryfallService.fetchCardList(request.getCards()));
             } catch (Exception e) {
                 loggingService.error(this, "SQL error in updateDeck");
                 throw e;
@@ -104,7 +106,7 @@ public class DeckService  {
             decks.forEach(deck -> {
                 List<Card> cardList = deckDatabaseDAO.getCardsByDeckId(deck.getId());
                 deck.setCards(cardList);
-                deck.setScryFallCards(scryfallService.fetchCardList(cardList));
+                deck.setScryfallCards(scryfallService.fetchCardList(cardList));
             });
         }
         catch (DataAccessException e) {

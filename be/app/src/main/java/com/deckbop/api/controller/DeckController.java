@@ -1,5 +1,6 @@
 package com.deckbop.api.controller;
 
+import com.deckbop.api.controller.response.CreateDeckResponse;
 import com.deckbop.api.controller.response.ErrorMessageResponse;
 import com.deckbop.api.exception.DeckNameExistsException;
 import com.deckbop.api.model.Deck;
@@ -21,10 +22,11 @@ public class DeckController {
     @Autowired
     ScryfallService scryfallService;
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @PostMapping( value = "")
     public ResponseEntity<?> createDeck(@RequestBody Deck request){
         try {
-            deckService.createDeck(request);
+            long deckId = deckService.createDeck(request);
+            return new ResponseEntity<>(new CreateDeckResponse(deckId), HttpStatus.CREATED);
         }
         catch (DeckNameExistsException e){
             return new ResponseEntity<>(new ErrorMessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
@@ -32,10 +34,9 @@ public class DeckController {
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @PostMapping(value = "/{id}")
     public ResponseEntity<?> updateDeck(@PathVariable long id, @RequestBody Deck request){
         try {
             Deck response = deckService.updateDeck(request, id);
@@ -49,7 +50,7 @@ public class DeckController {
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<?> getDeck(@PathVariable long id) {
         try {
             Deck response = deckService.getDeck(id);
@@ -60,7 +61,7 @@ public class DeckController {
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deleteDeck(@PathVariable long id) {
         try {
             deckService.deleteDeck(id);

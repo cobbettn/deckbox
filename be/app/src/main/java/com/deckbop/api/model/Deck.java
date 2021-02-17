@@ -11,7 +11,7 @@ public class Deck {
     private long userId;
     String name;
     List<Card> cards;
-    ArrayList<LinkedHashMap> scryFallCards;
+    ArrayList<LinkedHashMap> scryfallCards;
     
     public Deck(long id, long userId, String name, List<Card> cards){
         this.id = id;
@@ -66,11 +66,11 @@ public class Deck {
         this.name = name;
     }
 
-    public ArrayList<LinkedHashMap> getScryFallCards() {
-        return scryFallCards;
+    public ArrayList<LinkedHashMap> getScryfallCards() {
+        return scryfallCards;
     }
 
-    public void setScryFallCards(ArrayList<LinkedHashMap> scryFallCards) {
-        this.scryFallCards = scryFallCards;
+    public void setScryfallCards(ArrayList<LinkedHashMap> scryfallCards) {
+        this.scryfallCards = scryfallCards;
     }
 }

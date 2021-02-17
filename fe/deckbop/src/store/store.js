@@ -32,10 +32,10 @@ export default new Vuex.Store({
       state.searchResults = data;
     },
     ADD_TO_DECK(state, data) {
-      state.deck.cards = [...state.deck.cards, data].sort((a,b) => a.name < b.name ? -1 : 1)
+      state.deck.scryfallCards = [...state.deck.scryfallCards, data].sort((a,b) => a.name < b.name ? -1 : 1)
     },
     REMOVE_FROM_DECK(state, data) {
-      state.deck.cards.splice(state.deck.cards.findIndex((x) => x == data), 1)
+      state.deck.scryfallCards.splice(state.deck.cards.findIndex((x) => x == data), 1)
     },
     TOGGLE_VIEW_SEARCH(state) {
       state.viewSearch = !state.viewSearch
@@ -50,7 +50,7 @@ export default new Vuex.Store({
       state.editorMode = data
     },
     CLEAR_DECK(state) {
-      state.deck = {...defaultDeck}
+      state.deck.scryfallCards = []
     },
   },
   actions: {

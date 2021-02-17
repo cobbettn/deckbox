@@ -37,7 +37,10 @@ export default {
                 reqUrl,
                 reqBody,
                 reqHeaders
-            ).then(() => {
+            ).then(res => {
+                this.$store.dispatch('SET_DECK', {...this.getDeck, id: res.data.deckId})
+                this.getUser.decks.push(this.getDeck)
+                this.$store.dispatch('UPDATE_USER', this.getUser)
                 this.$toasted.show('Deck created', { position: 'bottom-center', duration: 2000})
             })
             .catch(e => console.log(e))
@@ -48,7 +51,9 @@ export default {
                 reqUrl,
                 reqBody,
                 reqHeaders
-            ).then(() => {
+            ).then(({data}) => {
+                console.log(data)
+                this.$store.dispatch("SET_DECK", data)
                 this.$toasted.show('Deck updated', { position: 'bottom-center', duration: 2000})
             })
             .catch(e => console.log(e))
@@ -60,7 +65,18 @@ export default {
                 userId: this.getUser.userId,
                 cards: []
             }
-            const cards = this.getDeck.cards
+            const reqHeaders = {
+                headers: {
+                    ...jsonContentHeader,
+                    ...authTokenFactory(this.getUser.token)
+                }
+            }
+            const getReqUrl = () => {
+                return update ? deckUrl + `/${this.getDeck.id}` : deckUrl
+            }
+
+            // maps card id to card quantity, reduce instead?
+            const cards = this.getDeck.scryfallCards
             const map = {}
             cards.forEach(({id}) => {
                 map[id] = map[id] ? map[id] + 1 : 1;
@@ -68,16 +84,8 @@ export default {
             Object.entries(map).forEach(([key, value]) => {
                 reqBody.cards.push({card_id: key, card_quantity: value})
             })
-            const reqHeaders = {
-                headers: {
-                    ...jsonContentHeader,
-                    ...authTokenFactory(this.getUser.token)
-                }
-            }
-            const getUrl = () => {
-                return update ? deckUrl + `/${this.getDeck.id}` : deckUrl
-            }
-            return {reqUrl: getUrl(), reqBody, reqHeaders}
+
+            return { reqUrl: getReqUrl(), reqHeaders, reqBody }
         }
     }
 }

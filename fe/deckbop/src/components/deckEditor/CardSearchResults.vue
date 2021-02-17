@@ -14,17 +14,18 @@ export default {
     components: {
         Card,
     },
-    data: () => {
-        return {}
-    },
     methods:{
         addToDeck: function (card) {
-            this.$store.dispatch('ADD_TO_DECK', card)
+            this.getDeck.scryfallCards.push(card)
+            this.$store.dispatch('SET_DECK', {...this.getDeck})
         }
     },
     computed: {
         populateResults() {
             return this.$store.getters.searchResults.data
+        },
+        getDeck() {
+            return this.$store.getters.deck
         }
     }
 }

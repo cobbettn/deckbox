@@ -30,8 +30,10 @@ export default {
         filterByCMC: function(cmc) {
             const vm = this
             return vm.getCards.filter(
-                card => (cmc === this.cmcColumns.length - 1 ? card.cmc >= this.cmcColumns.length - 1 : cmc === card.cmc) 
-                    && !card.type_line?.includes("Land")
+                card => (cmc === this.cmcColumns.length - 1 ? 
+                    card.cmc >= this.cmcColumns.length - 1 : 
+                    cmc === card.cmc) &&
+                    !card.type_line?.includes("Land")
             )
         },
     },
@@ -39,9 +41,12 @@ export default {
         filterByLand: function() {
             return this.getCards.filter(card => card.type_line?.includes("Land"))
         },
+        getDeck() {
+            return this.$store.getters.deck
+        },
         getCards() {
-            return this.$store.getters.deck.cards
-        }      
+            return this.getDeck.scryfallCards
+        } 
     }
 }
 </script>

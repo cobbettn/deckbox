@@ -33,18 +33,17 @@
 import { userUrl, jsonContentHeader, authTokenFactory } from '../../config/api'
 // cant bundle bcrypt with webpack using normal import
 const bcrypt = require('../../../node_modules/bcryptjs/') 
-const defaultState = {
-  newEmail: '',
-  newUsername: '',
-  newPassword: '',
-  currentPassword: '',
-  errorList: [],
-  successMsg: '',
-}
 export default {
   name: 'Profile',
   data() {
-    return {...defaultState}
+    return {
+      newEmail: '',
+      newUsername: '',
+      newPassword: '',
+      currentPassword: '',
+      errorList: [],
+      successMsg: '',
+    }
   },
   methods: {
     tryUpdate(field) {

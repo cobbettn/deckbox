@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="showLoggedInView" class="new-deck">
-            <router-link to="/deckEditor" @click.native="setEditorModeToCreate">
+            <router-link to="/deckEditor" @click.native="createNewDeck">
                 <h1>+ New Deck</h1>
             </router-link>
         </div>
@@ -20,7 +20,8 @@ export default {
     name: "ViewDecks",
     components: { DeckBox },
     methods: {
-        setEditorModeToCreate() {
+        createNewDeck() {
+            this.$store.dispatch('CLEAR_DECK')
             this.$store.dispatch('SET_EDITOR_MODE', 'create')
         }
     },

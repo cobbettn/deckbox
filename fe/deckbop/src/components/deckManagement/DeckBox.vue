@@ -16,6 +16,7 @@ export default {
     },
     methods: {
         editDeck() {
+            console.log('edit deck', this.deck)
             this.$store.dispatch('SET_EDITOR_MODE', 'edit')
             this.$store.dispatch('SET_DECK', {...this.deck})
             this.$router.push(`/deckEditor/${this.deck.id}`)
