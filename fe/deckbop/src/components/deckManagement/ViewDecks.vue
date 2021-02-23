@@ -21,6 +21,7 @@ export default {
     components: { DeckBox },
     methods: {
         createNewDeck() {
+            this.$store.dispatch('CLEAR_DECK')
             this.$store.dispatch('SET_EDITOR_MODE', 'create')
         },
 

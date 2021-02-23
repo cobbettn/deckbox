@@ -28,8 +28,7 @@ export default {
             this.$store.dispatch('REMOVE_FROM_DECK', card)
         },
         filterByCMC: function(cmc) {
-            const vm = this
-            return vm.getDeck.scryfallCards.filter(
+            return  this.$store.getters.deck.scryfallCards.filter(
                 card => (cmc === this.cmcColumns.length - 1 ? 
                     card.cmc >= this.cmcColumns.length - 1 : 
                     cmc === card.cmc) &&
@@ -39,11 +38,8 @@ export default {
     },
     computed: {
         filterByLand: function() {
-            return this.getDeck.scryfallCards.filter(card => card.type_line.includes("Land"))
+            return  this.$store.getters.deck.scryfallCards.filter(card => card.type_line.includes("Land"))
         },
-        getDeck() {
-            return this.$store.getters.deck
-        } 
     },
 }
 </script>

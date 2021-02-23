@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import defaultUser from '../model/user'
 import defaultDeck from '../model/deck'
-import {getDefaultState} from './defaultState'
+import { getDefaultState } from './defaultState'
 
 Vue.use(Vuex)
 
@@ -21,7 +21,7 @@ export default new Vuex.Store({
       state.user = {...data}
     },
     CLEAR_USER(state) {
-      state.user = {...defaultUser}
+      state.user = defaultUser()
     },
     SET_SEARCH_RESULTS(state, data) {
       state.searchResults = data;
@@ -45,7 +45,7 @@ export default new Vuex.Store({
       state.editorMode = data
     },
     CLEAR_DECK(state) {
-      state.deck = {...defaultDeck}
+      state.deck = defaultDeck()
     },
     RESET_STATE(state) {
       Object.assign(state, getDefaultState())
