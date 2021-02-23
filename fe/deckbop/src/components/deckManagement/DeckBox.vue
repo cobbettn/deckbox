@@ -43,7 +43,7 @@ export default {
     },
     computed: {
         getUser() {
-            return this.$store.getters.user.de
+            return this.$store.getters.user
         },
         getUserDecks() {
             return this.getUser.decks

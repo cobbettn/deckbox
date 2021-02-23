@@ -25,6 +25,9 @@ export default {
             return this.$store.getters.viewSearch
         },
     },
+    mounted() {
+        this.$store.dispatch("SET_SEARCH_RESULTS", {data: ""});
+    }
 }
 </script>
 
