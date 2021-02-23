@@ -17,7 +17,7 @@ export default {
     methods:{
         addToDeck: function (card) {
             this.getDeck.scryfallCards.push(card)
-            this.$store.dispatch('SET_DECK', {...this.getDeck})
+            this.$store.dispatch('SET_DECK', this.getDeck)
         }
     },
     computed: {

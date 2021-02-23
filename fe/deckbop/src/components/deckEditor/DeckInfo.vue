@@ -3,7 +3,7 @@
       <sidebar-nav></sidebar-nav>
       <div class="column-content">
         <input type="text" placeholder="Deck Name" v-model="getDeck.name"/>
-        <button @click="handleClick">{{ isEditMode ? 'save': 'create' }}</button>
+        <button @click="handleClick">{{ isEditMode ? 'save' : 'create' }}</button>
       </div>
   </div>
 </template>
@@ -37,11 +37,13 @@ export default {
                 reqUrl,
                 reqBody,
                 reqHeaders
-            ).then(res => {
-                this.$store.dispatch('SET_DECK', {...this.getDeck, id: res.data.deckId})
-                this.getUser.decks.push(this.getDeck)
+            ).then(({data}) => {
+                const newDeck = {...this.getDeck, id: data.deckId}
+                this.$store.dispatch('SET_DECK', newDeck)
+                this.getUser.decks.push(newDeck)
                 this.$store.dispatch('UPDATE_USER', this.getUser)
                 this.$toasted.show('Deck created', { position: 'bottom-center', duration: 2000})
+                this.$store.dispatch('SET_EDITOR_MODE', 'edit')
             })
             .catch(e => console.log(e))
         },
@@ -52,8 +54,11 @@ export default {
                 reqBody,
                 reqHeaders
             ).then(({data}) => {
-                console.log(data)
-                this.$store.dispatch("SET_DECK", data)
+                const updatedDeck = {...data, id: this.getDeck.id}
+                const updatedUserDecks = this.getUser.decks.filter(deck => deck.id !== updatedDeck.id)
+                updatedUserDecks.push(updatedDeck)
+                this.$store.dispatch("SET_DECK", updatedDeck)
+                this.$store.dispatch("UPDATE_USER", {...this.getUser, decks: updatedUserDecks})
                 this.$toasted.show('Deck updated', { position: 'bottom-center', duration: 2000})
             })
             .catch(e => console.log(e))

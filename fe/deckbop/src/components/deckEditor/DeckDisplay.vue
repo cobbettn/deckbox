@@ -29,25 +29,22 @@ export default {
         },
         filterByCMC: function(cmc) {
             const vm = this
-            return vm.getCards.filter(
+            return vm.getDeck.scryfallCards.filter(
                 card => (cmc === this.cmcColumns.length - 1 ? 
                     card.cmc >= this.cmcColumns.length - 1 : 
                     cmc === card.cmc) &&
-                    !card.type_line?.includes("Land")
+                    !card.type_line.includes("Land")
             )
         },
     },
     computed: {
         filterByLand: function() {
-            return this.getCards.filter(card => card.type_line?.includes("Land"))
+            return this.getDeck.scryfallCards.filter(card => card.type_line.includes("Land"))
         },
         getDeck() {
             return this.$store.getters.deck
-        },
-        getCards() {
-            return this.getDeck.scryfallCards
         } 
-    }
+    },
 }
 </script>
 

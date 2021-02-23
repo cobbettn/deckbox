@@ -5,7 +5,7 @@ import com.deckbop.api.controller.response.ErrorMessageResponse;
 import com.deckbop.api.exception.DeckNameExistsException;
 import com.deckbop.api.model.Deck;
 import com.deckbop.api.service.DeckService;
-import com.deckbop.api.service.ScryfallService;
+import com.deckbop.api.service.scryfall.ScryfallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

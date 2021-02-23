@@ -1,6 +1,5 @@
-package com.deckbop.api.service;
+package com.deckbop.api.service.scryfall;
 
-import com.deckbop.api.controller.request.ScryfallCardsCollectionRequest;
 import com.deckbop.api.model.Card;
 import com.deckbop.api.model.scryfall.Identifier;
 import org.springframework.http.HttpEntity;

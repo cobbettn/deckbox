@@ -6,7 +6,7 @@
             </router-link>
         </div>
         <div class="view-decks">
-            <div v-for="(deck, index) in getUserDecks" :key="index">
+            <div v-for="(deck, index) in getSortedUserDecks" :key="index">
                 <DeckBox v-bind:deck="deck" />
             </div>
         </div>    
@@ -21,20 +21,19 @@ export default {
     components: { DeckBox },
     methods: {
         createNewDeck() {
-            this.$store.dispatch('CLEAR_DECK')
             this.$store.dispatch('SET_EDITOR_MODE', 'create')
-        }
+        },
+
     },
     computed: {
         showLoggedInView() {
             return !!this.$store.getters.user.token
         },
-        getUserDecks() {
-            return this.$store.getters.user.decks
+        getSortedUserDecks() {
+            return [... this.$store.getters.user.decks].sort((a, b) => (a.name > b.name) ? 1 : -1)
         }
     }
 }
-
 </script>
 
 <style scoped>

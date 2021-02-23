@@ -25,10 +25,6 @@ export default {
             return this.$store.getters.viewSearch
         },
     },
-    destroyed() {
-        this.$store.dispatch('CLEAR_DECK')
-        this.$store.dispatch('SET_SEARCH_RESULTS', {data: ""})
-    },
 }
 </script>
 

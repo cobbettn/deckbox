@@ -19,7 +19,6 @@ const routes = [
   {path: '/login', component: Login, meta: {noAuth: true}},
   {path: '/viewDecks', component: ViewDecks},
   {path: '/deckEditor', component: DeckEditor},
-  {path: '/deckEditor/:id', component: DeckEditor},
   {path: '/profile', component: Profile},
 ]
 

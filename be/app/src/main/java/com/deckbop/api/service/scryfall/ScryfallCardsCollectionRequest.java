@@ -1,4 +1,4 @@
-package com.deckbop.api.controller.request;
+package com.deckbop.api.service.scryfall;
 
 import com.deckbop.api.model.scryfall.Identifier;
 

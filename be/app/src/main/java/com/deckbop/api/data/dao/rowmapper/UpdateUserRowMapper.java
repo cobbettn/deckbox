@@ -1,4 +1,4 @@
-package com.deckbop.api.data.dao.impl.rowmapper;
+package com.deckbop.api.data.dao.rowmapper;
 
 import com.deckbop.api.controller.response.UpdateUserResponse;
 import org.springframework.jdbc.core.RowMapper;
@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UpdateUserResponseRowMapper implements RowMapper<UpdateUserResponse> {
+public class UpdateUserRowMapper implements RowMapper<UpdateUserResponse> {
     @Override
     public UpdateUserResponse mapRow(ResultSet resultSet, int i) throws SQLException {
         Long userId = resultSet.getLong("user_id");

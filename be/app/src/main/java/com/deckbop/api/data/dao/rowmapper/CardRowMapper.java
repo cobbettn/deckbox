@@ -1,4 +1,4 @@
-package com.deckbop.api.data.dao.impl.rowmapper;
+package com.deckbop.api.data.dao.rowmapper;
 
 import com.deckbop.api.model.Card;
 import org.springframework.jdbc.core.RowMapper;

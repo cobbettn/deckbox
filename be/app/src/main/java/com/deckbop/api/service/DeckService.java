@@ -6,6 +6,7 @@ import com.deckbop.api.exception.CreateDeckException;
 import com.deckbop.api.exception.DeckNameExistsException;
 import com.deckbop.api.model.Card;
 import com.deckbop.api.model.Deck;
+import com.deckbop.api.service.scryfall.ScryfallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;

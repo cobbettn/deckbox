@@ -49,6 +49,9 @@ export default {
             this.$router.push('/register')
         }
     },
+    created() {
+        this.$store.dispatch('RESET_STATE')
+    }
 }
 </script>
 

@@ -2,21 +2,16 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import defaultUser from '../model/user'
 import defaultDeck from '../model/deck'
+import {getDefaultState} from './defaultState'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
-    user: {...defaultUser},
-    deck: {...defaultDeck},
-    editorMode: '',
-    searchResults: {data: ""},
-    viewSearch: false,
-  },
+  state: getDefaultState(),
   getters: {
     user: state => state.user,
-    searchResults: state => state.searchResults,
     deck: state => state.deck,
+    searchResults: state => state.searchResults,
     viewSearch: state => state.viewSearch,
     deckName: state => state.deck.name,
     editorMode: state => state.editorMode,
@@ -35,7 +30,7 @@ export default new Vuex.Store({
       state.deck.scryfallCards = [...state.deck.scryfallCards, data].sort((a,b) => a.name < b.name ? -1 : 1)
     },
     REMOVE_FROM_DECK(state, data) {
-      state.deck.scryfallCards.splice(state.deck.cards.findIndex((x) => x == data), 1)
+      state.deck.scryfallCards.splice(state.deck.scryfallCards.findIndex((x) => x == data), 1)
     },
     TOGGLE_VIEW_SEARCH(state) {
       state.viewSearch = !state.viewSearch
@@ -50,8 +45,11 @@ export default new Vuex.Store({
       state.editorMode = data
     },
     CLEAR_DECK(state) {
-      state.deck.scryfallCards = []
+      state.deck = {...defaultDeck}
     },
+    RESET_STATE(state) {
+      Object.assign(state, getDefaultState())
+    }
   },
   actions: {
     LOGIN(context, data) {
@@ -87,5 +85,8 @@ export default new Vuex.Store({
     CLEAR_DECK(context) {
       context.commit('CLEAR_DECK')
     },
+    RESET_STATE(context) {
+      context.commit('RESET_STATE')
+    }
   }
 })
