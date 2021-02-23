@@ -1,51 +1,76 @@
 package com.deckbop.api.model;
 
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 public class Deck {
     
-    private int deckId;
-    private int userId;
-    private int deckListId;
-    String deckName;
+    private long id;
+    private long userId;
+    String name;
+    List<Card> cards;
+    ArrayList<LinkedHashMap> scryfallCards;
     
-    public Deck(int deckId, int userId, int deckListId, String deckName){
-        this.deckId = deckId;
+    public Deck(long id, long userId, String name, List<Card> cards){
+        this.id = id;
         this.userId = userId;
-        this.deckListId = deckListId;
-        this.deckName = deckName;
+        this.name = name;
+        this.cards = cards;
     }
+
+    public Deck(long userId, String name, List<Card> cards) {
+        this.userId = userId;
+        this.name = name;
+        this.cards = cards;
+    }
+
+    public Deck(long id, long userId, String name) {
+        this.id = id;
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public Deck() {}
     
-    public int getDeckId() {
-        return deckId;
+    public long getId() {
+        return id;
     }
 
-    public void setDeckId(int deckId) {
-        this.deckId = deckId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public int getDeckListId() {
-        return deckListId;
+    public List<Card> getCards() {
+        return cards;
     }
 
-    public void setDeckListId(int deckListId) {
-        this.deckListId = deckListId;
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
-    public String getDeckName() {
-        return deckName;
+    public String getName() {
+        return name;
     }
 
-    public void setDeckName(String deckName) {
-        this.deckName = deckName;
+    public void setName(String name) {
+        this.name = name;
     }
-    
 
+    public ArrayList<LinkedHashMap> getScryfallCards() {
+        return scryfallCards;
+    }
+
+    public void setScryfallCards(ArrayList<LinkedHashMap> scryfallCards) {
+        this.scryfallCards = scryfallCards;
+    }
 }

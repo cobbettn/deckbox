@@ -1,22 +1,27 @@
 package com.deckbop.api.data.dao.impl;
 
+import com.deckbop.api.data.IDeckDatasource;
 import com.deckbop.api.data.SQLTemplates;
 import com.deckbop.api.data.dao.DatabaseDAO;
-import com.deckbop.api.data.IDeckDatasource;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import com.deckbop.api.data.dao.rowmapper.CardRowMapper;
+import com.deckbop.api.data.dao.rowmapper.DeckRowMapper;
+import com.deckbop.api.model.Card;
+import com.deckbop.api.model.Deck;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DeckDatabaseDAO extends DatabaseDAO implements IDeckDatasource {
 
     @Override
-    public SqlRowSet getDeckById(long deck_id){
-        return this.jdbcTemplate.queryForRowSet(SQLTemplates.getDeckById, deck_id);
+    public Deck getDeckById(long deck_id){
+        return this.jdbcTemplate.queryForObject(SQLTemplates.getDeckById, new DeckRowMapper(), deck_id);
     }
 
     @Override
-    public SqlRowSet getCardsByDeckId(long deck_id){
-        return this.jdbcTemplate.queryForRowSet(SQLTemplates.getCardsByDeckId, deck_id);
+    public List<Card> getCardsByDeckId(long deck_id){
+        return this.jdbcTemplate.queryForObject(SQLTemplates.getCardsByDeckId, new CardRowMapper(), deck_id);
     }
 
     @Override
@@ -30,8 +35,8 @@ public class DeckDatabaseDAO extends DatabaseDAO implements IDeckDatasource {
     }
 
     @Override
-    public SqlRowSet getDeckIdsByUserId(long userId) {
-        return this.jdbcTemplate.queryForRowSet(SQLTemplates.getDeckIdsByUserId, userId);
+    public List<Deck> getDecksByUserId(long user_id) {
+        return this.jdbcTemplate.query(SQLTemplates.getDecksByUserId, new DeckRowMapper(), user_id);
     }
 
     @Override
@@ -47,6 +52,11 @@ public class DeckDatabaseDAO extends DatabaseDAO implements IDeckDatasource {
     @Override
     public void addCardsToDeck(String sql){
         this.jdbcTemplate.update(sql);  // int[]columnTypes = {Types.INTEGER,Types.VARCHAR};
+    }
+
+    @Override
+    public Long getNumDeckNameCollisions(long userId, String deckName, long deckId) {
+        return this.jdbcTemplate.queryForObject(SQLTemplates.getNumDeckNameCollisions, Long.class, userId, deckName, deckId);
     }
 
 }

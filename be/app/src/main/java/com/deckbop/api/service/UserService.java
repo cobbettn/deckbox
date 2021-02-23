@@ -4,11 +4,12 @@ import com.deckbop.api.controller.request.UserActivationRequest;
 import com.deckbop.api.controller.request.UserLoginRequest;
 import com.deckbop.api.controller.request.UserRegisterRequest;
 import com.deckbop.api.controller.request.UserUpdateRequest;
-import com.deckbop.api.controller.response.UpdateUserSuccessResponse;
+import com.deckbop.api.controller.response.UpdateUserResponse;
 import com.deckbop.api.controller.response.UserLoginErrorResponse;
 import com.deckbop.api.controller.response.UserLoginSuccessResponse;
 import com.deckbop.api.controller.response.UserRegisterErrorResponse;
 import com.deckbop.api.data.IUserDatasource;
+import com.deckbop.api.model.Deck;
 import com.deckbop.api.model.User;
 import com.deckbop.api.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,15 @@ public class UserService {
                     String jwt;
                     try {
                         jwt = authenticationService.authenticateAndGetJWTToken(user.getUsername(), request.getPassword());
-                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getPassword());
+                        List<Deck> userDeckList = deckService.getUserDecks(user.getId());
+                        UserLoginSuccessResponse userLoginSuccessResponse = new UserLoginSuccessResponse(
+                                jwt,
+                                user.getId(),
+                                user.getUsername(),
+                                user.getEmail(),
+                                user.getPassword(),
+                                userDeckList
+                        );
                         HttpHeaders httpHeaders = this.getJWTHeaders(jwt);
                         response = new ResponseEntity<>(userLoginSuccessResponse, httpHeaders, HttpStatus.OK);
                     }
@@ -142,15 +151,15 @@ public class UserService {
             Optional<String> email = Optional.ofNullable(request.getCredentials().get("email"));
             Optional<String> password = Optional.ofNullable(request.getPassword());
             if (username.isPresent()) {
-                UpdateUserSuccessResponse successResponse =  userDatasource.updateUserUsername(username.get(), user_id);
+                UpdateUserResponse successResponse =  userDatasource.updateUserUsername(username.get(), user_id);
                 response = new ResponseEntity<>(successResponse, HttpStatus.OK);
             }
             if (email.isPresent()) {
-                UpdateUserSuccessResponse successResponse =  userDatasource.updateUserEmail(email.get(), user_id);
+                UpdateUserResponse successResponse =  userDatasource.updateUserEmail(email.get(), user_id);
                 response = new ResponseEntity<>(successResponse, HttpStatus.OK);
             }
             if (password.isPresent()) {
-                UpdateUserSuccessResponse successResponse =  userDatasource.updateUserPassword(this.getPasswordEncoder().encode(password.get()), user_id);
+                UpdateUserResponse successResponse =  userDatasource.updateUserPassword(this.getPasswordEncoder().encode(password.get()), user_id);
                 response = new ResponseEntity<>(successResponse, HttpStatus.OK);
             }
         }

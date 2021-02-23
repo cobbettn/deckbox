@@ -1,6 +1,5 @@
 <template>
     <div class="deck-editor">
-        
         <deck-info v-if="viewSearch" class="container" id="deck-info"></deck-info>
         <card-search v-else class="container" id="search"></card-search>    
         <card-search-results class="container" id="search-results"></card-search-results>
@@ -22,11 +21,13 @@ export default {
       DeckInfo,
     },
     computed: {
-        viewSearch(){
+        viewSearch() {
             return this.$store.getters.viewSearch
         },
+    },
+    mounted() {
+        this.$store.dispatch("SET_SEARCH_RESULTS", {data: ""});
     }
-    
 }
 </script>
 

@@ -1,13 +1,13 @@
 package com.deckbop.api.controller.response;
 
-public class UpdateUserSuccessResponse {
+public class UpdateUserResponse {
 
     Long userId;
     String username;
     String password;
     String email;
 
-    public UpdateUserSuccessResponse(Long userId, String username, String password, String email) {
+    public UpdateUserResponse(Long userId, String username, String password, String email) {
         this.userId = userId;
         this.username = username;
         this.password = password;

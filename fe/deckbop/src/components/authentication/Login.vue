@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import { StatusCodes } from 'http-status-codes'
 import { userLoginUrl, jsonContentHeader } from '../../config/api'
 export default {
     name: 'Login',
@@ -39,20 +38,20 @@ export default {
                 userLoginUrl,
                 reqBody,
                 jsonContentHeader
-            ).then(({status, data}) => {
-                if (status === StatusCodes.OK) {
-                    this.$store.dispatch('LOGIN', data)
-                    this.$router.push('/viewDecks')
-                }
+            ).then(({data}) => {
+                this.$store.dispatch('LOGIN', data)
+                this.$router.push('/viewDecks')
             }).catch(error => {
-                this.errorList = error.response.data.errorList
+                this.errorList = error.response?.data.errorList
             });
         },
         goToRegister() {
             this.$router.push('/register')
         }
+    },
+    created() {
+        this.$store.dispatch('RESET_STATE')
     }
-
 }
 </script>
 

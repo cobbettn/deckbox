@@ -13,6 +13,7 @@ public class UserDatasourceConfig {
     public IUserDatasource userDatabaseDAO() {
         return new UserDatabaseDAO();
     }
+
     @Profile("test")
     @Bean(name = "userDatasource")
     public IUserDatasource testDatasource() {

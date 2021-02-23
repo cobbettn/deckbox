@@ -1,7 +1,6 @@
 <template>
     <div class="card-search-results">
          <div v-for="(card, index) in populateResults" :key="index"  v-on:click="addToDeck(card)">
-
             <Card v-bind:card="card"/>
         </div>
     </div>
@@ -15,17 +14,18 @@ export default {
     components: {
         Card,
     },
-    data: () => {
-        return {}
-    },
     methods:{
-        addToDeck: function (card){
-            this.$store.dispatch('ADD_TO_DECK', card)
+        addToDeck: function (card) {
+            this.getDeck.scryfallCards.push(card)
+            this.$store.dispatch('SET_DECK', this.getDeck)
         }
     },
     computed: {
         populateResults() {
             return this.$store.getters.searchResults.data
+        },
+        getDeck() {
+            return this.$store.getters.deck
         }
     }
 }
