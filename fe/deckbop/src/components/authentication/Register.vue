@@ -40,22 +40,35 @@ export default {
             this.errorList = []
             this.successMsg = ''
             const vm = this
-            vm.isLoading = true
             const reqBody = {
                 credentials: {username: vm.username, email: vm.email},
                 password: vm.password
             }
-            this.$http.post(
-                userRegistrationUrl,
-                reqBody,
-                jsonContentHeader
-            ).then(() => {
-                this.successMsg = 'congrats, check your email for activation link'
-            }).catch(error => {
-                this.errorList = error.response.data.errorList
-            }).finally(() => {
-                this.isLoading = false
-            });
+            if (vm.username && vm.email && vm.password){
+                vm.isLoading = true
+                this.$http.post(
+                    userRegistrationUrl,
+                    reqBody,
+                    jsonContentHeader
+                ).then(() => {
+                    this.successMsg = 'congrats, check your email for activation link'
+                }).catch(error => {
+                    this.errorList = error.response.data.errorList
+                }).finally(() => {
+                    this.isLoading = false
+                });
+            } 
+            else {
+                if (!vm.username){
+                    this.errorList.push('please provide a username')
+                }
+                if (!vm.password){
+                    this.errorList.push('please provide a password')
+                }
+                if (!vm.email){
+                    this.errorList.push('please provide an email to register with')
+                }
+            }
         }
     }
 }
