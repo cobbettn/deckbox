@@ -234,7 +234,7 @@ public class UserService {
     private List<String> loginAndRegisterRequestValidator(String type, UserRegisterRequest request) {
         String username = request.getCredentials().get("username");
         String email = request.getCredentials().get("email");
-        boolean isRegister = type.equals("register");
+        boolean isRegister = "register".equals(type);
         boolean hasEmail = Optional.ofNullable(email).isPresent();
         boolean hasUsername = Optional.ofNullable(username).isPresent();
         boolean hasEmailUser = Optional.ofNullable(this.getUserByEmail(email)).isPresent();
